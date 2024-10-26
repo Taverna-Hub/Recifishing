@@ -35,7 +35,9 @@ int main(void)
         Texture2D startTexture = LoadTexture("../assets/pixel-art-beach-with-coconut-trees-clouds-sky-background-retro-style-8-bit-game-ai_985124-981.png");
         Texture2D logoTexture = LoadTexture("../assets/soumteste.png");
         Texture2D startmenuButton = LoadTexture("../assets/startbuttonMenu.png");
+        Texture2D darkstartmenuButton = LoadTexture("../assets/darkstartbuttonMenu.png");
         Texture2D exitmenuButton = LoadTexture("../assets/exitbuttonMenu.png");
+        Texture2D darkexitmenuButton = LoadTexture("../assets/darkexitbuttonMenu.png");
         Texture2D backgroundMenu = LoadTexture("../assets/yes.png");
 
         Rectangle exitbutton = imageToRectangle(exitmenuButton, 337, 580);
@@ -56,8 +58,16 @@ int main(void)
             if (currentScreen == MENU){
                 DrawTexture(backgroundMenu, 0, 0, RAYWHITE);
                 DrawTexture(logoTexture, 256, 0, RAYWHITE);
-                DrawTexture(startmenuButton, 337, 450, RAYWHITE);
-                DrawTexture(exitmenuButton, 337, 580, RAYWHITE);
+                if (CheckCollisionPointRec(mousePos, startbutton) == true){
+                    DrawTexture(darkstartmenuButton, 337, 450, RAYWHITE);
+                } else {
+                    DrawTexture(startmenuButton, 337, 450, RAYWHITE);
+                }
+                if (CheckCollisionPointRec(mousePos, exitbutton) == true){
+                    DrawTexture(darkexitmenuButton, 337, 580, RAYWHITE);
+                } else {
+                    DrawTexture(exitmenuButton, 337, 580, RAYWHITE);
+                }
             } else if (currentScreen == GAME){
                 ClearBackground(RAYWHITE);
             }
