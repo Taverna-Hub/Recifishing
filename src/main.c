@@ -33,7 +33,7 @@ int main(void)
         // TODO: Update your variables here
         //----------------------------------------------------------------------------------
         Texture2D startTexture = LoadTexture("../assets/pixel-art-beach-with-coconut-trees-clouds-sky-background-retro-style-8-bit-game-ai_985124-981.png");
-        Texture2D logoTexture = LoadTexture("../assets/soumteste.png");
+        Texture2D logoTexture = LoadTexture("../assets/logo.png");
         Texture2D startmenuButton = LoadTexture("../assets/startbuttonMenu.png");
         Texture2D darkstartmenuButton = LoadTexture("../assets/darkstartbuttonMenu.png");
         Texture2D exitmenuButton = LoadTexture("../assets/exitbuttonMenu.png");
