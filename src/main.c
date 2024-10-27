@@ -22,7 +22,10 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "Recifishing");
 
     GameScreen currentScreen = MENU;
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+    SetTargetFPS(60);
+    int fadeAlpha = 255;
+    bool inTransition = false; 
+    float time=0.0f;              // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
     // Main game loop
@@ -39,16 +42,32 @@ int main(void)
         Texture2D exitmenuButton = LoadTexture("../assets/exitbuttonMenu.png");
         Texture2D darkexitmenuButton = LoadTexture("../assets/darkexitbuttonMenu.png");
         Texture2D backgroundMenu = LoadTexture("../assets/yes.png");
+        Texture2D portSign=LoadTexture("../assets/portosign.png");
+        Texture2D fishBucket = LoadTexture("../assets/fishbucket.png");
+        Texture2D fishPedia = LoadTexture("../assets/fishpedia.png");
+        Texture2D fishShop= LoadTexture("../assets/fishshop.png");
 
         Rectangle exitbutton = imageToRectangle(exitmenuButton, 337, 580);
         Rectangle startbutton = imageToRectangle(startmenuButton, 337, 450);
         Vector2 mousePos = GetMousePosition();
 
         if (CheckCollisionPointRec(mousePos, startbutton) == true && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) == true){
+            inTransition = true;
             currentScreen = GAME;
+
         }
         if (CheckCollisionPointRec(mousePos, exitbutton) == true && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) == true && currentScreen == MENU){
             break;
+        }
+        if (inTransition) {
+            fadeAlpha -= 3;  // Diminui a opacidade gradualmente
+
+            if (fadeAlpha <= 0) {
+                fadeAlpha = 0;
+                inTransition = false; // Termina a transição
+                currentScreen = GAME; // Troca para a tela de jogo
+                fadeAlpha = 255;      // Reseta a opacidade para futuros usos
+            }
         }
         // Draw
         //----------------------------------------------------------------------------------
@@ -70,8 +89,24 @@ int main(void)
                 }
             } else if (currentScreen == GAME){
                 ClearBackground(RAYWHITE);
+                if(!inTransition){
+                    time+=GetFrameTime();
+                    
+                    DrawTexture(fishPedia,50,40,RAYWHITE);
+                    
+                    if (time>=0.2f)
+                    {
+                        DrawTexture(fishBucket,140,40,RAYWHITE);
+                    }
+                    
+                }
+                DrawTexture(fishShop,650,200,RAYWHITE);
+                DrawTexture(portSign,50,300,RAYWHITE);
             }
             ClearBackground(RAYWHITE);
+             if (inTransition) {
+                DrawRectangle(0, 0, screenWidth, screenHeight, Fade(BLACK, fadeAlpha / 255.0f));
+            }
 
         EndDrawing();
 
