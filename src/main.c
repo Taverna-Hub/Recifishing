@@ -25,10 +25,12 @@ int main(void) {
     while (!WindowShouldClose()) {
 
         mousePos = GetMousePosition();
+
+        SetMouseCursor(MOUSE_CURSOR_DEFAULT);
         
         if (currentScreen == MENU) {
             UpdateMenu(&currentScreen, &inTransition, mousePos, assets, &isSoundPlayed);
-            DrawMenu(mousePos, inTransition, fadeAlpha, assets, &isSoundPlayed);
+            DrawMenu(&currentScreen, mousePos, inTransition, fadeAlpha, assets, &isSoundPlayed);
         }
         else if (currentScreen == GAME) {
             UpdateGame(&inTransition, &currentScreen);

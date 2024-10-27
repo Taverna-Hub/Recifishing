@@ -8,16 +8,16 @@ void UpdateMenu(GameScreen *currentScreen, bool *inTransition, Vector2 mousePos,
     if (CheckCollisionPointRec(mousePos, startButtonRect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         *inTransition = true;
         *currentScreen = GAME;
-        StopSound(assets.anunciacao);
         *isSoundPlayed = false;
-
+        StopSound(assets.anunciacao);
     }
+
     if (CheckCollisionPointRec(mousePos, exitButtonRect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         *currentScreen = -1;
     }
 }
 
-void DrawMenu(Vector2 mousePos, bool inTransition, int fadeAlpha, Assets assets, bool *isSoundPlayed) {
+void DrawMenu(GameScreen *currentScreen, Vector2 mousePos, bool inTransition, int fadeAlpha, Assets assets, bool *isSoundPlayed) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
     DrawTexture(assets.backgroundMenu, 0, 0, RAYWHITE);
@@ -27,17 +27,19 @@ void DrawMenu(Vector2 mousePos, bool inTransition, int fadeAlpha, Assets assets,
     Rectangle exitButtonRect = { 337, 560, assets.exitButton.width, assets.exitButton.height };
 
     if (CheckCollisionPointRec(mousePos, startButtonRect)) {
+        SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         DrawTexture(assets.darkStartButton, 337, 430, RAYWHITE);
     } else {
         DrawTexture(assets.startButton, 337, 430, RAYWHITE);
     }
     if (CheckCollisionPointRec(mousePos, exitButtonRect)) {
+        SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         DrawTexture(assets.darkExitButton, 337, 560, RAYWHITE);
     } else {
         DrawTexture(assets.exitButton, 337, 560, RAYWHITE);
     }
 
-    if (!(*isSoundPlayed)) {
+    if (!(*isSoundPlayed) && *currentScreen != GAME) {
         PlaySound(assets.anunciacao);
         *isSoundPlayed = true;
     }
