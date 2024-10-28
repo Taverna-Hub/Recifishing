@@ -5,6 +5,7 @@ Assets LoadAssets(void) {
     Assets assets;
     assets.logoTexture = LoadTexture("assets/icons/logo.png");
     assets.fishPedia = LoadTexture("assets/icons/fishpedia.png");
+    assets.fishPedia2 = LoadTexture("assets/icons/fishpedia2.png");
     assets.exitButton = LoadTexture("assets/menu/exitButton.png");
     assets.anunciacao = LoadSound("assets/sounds/anunciacao.WAV");
     assets.morenaTropicana = LoadSound("assets/sounds/morena-tropicana.WAV");

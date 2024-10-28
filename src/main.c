@@ -21,7 +21,6 @@ int main(void) {
     Assets assets = LoadAssets();
 
     Vector2 mousePos = GetMousePosition();
-    
 
     while (!WindowShouldClose()) {
         
@@ -29,15 +28,13 @@ int main(void) {
         mousePos = GetMousePosition();
 
         SetMouseCursor(MOUSE_CURSOR_DEFAULT);
-         
-        
         
         if (currentScreen == MENU) {
             UpdateMenu(&currentScreen, &inTransition,&fadeAlpha, mousePos, assets, &isSoundPlayed);
             DrawMenu(&currentScreen, mousePos, inTransition, fadeAlpha, assets, &isSoundPlayed);
         }
         else if (currentScreen == GAME) {
-           if (!inTransition && fadeAlpha == 255) {
+        if (!inTransition && fadeAlpha == 255) {
                 inTransition = true; 
             }
             

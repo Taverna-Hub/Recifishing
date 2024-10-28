@@ -25,7 +25,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
     
     if (*inTransition) {
         DrawRectangle(0, 0, 1024, 720, Fade(BLACK, *fadeAlpha / 255.0f));
-        *fadeAlpha -= 5; 
+        *fadeAlpha -= 3; 
         if (*fadeAlpha <= 0) {
             *fadeAlpha = 0;
             *inTransition = false;  

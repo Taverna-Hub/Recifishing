@@ -7,6 +7,7 @@
 typedef struct {
     Texture2D logoTexture;
     Texture2D fishPedia;
+    Texture2D fishPedia2;
     Texture2D fishBucket;
     Texture2D exitButton;
     Texture2D startButton;
