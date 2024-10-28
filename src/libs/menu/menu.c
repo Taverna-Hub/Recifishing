@@ -1,5 +1,6 @@
 #include "menu.h"
 #include "raylib.h"
+#include <stdlib.h>
 #include "../cleanup/cleanup.h"
 
 void UpdateMenu(GameScreen *currentScreen, bool *inTransition, int *fadeAlpha, Vector2 mousePos, Assets assets, bool *isSoundPlayed) {
@@ -30,18 +31,32 @@ void DrawMenu(GameScreen *currentScreen, Vector2 mousePos, bool inTransition, in
     Rectangle startButtonRect = { 337, 430, assets.startButton.width, assets.startButton.height };
     Rectangle exitButtonRect = { 337, 560, assets.exitButton.width, assets.exitButton.height };
 
+    bool *isClicking = (bool*)malloc(sizeof(bool) * 2);
+    isClicking[0] = false;
+    isClicking[1] = false;
+
     if (CheckCollisionPointRec(mousePos, startButtonRect)) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+        isClicking[0] = true;
         DrawTexture(assets.darkStartButton, 337, 430, RAYWHITE);
     } else {
+        isClicking[0] = false;
         DrawTexture(assets.startButton, 337, 430, RAYWHITE);
     }
     if (CheckCollisionPointRec(mousePos, exitButtonRect)) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+        isClicking[1] = true;
         DrawTexture(assets.darkExitButton, 337, 560, RAYWHITE);
     } else {
+        isClicking[1] = false;
         DrawTexture(assets.exitButton, 337, 560, RAYWHITE);
     }
+
+    if (!isClicking[0] && !isClicking[1]) {
+        SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+    }
+
+    free(isClicking);
 
     if (!(*isSoundPlayed) && *currentScreen != GAME) {
         PlaySound(assets.anunciacao);

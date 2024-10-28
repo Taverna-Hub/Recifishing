@@ -25,8 +25,6 @@ int main(void) {
     while (!WindowShouldClose()) {
 
         mousePos = GetMousePosition();
-
-        SetMouseCursor(MOUSE_CURSOR_DEFAULT);
         
         if (currentScreen == MENU) {
             UpdateMenu(&currentScreen, &inTransition,&fadeAlpha, mousePos, assets, &isSoundPlayed);
