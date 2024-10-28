@@ -1,5 +1,6 @@
 #include "menu.h"
 #include "raylib.h"
+#include "../cleanup/cleanup.h"
 
 void UpdateMenu(GameScreen *currentScreen, bool *inTransition, int *fadeAlpha, Vector2 mousePos, Assets assets, bool *isSoundPlayed) {
     Rectangle startButtonRect = { 337, 430, assets.startButton.width, assets.startButton.height };
@@ -13,11 +14,9 @@ void UpdateMenu(GameScreen *currentScreen, bool *inTransition, int *fadeAlpha, V
         StopSound(assets.anunciacao);
     }
 
-
-
-    // Exit button logic
     if (CheckCollisionPointRec(mousePos, exitButtonRect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        *currentScreen = -1;
+        UnloadAssets(assets);
+        CloseAudioDevice();
         CloseWindow();
     }
 }

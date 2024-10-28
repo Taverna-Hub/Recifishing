@@ -23,7 +23,6 @@ int main(void) {
     Vector2 mousePos = GetMousePosition();
 
     while (!WindowShouldClose()) {
-        
 
         mousePos = GetMousePosition();
 
