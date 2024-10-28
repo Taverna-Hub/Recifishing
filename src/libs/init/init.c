@@ -11,7 +11,7 @@ Assets LoadAssets(void) {
     assets.fishBucket = LoadTexture("assets/icons/fishbucket.png");
     assets.startButton = LoadTexture("assets/menu/startButton.png");
     assets.fishShop = LoadTexture("assets/marco_zero/fishshop.png");
-    assets.portSign = LoadTexture("assets/marco_zero/portosign.png");
+    assets.portSign = LoadTexture("assets/marco_zero/portoSign.png");
     assets.backgroundMenu = LoadTexture("assets/menu/background.png");
     assets.labelledejour = LoadSound("assets/sounds/labelledejour.WAV");
     assets.darkExitButton = LoadTexture("assets/menu/darkExitButton.png");

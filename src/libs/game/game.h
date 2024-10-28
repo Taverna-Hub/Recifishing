@@ -4,6 +4,6 @@
 #include "../init/init.h"
 
 void UpdateGame(bool *inTransition, GameScreen *currentScreen);
-void DrawGame(bool inTransition, int fadeAlpha, Assets assets, bool *isSoundPlayed);
+void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed);
 
 #endif

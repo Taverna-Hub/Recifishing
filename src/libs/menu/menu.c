@@ -1,19 +1,24 @@
 #include "menu.h"
 #include "raylib.h"
 
-void UpdateMenu(GameScreen *currentScreen, bool *inTransition, Vector2 mousePos, Assets assets, bool *isSoundPlayed) {
+void UpdateMenu(GameScreen *currentScreen, bool *inTransition, int *fadeAlpha, Vector2 mousePos, Assets assets, bool *isSoundPlayed) {
     Rectangle startButtonRect = { 337, 430, assets.startButton.width, assets.startButton.height };
     Rectangle exitButtonRect = { 337, 560, assets.exitButton.width, assets.exitButton.height };
 
-    if (CheckCollisionPointRec(mousePos, startButtonRect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        *inTransition = true;
-        *currentScreen = GAME;
+    
+    if (CheckCollisionPointRec(mousePos, startButtonRect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {  
+        *fadeAlpha = 255;  
         *isSoundPlayed = false;
+        *currentScreen = GAME;
         StopSound(assets.anunciacao);
     }
 
+
+
+    // Exit button logic
     if (CheckCollisionPointRec(mousePos, exitButtonRect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         *currentScreen = -1;
+        CloseWindow();
     }
 }
 
@@ -42,6 +47,10 @@ void DrawMenu(GameScreen *currentScreen, Vector2 mousePos, bool inTransition, in
     if (!(*isSoundPlayed) && *currentScreen != GAME) {
         PlaySound(assets.anunciacao);
         *isSoundPlayed = true;
+    }
+
+    if (fadeAlpha > 0) {
+        DrawRectangle(0, 0, 1024, 720, (Color){ 0, 0, 0, fadeAlpha });
     }
 
     EndDrawing();

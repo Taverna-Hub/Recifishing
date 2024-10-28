@@ -9,7 +9,7 @@ int main(void) {
 
     GameScreen currentScreen = MENU;
     bool inTransition = false;
-    int fadeAlpha = 255;
+    int fadeAlpha = 0;
     bool isSoundPlayed = false;  
 
     const int screenWidth = 1024;
@@ -21,20 +21,29 @@ int main(void) {
     Assets assets = LoadAssets();
 
     Vector2 mousePos = GetMousePosition();
+    
 
     while (!WindowShouldClose()) {
+        
 
         mousePos = GetMousePosition();
 
         SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+         
+        
         
         if (currentScreen == MENU) {
-            UpdateMenu(&currentScreen, &inTransition, mousePos, assets, &isSoundPlayed);
+            UpdateMenu(&currentScreen, &inTransition,&fadeAlpha, mousePos, assets, &isSoundPlayed);
             DrawMenu(&currentScreen, mousePos, inTransition, fadeAlpha, assets, &isSoundPlayed);
         }
         else if (currentScreen == GAME) {
+           if (!inTransition && fadeAlpha == 255) {
+                inTransition = true; 
+            }
+            
             UpdateGame(&inTransition, &currentScreen);
-            DrawGame(inTransition, fadeAlpha, assets, &isSoundPlayed);
+            DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed);
+            
         }
     }
 
