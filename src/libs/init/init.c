@@ -1,11 +1,14 @@
 #include "init.h"
 #include "raylib.h"
 
+int frames = 0;
+
 Assets LoadAssets(void) {
     Assets assets;
     assets.logoTexture = LoadTexture("assets/icons/logo.png");
     assets.fishPedia = LoadTexture("assets/icons/fishpedia.png");
     assets.fishPedia2 = LoadTexture("assets/icons/fishpedia2.png");
+    assets.arrow = LoadTexture("assets/icons/arrow.png");
     assets.exitButton = LoadTexture("assets/menu/exitButton.png");
     assets.anunciacao = LoadSound("assets/sounds/anunciacao.WAV");
     assets.morenaTropicana = LoadSound("assets/sounds/morena-tropicana.WAV");
@@ -18,5 +21,8 @@ Assets LoadAssets(void) {
     assets.labelledejour = LoadSound("assets/sounds/labelledejour.WAV");
     assets.darkExitButton = LoadTexture("assets/menu/darkExitButton.png");
     assets.darkStartButton = LoadTexture("assets/menu/darkStartButton.png");
+    assets.boat = LoadTexture("assets/marco_zero/boat.png");
+    assets.button = LoadTexture("assets/icons/button.png");
+    assets.coin = LoadTexture("assets/icons/coin.png");
     return assets;
 }

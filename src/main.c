@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "libs/init/init.h"
 #include "libs/menu/menu.h"
@@ -22,10 +23,13 @@ int main(void) {
 
     Vector2 mousePos = GetMousePosition();
 
+    Arrow *arrow = (Arrow*)malloc(sizeof(Arrow));
+    arrow->direction = 0;
+    arrow->arrowFrames = 0;
+
     while (!WindowShouldClose()) {
 
         mousePos = GetMousePosition();
-
         if (currentScreen == MENU) {
             UpdateMenu(&currentScreen, &inTransition,&fadeAlpha, mousePos, assets, &isSoundPlayed);
             DrawMenu(&currentScreen, mousePos, inTransition, fadeAlpha, assets, &isSoundPlayed);
@@ -35,8 +39,8 @@ int main(void) {
                 inTransition = true; 
             }
             
-            UpdateGame(&inTransition, &currentScreen);
-            DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed);
+            UpdateGame(&inTransition, &currentScreen, arrow, mousePos);
+            DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed, arrow->arrowFrames, mousePos);
             
         }
     }

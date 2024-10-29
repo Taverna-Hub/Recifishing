@@ -17,6 +17,10 @@ typedef struct {
     Texture2D darkStartButton;
     Texture2D portSign;
     Texture2D fishShop;
+    Texture2D arrow;
+    Texture2D boat;
+    Texture2D button;
+    Texture2D coin;
     Sound labelledejour;
     Sound morenaTropicana;
     Sound anunciacao;
