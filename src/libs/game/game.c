@@ -19,7 +19,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
     DrawTexture(assets.backgroundMarcoZero, 0, 0, RAYWHITE);
     DrawTexture(assets.fishPedia, 50, 40, RAYWHITE);
     DrawTexture(assets.fishBucket, 140, 40, RAYWHITE);
-    DrawTexture(assets.fishShop, 650, 200, RAYWHITE);
+    DrawTexture(assets.fishShop, 730, 220, RAYWHITE);
     DrawTexture(assets.portSign, 50, 300, RAYWHITE);
 
     
