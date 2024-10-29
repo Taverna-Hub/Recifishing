@@ -1,6 +1,7 @@
 #include "menu.h"
 #include "raylib.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include "../cleanup/cleanup.h"
 
 void UpdateMenu(GameScreen *currentScreen, bool *inTransition, int *fadeAlpha, Vector2 mousePos, Assets assets, bool *isSoundPlayed) {

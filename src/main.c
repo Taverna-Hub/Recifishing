@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include <stdio.h>
 
 #include "libs/init/init.h"
 #include "libs/menu/menu.h"
@@ -17,7 +18,6 @@ int main(void) {
     InitWindow(screenWidth, screenHeight, "Recifishing");
     InitAudioDevice();
     SetTargetFPS(60);
-
     Assets assets = LoadAssets();
 
     Vector2 mousePos = GetMousePosition();
@@ -25,7 +25,7 @@ int main(void) {
     while (!WindowShouldClose()) {
 
         mousePos = GetMousePosition();
-        
+
         if (currentScreen == MENU) {
             UpdateMenu(&currentScreen, &inTransition,&fadeAlpha, mousePos, assets, &isSoundPlayed);
             DrawMenu(&currentScreen, mousePos, inTransition, fadeAlpha, assets, &isSoundPlayed);

@@ -11,6 +11,7 @@ void UnloadAssets(Assets assets) {
     UnloadTexture(assets.darkExitButton);
     UnloadTexture(assets.darkStartButton);
     UnloadTexture(assets.portSign);
+    UnloadTexture(assets.backgroundMarcoZero);
     UnloadTexture(assets.fishShop);
     UnloadSound(assets.labelledejour);
     UnloadSound(assets.anunciacao);

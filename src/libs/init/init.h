@@ -12,6 +12,7 @@ typedef struct {
     Texture2D exitButton;
     Texture2D startButton;
     Texture2D backgroundMenu;
+    Texture2D backgroundMarcoZero;
     Texture2D darkExitButton;
     Texture2D darkStartButton;
     Texture2D portSign;
