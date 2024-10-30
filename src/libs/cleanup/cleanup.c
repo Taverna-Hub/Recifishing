@@ -2,22 +2,24 @@
 #include "raylib.h"
 
 void UnloadAssets(Assets assets) {
-    UnloadTexture(assets.logoTexture);
+
+    UnloadTexture(assets.boat);
+    UnloadTexture(assets.coin);
+    UnloadTexture(assets.arrow);
+    UnloadTexture(assets.button);
+    UnloadTexture(assets.portSign);
+    UnloadTexture(assets.fishShop);
     UnloadTexture(assets.fishPedia);
-    UnloadTexture(assets.fishBucket);
     UnloadTexture(assets.exitButton);
+    UnloadTexture(assets.fishBucket);
     UnloadTexture(assets.startButton);
+    UnloadTexture(assets.logoTexture);
     UnloadTexture(assets.backgroundMenu);
     UnloadTexture(assets.darkExitButton);
     UnloadTexture(assets.darkStartButton);
-    UnloadTexture(assets.portSign);
     UnloadTexture(assets.backgroundMarcoZero);
-    UnloadTexture(assets.fishShop);
-    UnloadTexture(assets.arrow);
-    UnloadTexture(assets.boat);
-    UnloadTexture(assets.button);
-    UnloadTexture(assets.coin);
-    UnloadSound(assets.labelledejour);
-    UnloadSound(assets.anunciacao);
-    UnloadSound(assets.morenaTropicana);
+
+    UnloadMusicStream(assets.anunciacao);
+    UnloadMusicStream(assets.labelledejour);
+    UnloadMusicStream(assets.morenaTropicana);
 }

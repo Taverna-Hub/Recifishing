@@ -7,6 +7,12 @@ typedef struct Arrow {
     int direction;
 }Arrow;
 
+Arrow* createArrow();
+void updateArrow(Arrow *arrow);
+
+void cursorHandle(Vector2 mousePos, Texture2D button);
+void fadeHandle(bool *inTransition, int *fadeAlpha);
+
 void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vector2 mousePos);
 void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, Vector2 mousePos);
 
