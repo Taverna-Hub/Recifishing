@@ -9,27 +9,68 @@
 
 void updateArrow(Arrow *arrow);
 void fadeHandle(bool *inTransition, int *fadeAlpha);
-void cursorHandle(Vector2 mousePos, Texture2D button);
+int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D fishpedia, int gameFrame);
 void drawElements(Assets assets, int arrowFrames);
 
 void playSound(bool *isSoundPlayed, Music sound);
 
-void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vector2 mousePos) {
+void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vector2 mousePos, Assets assets, int *gameFrame) {
     updateArrow(arrow);
+
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        *gameFrame = cursorHandle(mousePos, assets.button, assets.fishBucket, assets.fishPedia, *gameFrame);
+    }
 }
 
-void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, Vector2 mousePos) {
+void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, Vector2 mousePos, int frame) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
 
-    drawElements(assets, arrowFrames);
+    SetMouseCursor(MOUSE_CURSOR_DEFAULT);
 
-    cursorHandle(mousePos, assets.button);
+    switch (frame) {
+        case BUCKET:
+            DrawText("Balde de peixes", 300, 300, 28, BLACK);
+            DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+            DrawText("VOLTAR", 65, 632, 28, WHITE);
+            break;
+        
+        case FISHPEDIA:
+            DrawText("Fishpedia", 300, 300, 28, BLACK);
+            DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+            DrawText("VOLTAR", 65, 632, 28, WHITE);
+            break;
 
-    playSound(isSoundPlayed, assets.morenaTropicana);
-    UpdateMusicStream(assets.morenaTropicana);
+        case PORT:
+            DrawText("Porto", 300, 300, 28, BLACK);
+            DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+            DrawText("VOLTAR", 65, 632, 28, WHITE);
+            break;
 
-    fadeHandle(inTransition, fadeAlpha);
+        case PIER:
+            DrawText("Pier", 300, 300, 28, BLACK);
+            DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+            DrawText("VOLTAR", 65, 632, 28, WHITE);
+            break;
+
+        case FISHSHOP:
+            DrawText("Peixaria", 300, 300, 28, BLACK);
+            DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+            DrawText("VOLTAR", 65, 632, 28, WHITE);
+            break;
+        
+        default:
+            printf("AAAAAAAAAAAAAA\n");
+            drawElements(assets, arrowFrames);
+
+            cursorHandle(mousePos, assets.button, assets.fishBucket, assets.fishPedia, frame);
+
+            playSound(isSoundPlayed, assets.morenaTropicana);
+            UpdateMusicStream(assets.morenaTropicana);
+
+            fadeHandle(inTransition, fadeAlpha);
+            break;
+    }
 
     EndDrawing();
 }
@@ -55,21 +96,35 @@ void updateArrow(Arrow *arrow) {
     }
 }
 
-void cursorHandle(Vector2 mousePos, Texture2D button) {
+int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D fishpedia, int gameFrame) {
 
     Rectangle recPort = {0, 140, 310, 270};
     Rectangle recPier = {405, 305, 220, 125};
     Rectangle recFishShop = {740, 240, 200, 250};
+    Rectangle recBucket = {140, 40, bucket.width, bucket.height};
+    Rectangle recFishpedia = {50, 40, fishpedia.width, fishpedia.height};
+    Rectangle recBackButton = {50, 620, button.width, button.height};
 
     bool isClickingPort = false;
     bool isClickingPier = false;
+    bool isClickingBackButton = false;
+    bool isClickingBucket = false;
+    bool isClickingFishpedia = false;
     bool isClickingFishShop = false;
 
+    if (CheckCollisionPointRec(mousePos, recBackButton) && gameFrame != DEFAULT) {
+        SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+        isClickingBackButton = true;
+        return DEFAULT;
+    } else {
+        isClickingBackButton = false;
+    }
     if (CheckCollisionPointRec(mousePos, recPort)) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         DrawTextureEx(button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
         DrawText("PORTO", 79, 632, 30, WHITE);
         isClickingPort = true;
+        return PORT;
     } else {
         isClickingPort = false;
     }
@@ -78,6 +133,7 @@ void cursorHandle(Vector2 mousePos, Texture2D button) {
         DrawTextureEx(button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
         DrawText("PIER", 95, 632, 30, WHITE);
         isClickingPier = true;
+        return PIER;
     } else {
         isClickingPier = false;
     }
@@ -86,11 +142,26 @@ void cursorHandle(Vector2 mousePos, Texture2D button) {
         DrawTextureEx(button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
         DrawText("PEIXARIA", 65, 632, 28, WHITE);
         isClickingFishShop = true;
+        return FISHSHOP;
     } else {
         isClickingFishShop = false;
     }
+    if (CheckCollisionPointRec(mousePos, recBucket)) {
+        SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+        isClickingBucket = true;
+        return BUCKET;
+    } else {
+        isClickingBucket = false;
+    }
+    if (CheckCollisionPointRec(mousePos, recFishpedia)) {
+        SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+        isClickingFishpedia = true;
+        return FISHPEDIA;
+    } else {
+        isClickingFishpedia = false;
+    }
 
-    if (!isClickingFishShop && !isClickingPier && !isClickingPort) {
+    if (!isClickingFishShop && !isClickingPier && !isClickingPort && !isClickingBucket && !isClickingFishpedia & !isClickingBackButton) {
         SetMouseCursor(MOUSE_CURSOR_DEFAULT);
     }
 
@@ -125,6 +196,6 @@ void drawElements(Assets assets, int arrowFrames) {
     DrawTexture(assets.fishShop, 730, 220, RAYWHITE);
     DrawTexture(assets.portSign, 10, 330, RAYWHITE);
     DrawTextureEx(assets.coin, (Vector2){780, 40}, 0.0f, 0.7f, WHITE);
-    DrawText("350", 858, 53, 45, BLACK);
+    DrawText("350", 858, 57, 45, BLACK);
     DrawText("350", 860, 55, 45, WHITE);
 }

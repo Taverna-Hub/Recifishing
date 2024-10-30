@@ -31,6 +31,8 @@ int main(void) {
 
     Arrow *arrow = createArrow();
 
+    int gameFrame = DEFAULT;
+
     while (!WindowShouldClose()) {
 
         mousePos = GetMousePosition();
@@ -45,8 +47,8 @@ int main(void) {
             if (!inTransition && fadeAlpha == 255) {
                 inTransition = true; 
             }
-            UpdateGame(&inTransition, &currentScreen, arrow, mousePos);
-            DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed, arrow->arrowFrames, mousePos);
+            UpdateGame(&inTransition, &currentScreen, arrow, mousePos, assets, &gameFrame);
+            DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed, arrow->arrowFrames, mousePos, gameFrame);
 
         }
     }
