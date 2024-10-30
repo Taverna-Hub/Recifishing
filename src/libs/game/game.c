@@ -20,6 +20,8 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vec
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         *gameFrame = cursorHandle(mousePos, assets.button, assets.fishBucket, assets.fishPedia, *gameFrame);
     }
+    
+    
 }
 
 void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, Vector2 mousePos, int frame) {
@@ -59,8 +61,8 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             DrawText("VOLTAR", 65, 632, 28, WHITE);
             break;
         
-        default:
-            printf("AAAAAAAAAAAAAA\n");
+        case DEFAULT:
+            
             drawElements(assets, arrowFrames);
 
             cursorHandle(mousePos, assets.button, assets.fishBucket, assets.fishPedia, frame);
@@ -71,6 +73,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             fadeHandle(inTransition, fadeAlpha);
             break;
     }
+    
 
     EndDrawing();
 }
@@ -105,65 +108,39 @@ int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D
     Rectangle recFishpedia = {50, 40, fishpedia.width, fishpedia.height};
     Rectangle recBackButton = {50, 620, button.width, button.height};
 
-    bool isClickingPort = false;
-    bool isClickingPier = false;
-    bool isClickingBackButton = false;
-    bool isClickingBucket = false;
-    bool isClickingFishpedia = false;
-    bool isClickingFishShop = false;
-
+    
     if (CheckCollisionPointRec(mousePos, recBackButton) && gameFrame != DEFAULT) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-        isClickingBackButton = true;
-        return DEFAULT;
-    } else {
-        isClickingBackButton = false;
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            return DEFAULT;
+        }
     }
+
+    
     if (CheckCollisionPointRec(mousePos, recPort)) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-        DrawTextureEx(button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
-        DrawText("PORTO", 79, 632, 30, WHITE);
-        isClickingPort = true;
         return PORT;
-    } else {
-        isClickingPort = false;
     }
     if (CheckCollisionPointRec(mousePos, recPier)) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-        DrawTextureEx(button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
-        DrawText("PIER", 95, 632, 30, WHITE);
-        isClickingPier = true;
         return PIER;
-    } else {
-        isClickingPier = false;
     }
     if (CheckCollisionPointRec(mousePos, recFishShop)) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-        DrawTextureEx(button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
-        DrawText("PEIXARIA", 65, 632, 28, WHITE);
-        isClickingFishShop = true;
         return FISHSHOP;
-    } else {
-        isClickingFishShop = false;
     }
     if (CheckCollisionPointRec(mousePos, recBucket)) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-        isClickingBucket = true;
         return BUCKET;
-    } else {
-        isClickingBucket = false;
     }
     if (CheckCollisionPointRec(mousePos, recFishpedia)) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-        isClickingFishpedia = true;
         return FISHPEDIA;
-    } else {
-        isClickingFishpedia = false;
     }
 
-    if (!isClickingFishShop && !isClickingPier && !isClickingPort && !isClickingBucket && !isClickingFishpedia & !isClickingBackButton) {
-        SetMouseCursor(MOUSE_CURSOR_DEFAULT);
-    }
+   
+    SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+    return gameFrame;
 
 }
 
