@@ -28,7 +28,17 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
     BeginDrawing();
     ClearBackground(RAYWHITE);
 
-    SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+    Rectangle recBackButton = {50, 620, assets.button.width, assets.button.height};
+
+    if (frame!=DEFAULT && CheckCollisionPointRec(mousePos,recBackButton))
+    {
+        SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+    }else
+    {
+        SetMouseCursor(MOUSE_CURSOR_DEFAULT);
+    }
+    
+    
 
     switch (frame) {
         case BUCKET:
@@ -117,34 +127,38 @@ int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D
       
         return DEFAULT;
     } 
-    if (CheckCollisionPointRec(mousePos, recPort)) {
-        SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-        DrawTextureEx(button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
-        DrawText("PORTO", 79, 632, 30, WHITE);
+    if (CheckCollisionPointRec(mousePos, recPort) && gameFrame==DEFAULT) {
+        
+            SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+            DrawTextureEx(button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+            DrawText("PORTO", 79, 632, 30, WHITE);
      
-        return PORT;
+            return PORT;
+            
+        
+        
     }
    
-    if (CheckCollisionPointRec(mousePos, recPier)) {
+    if (CheckCollisionPointRec(mousePos, recPier)&& gameFrame==DEFAULT) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         DrawTextureEx(button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
         DrawText("PIER", 95, 632, 30, WHITE);
         
         return PIER;
     } 
-    if (CheckCollisionPointRec(mousePos, recFishShop)) {
+    if (CheckCollisionPointRec(mousePos, recFishShop)&& gameFrame==DEFAULT) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         DrawTextureEx(button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
         DrawText("PEIXARIA", 65, 632, 28, WHITE);
        
         return FISHSHOP;
     } 
-    if (CheckCollisionPointRec(mousePos, recBucket)) {
+    if (CheckCollisionPointRec(mousePos, recBucket)&& gameFrame==DEFAULT) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
        
         return BUCKET;
     } 
-    if (CheckCollisionPointRec(mousePos, recFishpedia)) {
+    if (CheckCollisionPointRec(mousePos, recFishpedia)&& gameFrame==DEFAULT) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
        
         return FISHPEDIA;
