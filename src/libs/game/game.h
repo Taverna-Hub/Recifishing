@@ -16,16 +16,26 @@ typedef enum GameFrames {
     PIER = 5,
 } GameFrames;
 
-typedef struct Frames {
+typedef struct Frame {
     int frame;
     int isUsing;
     int direction;
-}Frames;
+    int x;
+    int y;
+    int finalX;
+    int finalY;
+    int velX;
+    int velY;
+}Frame;
 
 typedef struct AnimationFrames {
-    Frames *fishmanIdle;
-    Frames *fishmanFishing;
-    Frames *fishmanHook;
+    int rodAnimation;
+    Frame *fishingRod;
+    Frame *fishmanIdle;
+    Frame *fishmanFishing;
+    Frame *fishmanHook;
+    Vector2 rodPoints[10000];
+    int rodPointCount;
 }AnimationFrames;
 
 Arrow* createArrow();
