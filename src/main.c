@@ -30,12 +30,21 @@ int main(void) {
     Vector2 mousePos = GetMousePosition();
 
     Arrow *arrow = createArrow();
+    AnimationFrames *animationFrames = createAnimationFrames();
 
     int gameFrame = DEFAULT;
+
+    printf("INICIOU\n");
 
     while (!WindowShouldClose()) {
 
         mousePos = GetMousePosition();
+
+        /* if (isSoundPlayed) {
+            printf("PLAYING\n");
+        } else {
+            printf("NOT PLAYING\n");
+        } */
 
         if (currentScreen == MENU) {
 
@@ -47,8 +56,8 @@ int main(void) {
             if (!inTransition && fadeAlpha == 255) {
                 inTransition = true; 
             }
-            UpdateGame(&inTransition, &currentScreen, arrow, mousePos, assets, &gameFrame);
-            DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed, arrow->arrowFrames, mousePos, gameFrame);
+            UpdateGame(&inTransition, &currentScreen, arrow, mousePos, assets, &gameFrame, &animationFrames);
+            DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed, arrow->arrowFrames, mousePos, gameFrame, &animationFrames);
 
         }
     }

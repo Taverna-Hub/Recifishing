@@ -8,26 +8,41 @@
 #include "game.h"
 
 void updateArrow(Arrow *arrow);
-void fadeHandle(bool *inTransition, int *fadeAlpha);
-int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D fishpedia, int gameFrame);
 void drawElements(Assets assets, int arrowFrames);
+void fadeHandle(bool *inTransition, int *fadeAlpha);
+void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets);
+int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D fishpedia, int gameFrame);
 
 void playSound(bool *isSoundPlayed, Music sound);
 
-void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vector2 mousePos, Assets assets, int *gameFrame) {
+void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vector2 mousePos, Assets assets, int *gameFrame, AnimationFrames **animationFrames) {
     updateArrow(arrow);
 
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         *gameFrame = cursorHandle(mousePos, assets.button, assets.fishBucket, assets.fishPedia, *gameFrame);
     }
     
-    
+    if (*gameFrame == PIER) {
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+
+            if ((*animationFrames)->fishmanFishing->isUsing) {
+                (*animationFrames)->fishmanFishing->isUsing = 0;
+                (*animationFrames)->fishmanFishing->frame = 0;
+                (*animationFrames)->fishmanHook->isUsing = 1;
+                (*animationFrames)->fishmanHook->frame = 0;
+            } else {
+                (*animationFrames)->fishmanIdle->isUsing = 0;
+                (*animationFrames)->fishmanFishing->isUsing = 1;
+                (*animationFrames)->fishmanFishing->frame = 0;
+            }
+        }
+    }
 }
 
-void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, Vector2 mousePos, int frame) {
+void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, Vector2 mousePos, int frame, AnimationFrames **animationFrames) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
-
+    printf("GAME\n");
     Rectangle recBackButton = {50, 620, assets.button.width, assets.button.height};
 
     if (frame!=DEFAULT && CheckCollisionPointRec(mousePos,recBackButton))
@@ -37,8 +52,6 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
     {
         SetMouseCursor(MOUSE_CURSOR_DEFAULT);
     }
-    
-    
 
     switch (frame) {
         case BUCKET:
@@ -60,7 +73,10 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             break;
 
         case PIER:
-            DrawText("Pier", 300, 300, 28, BLACK);
+            DrawTexture(assets.marcoZeroPier, 0, 0, RAYWHITE);
+
+            updateAnimationFrames(*animationFrames, assets);
+
             DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
             DrawText("VOLTAR", 65, 632, 28, WHITE);
             break;
@@ -95,6 +111,69 @@ Arrow* createArrow() {
     return arrow;
 }
 
+AnimationFrames* createAnimationFrames() {
+    AnimationFrames *animationFrames = (AnimationFrames*)malloc(sizeof(AnimationFrames));
+
+    animationFrames->fishmanHook = (Frames*)malloc(sizeof(Frames));
+    animationFrames->fishmanHook->frame = 0;
+    animationFrames->fishmanHook->direction = 0;
+    animationFrames->fishmanHook->isUsing = 0;
+
+    animationFrames->fishmanIdle = (Frames*)malloc(sizeof(Frames));
+    animationFrames->fishmanIdle->frame = 0;
+    animationFrames->fishmanIdle->direction = 0;
+    animationFrames->fishmanIdle->isUsing = 1;
+
+    animationFrames->fishmanFishing = (Frames*)malloc(sizeof(Frames));
+    animationFrames->fishmanFishing->frame = 0;
+    animationFrames->fishmanFishing->direction = 0;
+    animationFrames->fishmanFishing->isUsing = 1;
+
+    return animationFrames;
+}
+
+void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets) {
+
+    if (animationFrames->fishmanIdle->isUsing) {
+        DrawTextureEx(assets.fishermanIdle[animationFrames->fishmanIdle->frame / 10], (Vector2){120, 280}, 0.0f, 3.0f, WHITE);
+        if (!animationFrames->fishmanIdle->direction) {
+            animationFrames->fishmanIdle->frame--;
+            if (animationFrames->fishmanIdle->frame <= 0) {
+                animationFrames->fishmanIdle->frame = 0;
+                animationFrames->fishmanIdle->direction = 1;
+            }
+        } else {
+            animationFrames->fishmanIdle->frame++;
+            if (animationFrames->fishmanIdle->frame >= 40) {
+                animationFrames->fishmanIdle->frame = 39;
+                animationFrames->fishmanIdle->direction = 0;
+            }
+        }
+    } else if (animationFrames->fishmanFishing->isUsing) {
+        DrawTextureEx(assets.fishermanFishing[animationFrames->fishmanFishing->frame / 10], (Vector2){120, 280}, 0.0f, 3.0f, WHITE);
+        if (!animationFrames->fishmanFishing->direction) {
+            animationFrames->fishmanFishing->frame--;
+            if (animationFrames->fishmanFishing->frame <= 0) {
+                animationFrames->fishmanFishing->frame = 0;
+                animationFrames->fishmanFishing->direction = 1;
+            }
+        } else {
+            animationFrames->fishmanFishing->frame++;
+            if (animationFrames->fishmanFishing->frame >= 40) {
+                animationFrames->fishmanFishing->frame = 39;
+                animationFrames->fishmanFishing->direction = 0;
+            }
+        }
+    } else if (animationFrames->fishmanHook->isUsing) {
+        DrawTextureEx(assets.fishermanHook[animationFrames->fishmanHook->frame / 10], (Vector2){120, 280}, 0.0f, 3.0f, WHITE);
+        animationFrames->fishmanHook->frame++;
+        if (animationFrames->fishmanHook->frame >= 60) {
+            animationFrames->fishmanHook->isUsing = 0;
+            animationFrames->fishmanIdle->isUsing = 1;
+        }
+    } 
+}
+
 void updateArrow(Arrow *arrow) {
     if ((*arrow).direction) {
         ((*arrow).arrowFrames)++;
@@ -118,57 +197,49 @@ int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D
     Rectangle recFishpedia = {50, 40, fishpedia.width, fishpedia.height};
     Rectangle recBackButton = {50, 620, button.width, button.height};
 
-   
-
     if (CheckCollisionPointRec(mousePos, recBackButton) && gameFrame != DEFAULT) {
-        
-       
+
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-      
+
         return DEFAULT;
     } 
-    if (CheckCollisionPointRec(mousePos, recPort) && gameFrame==DEFAULT) {
+
+    if (CheckCollisionPointRec(mousePos, recPort) && gameFrame == DEFAULT) {
         
-            SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-            DrawTextureEx(button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
-            DrawText("PORTO", 79, 632, 30, WHITE);
-     
-            return PORT;
-            
-        
-        
+        SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+        DrawTextureEx(button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+        DrawText("PORTO", 79, 632, 30, WHITE);
+        return PORT;
     }
-   
-    if (CheckCollisionPointRec(mousePos, recPier)&& gameFrame==DEFAULT) {
+
+    if (CheckCollisionPointRec(mousePos, recPier) && gameFrame == DEFAULT) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         DrawTextureEx(button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
         DrawText("PIER", 95, 632, 30, WHITE);
-        
         return PIER;
     } 
-    if (CheckCollisionPointRec(mousePos, recFishShop)&& gameFrame==DEFAULT) {
+
+    if (CheckCollisionPointRec(mousePos, recFishShop) && gameFrame == DEFAULT) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         DrawTextureEx(button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
         DrawText("PEIXARIA", 65, 632, 28, WHITE);
-       
+
         return FISHSHOP;
     } 
-    if (CheckCollisionPointRec(mousePos, recBucket)&& gameFrame==DEFAULT) {
+
+    if (CheckCollisionPointRec(mousePos, recBucket) && gameFrame == DEFAULT) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-       
+
         return BUCKET;
     } 
-    if (CheckCollisionPointRec(mousePos, recFishpedia)&& gameFrame==DEFAULT) {
+
+    if (CheckCollisionPointRec(mousePos, recFishpedia) && gameFrame == DEFAULT) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-       
+
         return FISHPEDIA;
     } 
-
-   
-  
     
     return gameFrame;
-    
 }
 
 void fadeHandle(bool *inTransition, int *fadeAlpha) {
@@ -198,7 +269,8 @@ void drawElements(Assets assets, int arrowFrames) {
     DrawTexture(assets.fishPedia, 50, 40, RAYWHITE);
     DrawTexture(assets.fishBucket, 140, 40, RAYWHITE);
     DrawTexture(assets.fishShop, 730, 220, RAYWHITE);
-    DrawTexture(assets.portSign, 10, 330, RAYWHITE);
+    DrawTextureEx(assets.portSign, (Vector2){30, 350}, 0.0f, 0.8f, WHITE);
+    DrawTexture(assets.sailor, 170, 250, RAYWHITE);
     DrawTextureEx(assets.coin, (Vector2){780, 40}, 0.0f, 0.7f, WHITE);
     DrawText("350", 858, 57, 45, BLACK);
     DrawText("350", 860, 55, 45, WHITE);

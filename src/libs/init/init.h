@@ -9,6 +9,7 @@ typedef struct {
     Texture2D boat;
     Texture2D coin;
     Texture2D arrow;
+    Texture2D sailor;
     Texture2D button;
     Texture2D fishShop;
     Texture2D portSign;
@@ -22,6 +23,11 @@ typedef struct {
     Texture2D darkExitButton;
     Texture2D darkStartButton;
     Texture2D backgroundMarcoZero;
+    Texture2D marcoZeroPier;
+
+    Texture2D fishermanHook[6];
+    Texture2D fishermanIdle[4];
+    Texture2D fishermanFishing[4];
 
     Music anunciacao;
     Music labelledejour;

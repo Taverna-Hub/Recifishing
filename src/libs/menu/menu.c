@@ -15,7 +15,6 @@ void UpdateMenu(GameScreen *currentScreen, bool *inTransition, int *fadeAlpha, V
     Rectangle startButtonRect = { 337, 430, assets.startButton.width, assets.startButton.height };
     Rectangle exitButtonRect = { 337, 560, assets.exitButton.width, assets.exitButton.height };
 
-    
     if (CheckCollisionPointRec(mousePos, startButtonRect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {  
         *fadeAlpha = 255;  
         *isSoundPlayed = false;
@@ -24,7 +23,6 @@ void UpdateMenu(GameScreen *currentScreen, bool *inTransition, int *fadeAlpha, V
     }
 
     if (CheckCollisionPointRec(mousePos, exitButtonRect) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-        UnloadAssets(assets);
         CloseAudioDevice();
         CloseWindow();
     }
@@ -33,10 +31,10 @@ void UpdateMenu(GameScreen *currentScreen, bool *inTransition, int *fadeAlpha, V
 void DrawMenu(GameScreen *currentScreen, Vector2 mousePos, bool inTransition, int fadeAlpha, Assets assets, bool *isSoundPlayed) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
-
+    /* printf("MENU\n"); */
     DrawTexture(assets.backgroundMenu, 0, 0, RAYWHITE);
     DrawTexture(assets.logoTexture, 256, -20, RAYWHITE);
-    
+
     buttonsHandle(assets.startButton, assets.exitButton, assets.darkStartButton, assets.darkExitButton, mousePos);
 
     playSoundMenu(isSoundPlayed, currentScreen, assets.anunciacao);
