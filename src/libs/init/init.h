@@ -9,6 +9,7 @@ typedef struct {
     Texture2D boat;
     Texture2D coin;
     Texture2D arrow;
+    Texture2D salesman;
     Texture2D sailor;
     Texture2D button;
     Texture2D fishShop;
@@ -24,6 +25,8 @@ typedef struct {
     Texture2D darkStartButton;
     Texture2D backgroundMarcoZero;
     Texture2D marcoZeroPier;
+
+    Texture2D fish;
 
     Texture2D fishermanHook[6];
     Texture2D fishermanIdle[4];

@@ -10,14 +10,16 @@
 #include "game.h"
 
 void updateArrow(Arrow *arrow);
-void drawElements(Assets assets, int arrowFrames);
+void drawElements(Assets assets, Location *location, int arrowFrames);
 void fadeHandle(bool *inTransition, int *fadeAlpha);
 void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vector2 mousePos);
 int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D fishpedia, int gameFrame);
 
 void playSound(bool *isSoundPlayed, Music sound);
+void throwRod(AnimationFrames **animationFrames);
+void pullRod(AnimationFrames **animationFrames);
 
-void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vector2 mousePos, Assets assets, int *gameFrame, AnimationFrames **animationFrames) {
+void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vector2 mousePos, Assets assets, int *gameFrame, AnimationFrames **animationFrames, Location *location) {
     updateArrow(arrow);
 
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
@@ -56,7 +58,7 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vec
     }
 }
 
-void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, Vector2 mousePos, int frame, AnimationFrames **animationFrames) {
+void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, Vector2 mousePos, int frame, AnimationFrames **animationFrames, Location *location) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
     printf("GAME\n");
@@ -90,16 +92,14 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             break;
 
         case PIER:
-            DrawTexture(assets.marcoZeroPier, 0, 0, RAYWHITE);
+            DrawTexture(location->pier, 0, 0, RAYWHITE);
 
-            for (int i = 0; i < (*animationFrames)->rodPointCount - 1; i++) {
-                Vector2 start = (*animationFrames)->rodPoints[i];
-                Vector2 end = (*animationFrames)->rodPoints[i + 1];
-                float lineThickness = 5.0f;  
-                DrawLineEx(start, end, lineThickness, (i + 5 > (*animationFrames)->rodPointCount) ? RED : GRAY);
-            }
+            DrawRectangle(210, 0, 367, 360, (Color){255, 0, 0, 128});
+            DrawRectangle(210, 360, 367, 360, (Color){0, 255, 0, 128});
+            DrawRectangle(577, 0, 367, 360, (Color){0, 0, 255, 128});
+            DrawRectangle(577, 360, 367, 360, (Color){0, 155, 155, 128});
 
-
+            throwRod(animationFrames);
 
             if ((*animationFrames)->rodAnimation) {
                 (*animationFrames)->fishingRod->isUsing = 1;
@@ -109,6 +109,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
 
             DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
             DrawText("VOLTAR", 65, 632, 28, WHITE);
+            DrawRectangle(50, 620, assets.button.width / 2, assets.button.height / 2, (Color){255, 0, 0, 50});
             break;
 
         case FISHSHOP:
@@ -119,7 +120,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
         
         case DEFAULT:
             
-            drawElements(assets, arrowFrames);
+            drawElements(assets, location, arrowFrames);
 
             cursorHandle(mousePos, assets.button, assets.fishBucket, assets.fishPedia, frame);
 
@@ -235,20 +236,18 @@ int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D
 
     Rectangle recPort = {0, 140, 310, 270};
     Rectangle recPier = {405, 305, 220, 125};
-    Rectangle recFishShop = {740, 240, 200, 250};
+    Rectangle recFishShop = {760, 240, 250, 250};
     Rectangle recBucket = {140, 40, bucket.width, bucket.height};
     Rectangle recFishpedia = {50, 40, fishpedia.width, fishpedia.height};
-    Rectangle recBackButton = {50, 620, button.width, button.height};
+    Rectangle recBackButton = {50, 620, button.width / 2, button.height / 2};
 
     if (CheckCollisionPointRec(mousePos, recBackButton) && gameFrame != DEFAULT) {
-
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
 
         return DEFAULT;
     } 
 
     if (CheckCollisionPointRec(mousePos, recPort) && gameFrame == DEFAULT) {
-        
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         DrawTextureEx(button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
         DrawText("PORTO", 79, 632, 30, WHITE);
@@ -305,16 +304,72 @@ void playSound(bool *isSoundPlayed, Music sound) {
     UpdateMusicStream(sound);
 }
 
-void drawElements(Assets assets, int arrowFrames) {
-    DrawTexture(assets.backgroundMarcoZero, 0, 0, RAYWHITE);
+void drawElements(Assets assets, Location *location, int arrowFrames) {
+    printf("BUGDOCARALHO\n");
+    DrawTexture(location->background, 0, 0, RAYWHITE);
     DrawTexture(assets.arrow, 485, 260+(arrowFrames)/5, RAYWHITE);
-    DrawTexture(assets.boat, -50, 115, RAYWHITE);
+    DrawTexture(location->boat, -50, 115, RAYWHITE);
     DrawTexture(assets.fishPedia, 50, 40, RAYWHITE);
     DrawTexture(assets.fishBucket, 140, 40, RAYWHITE);
-    DrawTexture(assets.fishShop, 730, 220, RAYWHITE);
+    DrawTexture(location->fishShop, 730, 220, RAYWHITE);
     DrawTextureEx(assets.portSign, (Vector2){30, 350}, 0.0f, 0.8f, WHITE);
-    DrawTexture(assets.sailor, 170, 250, RAYWHITE);
+    DrawTexture(location->sailor, 170, 250, RAYWHITE);
+    DrawTexture(location->salesman, 860, 350, RAYWHITE);
     DrawTextureEx(assets.coin, (Vector2){780, 40}, 0.0f, 0.7f, WHITE);
     DrawText("350", 858, 57, 45, BLACK);
     DrawText("350", 860, 55, 45, WHITE);
 }
+
+Location* startLocation(LocationName locationName, Assets assets) {
+
+    Location *location = (Location*)malloc(sizeof(Location));
+    location->name = locationName;
+
+    switch (locationName) {
+
+        case MARCO_ZERO:
+
+            location->background = assets.backgroundMarcoZero;
+            location->boat = assets.boat;
+            location->sailor = assets.sailor;
+            location->salesman = assets.salesman;
+            location->fishShop = assets.fishShop;
+            location->pier = assets.marcoZeroPier;
+
+            break;
+
+        case PORTO_DE_GALINHAS:
+            break;
+
+        case FERNANDO_DE_NORONHA:
+            break;
+
+        default:
+            break;
+
+
+    }
+    return location;
+
+
+}
+
+void throwRod(AnimationFrames **animationFrames) {
+
+    Vector2 start;
+    Vector2 end;
+    for (int i = 0; i < (*animationFrames)->rodPointCount - 1; i++) {
+        
+        start = (*animationFrames)->rodPoints[i];
+        end = (*animationFrames)->rodPoints[i + 1];;
+
+        DrawLineEx(start, end, 9.0f, BLACK);
+        
+        DrawLineEx(start, end, 5.0f, GRAY);
+    }
+
+    DrawCircleV((*animationFrames)->rodPoints[(*animationFrames)->rodPointCount - 1], 7.0f, BLACK);
+    DrawCircleV((*animationFrames)->rodPoints[(*animationFrames)->rodPointCount - 1], 5.0f, ((*animationFrames)->rodPointCount > 2) ? RED : GRAY); 
+
+}
+

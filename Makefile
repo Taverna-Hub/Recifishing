@@ -15,6 +15,6 @@ clean:
 
 all: $(TARGET)
 
-run: all
+run: clean all
 	clear
 	./$(TARGET)

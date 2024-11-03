@@ -32,6 +32,9 @@ int main(void) {
     Arrow *arrow = createArrow();
     AnimationFrames *animationFrames = createAnimationFrames();
 
+    Location *marcoZero = startLocation(MARCO_ZERO, assets);
+    Location *location = marcoZero;
+
     int gameFrame = DEFAULT;
 
     printf("INICIOU\n");
@@ -40,11 +43,11 @@ int main(void) {
 
         mousePos = GetMousePosition();
 
-        /* if (isSoundPlayed) {
+        if (isSoundPlayed) {
             printf("PLAYING\n");
         } else {
             printf("NOT PLAYING\n");
-        } */
+        }
 
         if (currentScreen == MENU) {
 
@@ -56,8 +59,8 @@ int main(void) {
             if (!inTransition && fadeAlpha == 255) {
                 inTransition = true; 
             }
-            UpdateGame(&inTransition, &currentScreen, arrow, mousePos, assets, &gameFrame, &animationFrames);
-            DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed, arrow->arrowFrames, mousePos, gameFrame, &animationFrames);
+            UpdateGame(&inTransition, &currentScreen, arrow, mousePos, assets, &gameFrame, &animationFrames, location);
+            DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed, arrow->arrowFrames, mousePos, gameFrame, &animationFrames, location);
 
         }
     }

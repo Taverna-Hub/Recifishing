@@ -7,6 +7,7 @@ void UnloadAssets(Assets assets) {
     UnloadTexture(assets.coin);
     UnloadTexture(assets.arrow);
     UnloadTexture(assets.sailor);
+    UnloadTexture(assets.salesman);
     UnloadTexture(assets.button);
     UnloadTexture(assets.portSign);
     UnloadTexture(assets.fishShop);
@@ -20,6 +21,7 @@ void UnloadAssets(Assets assets) {
     UnloadTexture(assets.darkExitButton);
     UnloadTexture(assets.darkStartButton);
     UnloadTexture(assets.backgroundMarcoZero);
+    UnloadTexture(assets.fish);
 
     UnloadTexture(assets.fishermanHook[0]);
     UnloadTexture(assets.fishermanHook[1]);
