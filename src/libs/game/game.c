@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "raylib.h"
+#include "raymath.h"
 
 #include "../utils/utils.h"
 
@@ -91,14 +92,13 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
         case PIER:
             DrawTexture(assets.marcoZeroPier, 0, 0, RAYWHITE);
 
-            for (int i = 0; i < (*animationFrames)->rodPointCount; i++) {
-
-                    if (i + 10 > (*animationFrames)->rodPointCount) {
-                        DrawCircleV((*animationFrames)->rodPoints[i], 5, RED);
-                    } else {
-                        DrawCircleV((*animationFrames)->rodPoints[i], 5, GRAY);
-                    }
+            for (int i = 0; i < (*animationFrames)->rodPointCount - 1; i++) {
+                Vector2 start = (*animationFrames)->rodPoints[i];
+                Vector2 end = (*animationFrames)->rodPoints[i + 1];
+                float lineThickness = 5.0f;  
+                DrawLineEx(start, end, lineThickness, (i + 5 > (*animationFrames)->rodPointCount) ? RED : GRAY);
             }
+
 
 
             if ((*animationFrames)->rodAnimation) {
@@ -180,34 +180,10 @@ void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vect
 
     if (animationFrames->fishmanIdle->isUsing) {
         DrawTextureEx(assets.fishermanIdle[animationFrames->fishmanIdle->frame / 10], (Vector2){120, 280}, 0.0f, 3.0f, WHITE);
-        if (!animationFrames->fishmanIdle->direction) {
-            animationFrames->fishmanIdle->frame--;
-            if (animationFrames->fishmanIdle->frame <= 0) {
-                animationFrames->fishmanIdle->frame = 0;
-                animationFrames->fishmanIdle->direction = 1;
-            }
-        } else {
-            animationFrames->fishmanIdle->frame++;
-            if (animationFrames->fishmanIdle->frame >= 40) {
-                animationFrames->fishmanIdle->frame = 39;
-                animationFrames->fishmanIdle->direction = 0;
-            }
-        }
+        animationFrames->fishmanIdle->frame = (animationFrames->fishmanIdle->frame + 1) % 40;
     } else if (animationFrames->fishmanFishing->isUsing) {
         DrawTextureEx(assets.fishermanFishing[animationFrames->fishmanFishing->frame / 10], (Vector2){120, 280}, 0.0f, 3.0f, WHITE);
-        if (!animationFrames->fishmanFishing->direction) {
-            animationFrames->fishmanFishing->frame--;
-            if (animationFrames->fishmanFishing->frame <= 0) {
-                animationFrames->fishmanFishing->frame = 0;
-                animationFrames->fishmanFishing->direction = 1;
-            }
-        } else {
-            animationFrames->fishmanFishing->frame++;
-            if (animationFrames->fishmanFishing->frame >= 40) {
-                animationFrames->fishmanFishing->frame = 39;
-                animationFrames->fishmanFishing->direction = 0;
-            }
-        }
+        animationFrames->fishmanFishing->frame = (animationFrames->fishmanFishing->frame + 1) % 40;
     } else if (animationFrames->fishmanHook->isUsing) {
         DrawTextureEx(assets.fishermanHook[animationFrames->fishmanHook->frame / 10], (Vector2){120, 280}, 0.0f, 3.0f, WHITE);
         animationFrames->fishmanHook->frame++;
@@ -217,52 +193,28 @@ void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vect
         }
     }
 
-
     if (animationFrames->fishingRod->isUsing && animationFrames->rodAnimation) {
-        int deltaX = animationFrames->fishingRod->finalX - animationFrames->fishingRod->x;
-        int deltaY = animationFrames->fishingRod->finalY - animationFrames->fishingRod->y;
-
+        Vector2 rodPos = {animationFrames->fishingRod->x, animationFrames->fishingRod->y};
+        Vector2 targetPos = {animationFrames->fishingRod->finalX, animationFrames->fishingRod->finalY};
+        
         float speed = 20.0f;
-        float distance = sqrt(deltaX * deltaX + deltaY * deltaY);
+        float distance = Vector2Distance(rodPos, targetPos);
 
         if (distance < 10.0f) {
             animationFrames->fishingRod->isUsing = 0;
             animationFrames->rodAnimation = 0;
         } else {
+            Vector2 direction = Vector2Normalize(Vector2Subtract(targetPos, rodPos));
+            Vector2 velocity = Vector2Scale(direction, speed);
+            
+            animationFrames->fishingRod->x += velocity.x;
+            animationFrames->fishingRod->y += velocity.y;
 
-            float velX = (deltaX / distance) * speed;
-            float velY = (deltaY / distance) * speed;
-
-            animationFrames->fishingRod->x += velX;
-            animationFrames->fishingRod->y += velY;
-
-            if (animationFrames->fishingRod->finalX - 240 < 100) {
-                for (int i = 0; i < 20; i++) {
-                    if (animationFrames->rodPointCount < 10000) {
-                        animationFrames->rodPoints[animationFrames->rodPointCount++] = 
-                            (Vector2){animationFrames->fishingRod->x, animationFrames->fishingRod->y + i};
-                    }
-                }
-            } else if (animationFrames->fishingRod->finalX - 240 < 200) {
-                for (int i = 0; i < 40; i++) {
-                    if (animationFrames->rodPointCount < 10000) {
-                        animationFrames->rodPoints[animationFrames->rodPointCount++] = 
-                            (Vector2){animationFrames->fishingRod->x, animationFrames->fishingRod->y + i};
-                    }
-                }
-            } else {
-                for (int i = 0; i < 20; i++) {
-                    if (animationFrames->rodPointCount < 10000) {
-                        animationFrames->rodPoints[animationFrames->rodPointCount++] = 
-                            (Vector2){animationFrames->fishingRod->x + i, animationFrames->fishingRod->y};
-                    }
-                }
+            if (animationFrames->rodPointCount < 10000) {
+                animationFrames->rodPoints[animationFrames->rodPointCount++] = rodPos;
             }
-
         }
     }
-
-
 }
 
 void updateArrow(Arrow *arrow) {
