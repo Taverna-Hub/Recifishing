@@ -11,6 +11,7 @@
 
 int cont = 0;
 int entrou = 0;
+int selectedQuadrant = -1;
 
 void updateArrow(Arrow *arrow);
 void drawElements(Assets assets, Location *location, int arrowFrames);
@@ -54,7 +55,21 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vec
                     (*animationFrames)->fishmanIdle->isUsing = 0;
                     (*animationFrames)->fishmanFishing->isUsing = 1;
                     (*animationFrames)->fishmanFishing->frame = 0;
-                    (*animationFrames)->rodPointCount = 0; 
+                    (*animationFrames)->rodPointCount = 0;
+                    Rectangle upperLeftSquare = {210, 0, 367, 360};
+                    Rectangle bottomLeftSquare = {210, 360, 367, 360};
+                    Rectangle upperRightSquare = {577, 0, 367, 360};
+                    Rectangle bottomRightSquare = {577, 360, 367, 360};
+
+                    if (CheckCollisionPointRec(mousePos, upperLeftSquare)) {
+                        selectedQuadrant = 1;
+                    } else if (CheckCollisionPointRec(mousePos, bottomLeftSquare)) {
+                        selectedQuadrant = 2;
+                    } else if (CheckCollisionPointRec(mousePos, upperRightSquare)) {
+                        selectedQuadrant = 3;
+                    } else if (CheckCollisionPointRec(mousePos, bottomRightSquare)) {
+                        selectedQuadrant = 4;
+                    }
                 }
             } else {
                 entrou = 1;
@@ -94,6 +109,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             break;
 
         case PIER:
+            int fishes[4]={1,2,3,4};
             DrawTexture(location->pier, 0, 0, RAYWHITE);
 
             DrawRectangle(210, 0, 367, 360, (Color){255, 0, 0, 128});
@@ -101,10 +117,20 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             DrawRectangle(577, 0, 367, 360, (Color){0, 0, 255, 128});
             DrawRectangle(577, 360, 367, 360, (Color){0, 155, 155, 128});
 
+            Rectangle upperLeftSquare={210, 0, 367, 360};
+            Rectangle bottomLeftSquare={210, 360, 367, 360};
+            Rectangle upperRightSquare={577, 0, 367, 360};
+            Rectangle bottomRightSquare={577, 360, 367, 360};
+
+
             if ((*animationFrames)->throwingRodAnimation || (*animationFrames)->fishmanFishing->isUsing) {
                 throwRod(animationFrames);
+
             } else if ((*animationFrames)->pullingRodAnimation || (*animationFrames)->fishmanHook->isUsing) {
-                pullRod(animationFrames, assets); 
+                if (selectedQuadrant != -1) {
+                    printf("Quadrante selecionado: %d\n", selectedQuadrant);
+                }
+                pullRod(animationFrames, assets);
             }
 
             updateAnimationFrames(*animationFrames, assets, mousePos);
@@ -201,7 +227,7 @@ void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vect
         Vector2 rodPos = {animationFrames->fishingRod->x, animationFrames->fishingRod->y};
         Vector2 targetPos = {animationFrames->fishingRod->finalX, animationFrames->fishingRod->finalY};
         
-        float speed = 20.0f;
+        float speed = 10.0f;
         float distance = Vector2Distance(rodPos, targetPos);
 
         if (distance < 10.0f) {
