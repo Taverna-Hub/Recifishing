@@ -1,7 +1,7 @@
 CC = gcc
 SRC = $(shell find src -name '*.c')  
 OBJ = $(SRC:.c=.o)  
-TARGET = Recifishing  
+TARGET = Recifishing
 CFLAGS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11  
 
 $(TARGET): $(OBJ)
@@ -14,3 +14,7 @@ clean:
 	rm -f $(OBJ) $(TARGET)
 
 all: $(TARGET)
+
+run: clean all
+	clear
+	./$(TARGET)
