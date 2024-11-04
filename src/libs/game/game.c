@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 #include "raylib.h"
 #include "raymath.h"
@@ -12,6 +13,9 @@
 int cont = 0;
 int entrou = 0;
 int selectedQuadrant = -1;
+int successfulCatch = 0;
+float waitingFish = -1;
+int waitingFrames = 0;
 
 void updateArrow(Arrow *arrow);
 void drawElements(Assets assets, Location *location, int arrowFrames);
@@ -21,7 +25,7 @@ int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D
 
 void playSound(bool *isSoundPlayed, Music sound);
 void throwRod(AnimationFrames **animationFrames);
-void pullRod(AnimationFrames **animationFrames, Assets assets);
+void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCatch);
 
 void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vector2 mousePos, Assets assets, int *gameFrame, AnimationFrames **animationFrames, Location *location) {
     updateArrow(arrow);
@@ -44,6 +48,8 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vec
                     (*animationFrames)->fishmanFishing->frame = 0;
                     (*animationFrames)->fishmanHook->isUsing = 1;
                     (*animationFrames)->fishmanHook->frame = 0;
+                    waitingFrames = 0;
+                    waitingFish = -1;
                 } else {
                     (*animationFrames)->fishingRod->finalX = mousePos.x;
                     (*animationFrames)->fishingRod->finalY = mousePos.y;
@@ -60,6 +66,10 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vec
                     Rectangle bottomLeftSquare = {210, 360, 367, 360};
                     Rectangle upperRightSquare = {577, 0, 367, 360};
                     Rectangle bottomRightSquare = {577, 360, 367, 360};
+
+                    successfulCatch = 0;
+
+                    waitingFish = (rand() % 500) + 200; 
 
                     if (CheckCollisionPointRec(mousePos, upperLeftSquare)) {
                         selectedQuadrant = 1;
@@ -82,7 +92,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
     BeginDrawing();
     ClearBackground(RAYWHITE);
     Rectangle recBackButton = {50, 620, assets.button.width, assets.button.height};
-
+    printf("%d %f\n", waitingFrames, waitingFish);
     if (frame != DEFAULT && CheckCollisionPointRec(mousePos, recBackButton)) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
     } else {
@@ -122,16 +132,22 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             Rectangle upperRightSquare={577, 0, 367, 360};
             Rectangle bottomRightSquare={577, 360, 367, 360};
 
-
             if ((*animationFrames)->throwingRodAnimation || (*animationFrames)->fishmanFishing->isUsing) {
                 throwRod(animationFrames);
-
-            } else if ((*animationFrames)->pullingRodAnimation || (*animationFrames)->fishmanHook->isUsing) {
-                if (selectedQuadrant != -1) {
-                    printf("Quadrante selecionado: %d\n", selectedQuadrant);
+                if (waitingFrames == waitingFish) {
+                    if (IsKeyPressed(32)) {
+                        successfulCatch = 1;
+                        waitingFrames = 0;
+                        waitingFish = -1;
+                    } else {
+                        DrawTexture(assets.baseButtonSpace, 200, 200, WHITE);
+                    }
+                } else {
+                    waitingFrames++;
                 }
-                pullRod(animationFrames, assets);
-            }
+            } else if ((*animationFrames)->pullingRodAnimation || (*animationFrames)->fishmanHook->isUsing) {
+                pullRod(animationFrames, assets, successfulCatch);
+            } 
 
             updateAnimationFrames(*animationFrames, assets, mousePos);
 
@@ -150,6 +166,10 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
 
             free(*animationFrames);
             *animationFrames = createAnimationFrames();
+
+            waitingFrames = 0;
+            waitingFish = -1;
+            successfulCatch = 0;
 
             cursorHandle(mousePos, assets.button, assets.fishBucket, assets.fishPedia, frame);
 
@@ -227,7 +247,7 @@ void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vect
         Vector2 rodPos = {animationFrames->fishingRod->x, animationFrames->fishingRod->y};
         Vector2 targetPos = {animationFrames->fishingRod->finalX, animationFrames->fishingRod->finalY};
         
-        float speed = 10.0f;
+        float speed = 15.0f;
         float distance = Vector2Distance(rodPos, targetPos);
 
         if (distance < 10.0f) {
@@ -247,7 +267,7 @@ void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vect
 
     if (animationFrames->fishingRod->isUsing && animationFrames->pullingRodAnimation) {
         Vector2 targetPos = {240, 350}; 
-        float speed = 20.0f;
+        float speed = 15.0f;
 
         Vector2 rodPos = {animationFrames->fishingRod->x, animationFrames->fishingRod->y};
         float distance = Vector2Distance(rodPos, targetPos);
@@ -425,7 +445,7 @@ void throwRod(AnimationFrames **animationFrames) {
     }
 }
 
-void pullRod(AnimationFrames **animationFrames, Assets assets) {
+void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCatch) {
 
     Vector2 start;
     Vector2 end;
@@ -449,13 +469,18 @@ void pullRod(AnimationFrames **animationFrames, Assets assets) {
 
         float angle = atan2f(tipPosition.y - prevPosition.y, tipPosition.x - prevPosition.x) * (180.0f / PI);
 
-        DrawTextureEx(assets.fish, (Vector2){tipPosition.x - assets.fish.width * 0.25f, tipPosition.y - assets.fish.height * 0.25f}, angle, 3.0f, WHITE);
+        if (successfulCatch == 1) {
+            DrawTextureEx(assets.fish, (Vector2){tipPosition.x - assets.fish.width * 0.25f, tipPosition.y - assets.fish.height * 0.25f}, angle, 3.0f, WHITE);
+        }
     } else if (rodPointCount == 1) {
         Vector2 tipPosition = (*animationFrames)->rodPoints[rodPointCount - 1];
 
         DrawCircleV(tipPosition, 7.0f, BLACK);
         DrawCircleV(tipPosition, 5.0f, GRAY);
 
-        DrawTextureEx(assets.fish, (Vector2){tipPosition.x - assets.fish.width * 0.25f, tipPosition.y - assets.fish.height * 0.25f}, 0.0f, 3.0f, WHITE);
+        if (successfulCatch == 1) {
+            DrawTextureEx(assets.fish, (Vector2){tipPosition.x - assets.fish.width * 0.25f, tipPosition.y - assets.fish.height * 0.25f}, 0.0f, 3.0f, WHITE);
+        }
     }
 }
+

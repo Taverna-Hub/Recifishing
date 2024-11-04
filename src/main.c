@@ -8,9 +8,13 @@
 #include "libs/game/game.h"
 #include "libs/cleanup/cleanup.h"
 
+#include <time.h>
+
 int main(void) {
 
     GameScreen currentScreen = MENU;
+
+    srand(time(0));
 
     int fadeAlpha = 0;
     bool inTransition = false;

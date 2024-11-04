@@ -22,6 +22,8 @@ void UnloadAssets(Assets assets) {
     UnloadTexture(assets.darkStartButton);
     UnloadTexture(assets.backgroundMarcoZero);
     UnloadTexture(assets.fish);
+    UnloadTexture(assets.baseButton);
+    UnloadTexture(assets.baseButtonSpace);
 
     UnloadTexture(assets.fishermanHook[0]);
     UnloadTexture(assets.fishermanHook[1]);
@@ -43,4 +45,5 @@ void UnloadAssets(Assets assets) {
     UnloadMusicStream(assets.anunciacao);
     UnloadMusicStream(assets.labelledejour);
     UnloadMusicStream(assets.morenaTropicana);
+    UnloadSound(assets.spacePress);
 }
