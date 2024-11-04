@@ -10,7 +10,7 @@ int main(void) {
     GameScreen currentScreen = MENU;
     bool inTransition = false;
     int fadeAlpha = 0;
-    bool isSoundPlayed = false;  
+    bool isSoundPlayed = false;
 
     const int screenWidth = 1024;
     const int screenHeight = 720;
@@ -25,19 +25,19 @@ int main(void) {
     while (!WindowShouldClose()) {
 
         mousePos = GetMousePosition();
-        
+
         if (currentScreen == MENU) {
             UpdateMenu(&currentScreen, &inTransition,&fadeAlpha, mousePos, assets, &isSoundPlayed);
             DrawMenu(&currentScreen, mousePos, inTransition, fadeAlpha, assets, &isSoundPlayed);
         }
         else if (currentScreen == GAME) {
         if (!inTransition && fadeAlpha == 255) {
-                inTransition = true; 
+                inTransition = true;
             }
-            
+
             UpdateGame(&inTransition, &currentScreen);
             DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed);
-            
+
         }
     }
 
