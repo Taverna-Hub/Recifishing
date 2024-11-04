@@ -37,17 +37,9 @@ int main(void) {
 
     int gameFrame = DEFAULT;
 
-    printf("INICIOU\n");
-
     while (!WindowShouldClose()) {
 
         mousePos = GetMousePosition();
-
-        if (isSoundPlayed) {
-            printf("PLAYING\n");
-        } else {
-            printf("NOT PLAYING\n");
-        }
 
         if (currentScreen == MENU) {
 

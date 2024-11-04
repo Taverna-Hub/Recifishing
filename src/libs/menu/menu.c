@@ -31,7 +31,6 @@ void UpdateMenu(GameScreen *currentScreen, bool *inTransition, int *fadeAlpha, V
 void DrawMenu(GameScreen *currentScreen, Vector2 mousePos, bool inTransition, int fadeAlpha, Assets assets, bool *isSoundPlayed) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    printf("MENU\n");
     DrawTexture(assets.backgroundMenu, 0, 0, RAYWHITE);
     DrawTexture(assets.logoTexture, 256, -20, RAYWHITE);
 

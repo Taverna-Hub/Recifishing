@@ -57,14 +57,16 @@ typedef struct Location {
 
 
 typedef struct AnimationFrames {
-    int rodAnimation;
+    int throwingRodAnimation;
+    int pullingRodAnimation;
     Frame *fishingRod;
     Frame *fishmanIdle;
     Frame *fishmanFishing;
     Frame *fishmanHook;
     Vector2 rodPoints[10000];
     int rodPointCount;
-}AnimationFrames;
+} AnimationFrames;
+
 
 Arrow* createArrow();
 AnimationFrames* createAnimationFrames();

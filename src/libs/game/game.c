@@ -9,6 +9,9 @@
 
 #include "game.h"
 
+int cont = 0;
+int entrou = 0;
+
 void updateArrow(Arrow *arrow);
 void drawElements(Assets assets, Location *location, int arrowFrames);
 void fadeHandle(bool *inTransition, int *fadeAlpha);
@@ -17,7 +20,7 @@ int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D
 
 void playSound(bool *isSoundPlayed, Music sound);
 void throwRod(AnimationFrames **animationFrames);
-void pullRod(AnimationFrames **animationFrames);
+void pullRod(AnimationFrames **animationFrames, Assets assets);
 
 void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vector2 mousePos, Assets assets, int *gameFrame, AnimationFrames **animationFrames, Location *location) {
     updateArrow(arrow);
@@ -29,30 +32,32 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vec
     if (*gameFrame == PIER) {
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
 
-            if ((*animationFrames)->fishmanFishing->isUsing) {
-                (*animationFrames)->fishingRod->x = 240;
-                (*animationFrames)->fishingRod->y = 350;
-                (*animationFrames)->fishingRod->finalX = 0;
-                (*animationFrames)->fishingRod->finalY = 0;
-                (*animationFrames)->rodAnimation = 0;
-                (*animationFrames)->fishmanFishing->isUsing = 0;
-                (*animationFrames)->fishmanFishing->frame = 0;
-                (*animationFrames)->fishmanHook->isUsing = 1;
-                (*animationFrames)->fishmanHook->frame = 0;
-                for (int i = 0; i < 10000; i++) {
-                    (*animationFrames)->rodPoints[i].x = 0;
-                    (*animationFrames)->rodPoints[i].y = 0;
+            if (entrou) {
+                if ((*animationFrames)->fishmanFishing->isUsing) {
+                    (*animationFrames)->fishingRod->finalX = 240;
+                    (*animationFrames)->fishingRod->finalY = 350;
+                    (*animationFrames)->pullingRodAnimation = 1;
+                    (*animationFrames)->throwingRodAnimation = 0;
+                    (*animationFrames)->fishingRod->isUsing = 1;
+                    (*animationFrames)->fishmanFishing->isUsing = 0;
+                    (*animationFrames)->fishmanFishing->frame = 0;
+                    (*animationFrames)->fishmanHook->isUsing = 1;
+                    (*animationFrames)->fishmanHook->frame = 0;
+                } else {
+                    (*animationFrames)->fishingRod->finalX = mousePos.x;
+                    (*animationFrames)->fishingRod->finalY = mousePos.y;
+                    (*animationFrames)->fishingRod->x = 240;
+                    (*animationFrames)->fishingRod->y = 350;
+                    (*animationFrames)->throwingRodAnimation = 1;
+                    (*animationFrames)->pullingRodAnimation = 0;
+                    (*animationFrames)->fishingRod->isUsing = 1;
+                    (*animationFrames)->fishmanIdle->isUsing = 0;
+                    (*animationFrames)->fishmanFishing->isUsing = 1;
+                    (*animationFrames)->fishmanFishing->frame = 0;
+                    (*animationFrames)->rodPointCount = 0; 
                 }
-                (*animationFrames)->rodPointCount = 0;
             } else {
-                (*animationFrames)->fishingRod->finalX = mousePos.x;
-                (*animationFrames)->fishingRod->finalY = mousePos.y;
-                (*animationFrames)->fishingRod->x = 240;
-                (*animationFrames)->fishingRod->y = 350;
-                (*animationFrames)->rodAnimation = 1;
-                (*animationFrames)->fishmanIdle->isUsing = 0;
-                (*animationFrames)->fishmanFishing->isUsing = 1;
-                (*animationFrames)->fishmanFishing->frame = 0;
+                entrou = 1;
             }
         }
     }
@@ -61,14 +66,11 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vec
 void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, Vector2 mousePos, int frame, AnimationFrames **animationFrames, Location *location) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    printf("GAME\n");
     Rectangle recBackButton = {50, 620, assets.button.width, assets.button.height};
 
-    if (frame!=DEFAULT && CheckCollisionPointRec(mousePos,recBackButton))
-    {
+    if (frame != DEFAULT && CheckCollisionPointRec(mousePos, recBackButton)) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-    }else
-    {
+    } else {
         SetMouseCursor(MOUSE_CURSOR_DEFAULT);
     }
 
@@ -99,17 +101,16 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             DrawRectangle(577, 0, 367, 360, (Color){0, 0, 255, 128});
             DrawRectangle(577, 360, 367, 360, (Color){0, 155, 155, 128});
 
-            throwRod(animationFrames);
-
-            if ((*animationFrames)->rodAnimation) {
-                (*animationFrames)->fishingRod->isUsing = 1;
+            if ((*animationFrames)->throwingRodAnimation || (*animationFrames)->fishmanFishing->isUsing) {
+                throwRod(animationFrames);
+            } else if ((*animationFrames)->pullingRodAnimation || (*animationFrames)->fishmanHook->isUsing) {
+                pullRod(animationFrames, assets); 
             }
 
             updateAnimationFrames(*animationFrames, assets, mousePos);
 
             DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
             DrawText("VOLTAR", 65, 632, 28, WHITE);
-            DrawRectangle(50, 620, assets.button.width / 2, assets.button.height / 2, (Color){255, 0, 0, 50});
             break;
 
         case FISHSHOP:
@@ -119,8 +120,10 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             break;
         
         case DEFAULT:
-            
             drawElements(assets, location, arrowFrames);
+
+            free(*animationFrames);
+            *animationFrames = createAnimationFrames();
 
             cursorHandle(mousePos, assets.button, assets.fishBucket, assets.fishPedia, frame);
 
@@ -130,7 +133,6 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             fadeHandle(inTransition, fadeAlpha);
             break;
     }
-    
 
     EndDrawing();
 }
@@ -145,8 +147,9 @@ Arrow* createArrow() {
 AnimationFrames* createAnimationFrames() {
     AnimationFrames *animationFrames = (AnimationFrames*)malloc(sizeof(AnimationFrames));
 
-    animationFrames->rodAnimation = 0;
     animationFrames->rodPointCount = 0;
+    animationFrames->throwingRodAnimation = 0;
+    animationFrames->pullingRodAnimation = 0;
 
     animationFrames->fishingRod = (Frame*)malloc(sizeof(Frame));
     animationFrames->fishingRod->frame = 0;
@@ -172,7 +175,7 @@ AnimationFrames* createAnimationFrames() {
     animationFrames->fishmanFishing = (Frame*)malloc(sizeof(Frame));
     animationFrames->fishmanFishing->frame = 0;
     animationFrames->fishmanFishing->direction = 0;
-    animationFrames->fishmanFishing->isUsing = 1;
+    animationFrames->fishmanFishing->isUsing = 0;
 
     return animationFrames;
 }
@@ -194,7 +197,7 @@ void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vect
         }
     }
 
-    if (animationFrames->fishingRod->isUsing && animationFrames->rodAnimation) {
+    if (animationFrames->fishingRod->isUsing && animationFrames->throwingRodAnimation) {
         Vector2 rodPos = {animationFrames->fishingRod->x, animationFrames->fishingRod->y};
         Vector2 targetPos = {animationFrames->fishingRod->finalX, animationFrames->fishingRod->finalY};
         
@@ -202,8 +205,7 @@ void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vect
         float distance = Vector2Distance(rodPos, targetPos);
 
         if (distance < 10.0f) {
-            animationFrames->fishingRod->isUsing = 0;
-            animationFrames->rodAnimation = 0;
+            animationFrames->throwingRodAnimation = 0;
         } else {
             Vector2 direction = Vector2Normalize(Vector2Subtract(targetPos, rodPos));
             Vector2 velocity = Vector2Scale(direction, speed);
@@ -216,18 +218,47 @@ void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vect
             }
         }
     }
+
+    if (animationFrames->fishingRod->isUsing && animationFrames->pullingRodAnimation) {
+        Vector2 targetPos = {240, 350}; 
+        float speed = 20.0f;
+
+        Vector2 rodPos = {animationFrames->fishingRod->x, animationFrames->fishingRod->y};
+        float distance = Vector2Distance(rodPos, targetPos);
+
+        if (distance < 10.0f) {
+            animationFrames->fishingRod->x = targetPos.x;
+            animationFrames->fishingRod->y = targetPos.y;
+            animationFrames->fishingRod->isUsing = 0;
+            animationFrames->pullingRodAnimation = 0;
+            animationFrames->rodPointCount = 0; 
+        } else {
+            Vector2 direction = Vector2Normalize(Vector2Subtract(targetPos, rodPos));
+            Vector2 velocity = Vector2Scale(direction, speed);
+
+            animationFrames->fishingRod->x += velocity.x;
+            animationFrames->fishingRod->y += velocity.y;
+
+            for (int i = 0; i < animationFrames->rodPointCount; i++) {
+                Vector2 pointDirection = Vector2Normalize(Vector2Subtract(targetPos, animationFrames->rodPoints[i]));
+                Vector2 pointVelocity = Vector2Scale(pointDirection, speed);
+                animationFrames->rodPoints[i].x += pointVelocity.x;
+                animationFrames->rodPoints[i].y += pointVelocity.y;
+            }
+        }
+    }
 }
 
 void updateArrow(Arrow *arrow) {
-    if ((*arrow).direction) {
-        ((*arrow).arrowFrames)++;
-        if ((*arrow).arrowFrames > 30) {
-            (*arrow).direction = 0;
+    if (arrow->direction) {
+        arrow->arrowFrames++;
+        if (arrow->arrowFrames > 30) {
+            arrow->direction = 0;
         }
     } else {
-        ((*arrow).arrowFrames)--;
-        if ((*arrow).arrowFrames < 0) {
-            (*arrow).direction = 1;
+        arrow->arrowFrames--;
+        if (arrow->arrowFrames < 0) {
+            arrow->direction = 1;
         }
     }
 }
@@ -243,7 +274,7 @@ int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D
 
     if (CheckCollisionPointRec(mousePos, recBackButton) && gameFrame != DEFAULT) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-
+        entrou = 0;
         return DEFAULT;
     } 
 
@@ -305,9 +336,8 @@ void playSound(bool *isSoundPlayed, Music sound) {
 }
 
 void drawElements(Assets assets, Location *location, int arrowFrames) {
-    printf("BUGDOCARALHO\n");
     DrawTexture(location->background, 0, 0, RAYWHITE);
-    DrawTexture(assets.arrow, 485, 260+(arrowFrames)/5, RAYWHITE);
+    DrawTexture(assets.arrow, 485, 260 + arrowFrames / 5, RAYWHITE);
     DrawTexture(location->boat, -50, 115, RAYWHITE);
     DrawTexture(assets.fishPedia, 50, 40, RAYWHITE);
     DrawTexture(assets.fishBucket, 140, 40, RAYWHITE);
@@ -346,12 +376,8 @@ Location* startLocation(LocationName locationName, Assets assets) {
 
         default:
             break;
-
-
     }
     return location;
-
-
 }
 
 void throwRod(AnimationFrames **animationFrames) {
@@ -361,15 +387,49 @@ void throwRod(AnimationFrames **animationFrames) {
     for (int i = 0; i < (*animationFrames)->rodPointCount - 1; i++) {
         
         start = (*animationFrames)->rodPoints[i];
-        end = (*animationFrames)->rodPoints[i + 1];;
+        end = (*animationFrames)->rodPoints[i + 1];
 
         DrawLineEx(start, end, 9.0f, BLACK);
-        
         DrawLineEx(start, end, 5.0f, GRAY);
     }
 
-    DrawCircleV((*animationFrames)->rodPoints[(*animationFrames)->rodPointCount - 1], 7.0f, BLACK);
-    DrawCircleV((*animationFrames)->rodPoints[(*animationFrames)->rodPointCount - 1], 5.0f, ((*animationFrames)->rodPointCount > 2) ? RED : GRAY); 
-
+    if ((*animationFrames)->rodPointCount > 0) {
+        DrawCircleV((*animationFrames)->rodPoints[(*animationFrames)->rodPointCount - 1], 7.0f, BLACK);
+        DrawCircleV((*animationFrames)->rodPoints[(*animationFrames)->rodPointCount - 1], 5.0f, ((*animationFrames)->rodPointCount > 2) ? RED : GRAY); 
+    }
 }
 
+void pullRod(AnimationFrames **animationFrames, Assets assets) {
+
+    Vector2 start;
+    Vector2 end;
+    int rodPointCount = (*animationFrames)->rodPointCount;
+
+    for (int i = 0; i < rodPointCount - 1; i++) {
+        
+        start = (*animationFrames)->rodPoints[i];
+        end = (*animationFrames)->rodPoints[i + 1];
+
+        DrawLineEx(start, end, 9.0f, BLACK);
+        DrawLineEx(start, end, 5.0f, GRAY);
+    }
+
+    if (rodPointCount > 1) {
+        Vector2 tipPosition = (*animationFrames)->rodPoints[rodPointCount - 1];
+        Vector2 prevPosition = (*animationFrames)->rodPoints[rodPointCount - 2];
+
+        DrawCircleV(tipPosition, 7.0f, BLACK);
+        DrawCircleV(tipPosition, 5.0f, (rodPointCount > 2) ? RED : GRAY); 
+
+        float angle = atan2f(tipPosition.y - prevPosition.y, tipPosition.x - prevPosition.x) * (180.0f / PI);
+
+        DrawTextureEx(assets.fish, (Vector2){tipPosition.x - assets.fish.width * 0.25f, tipPosition.y - assets.fish.height * 0.25f}, angle, 3.0f, WHITE);
+    } else if (rodPointCount == 1) {
+        Vector2 tipPosition = (*animationFrames)->rodPoints[rodPointCount - 1];
+
+        DrawCircleV(tipPosition, 7.0f, BLACK);
+        DrawCircleV(tipPosition, 5.0f, GRAY);
+
+        DrawTextureEx(assets.fish, (Vector2){tipPosition.x - assets.fish.width * 0.25f, tipPosition.y - assets.fish.height * 0.25f}, 0.0f, 3.0f, WHITE);
+    }
+}
