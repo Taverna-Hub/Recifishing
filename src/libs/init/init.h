@@ -29,6 +29,9 @@ typedef struct {
     Texture2D fish;
     Texture2D baseButton;
     Texture2D baseButtonSpace;
+    Texture2D baseButtonFail;
+    Texture2D baseButtonPressed;
+    Texture2D keyButtonBox;
 
     Texture2D fishermanHook[6];
     Texture2D fishermanIdle[4];
@@ -37,7 +40,7 @@ typedef struct {
     Music anunciacao;
     Music labelledejour;
     Music morenaTropicana;
-    Sound spacePress;
+    Sound keyPress;
 
 } Assets;
 

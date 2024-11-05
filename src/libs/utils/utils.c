@@ -9,3 +9,12 @@ Rectangle imageToRectangle(Texture2D image, int x, int y) {
     rec.height = image.height;
     return rec;
 }
+
+int indexOf(int *arr, int c) {
+    int cont = 0;
+    for (int i = 0; arr[i] != '\0'; i++) {
+        cont++;
+    }
+    return cont;  
+}
+

@@ -23,6 +23,8 @@ void UnloadAssets(Assets assets) {
     UnloadTexture(assets.backgroundMarcoZero);
     UnloadTexture(assets.fish);
     UnloadTexture(assets.baseButton);
+    UnloadTexture(assets.baseButtonPressed);
+    UnloadTexture(assets.baseButtonFail);
     UnloadTexture(assets.baseButtonSpace);
 
     UnloadTexture(assets.fishermanHook[0]);
@@ -41,9 +43,10 @@ void UnloadAssets(Assets assets) {
     UnloadTexture(assets.fishermanFishing[1]);
     UnloadTexture(assets.fishermanFishing[2]);
     UnloadTexture(assets.fishermanFishing[3]);
+    UnloadTexture(assets.keyButtonBox);
 
     UnloadMusicStream(assets.anunciacao);
     UnloadMusicStream(assets.labelledejour);
     UnloadMusicStream(assets.morenaTropicana);
-    UnloadSound(assets.spacePress);
+    UnloadSound(assets.keyPress);
 }

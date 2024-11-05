@@ -11,7 +11,7 @@ Assets LoadAssets(void) {
     assets.anunciacao = LoadMusicStream("assets/sounds/anunciacao.WAV");
     assets.labelledejour = LoadMusicStream("assets/sounds/labelledejour.WAV");
     assets.morenaTropicana = LoadMusicStream("assets/sounds/morena-tropicana.WAV");
-    assets.spacePress = LoadSound("assets/sounds/spacePress.mpeg");
+    assets.keyPress = LoadSound("assets/sounds/spacePress.wav");
 
 
     assets.coin = LoadTexture("assets/icons/coin.png");
@@ -22,7 +22,10 @@ Assets LoadAssets(void) {
     assets.fishPedia2 = LoadTexture("assets/icons/fishpedia2.png");
     assets.fishBucket = LoadTexture("assets/icons/fishbucket.png");
     assets.baseButton = LoadTexture("assets/icons/baseButton.png");
+    assets.baseButtonPressed = LoadTexture("assets/icons/baseButtonPressed.png");
+    assets.baseButtonFail = LoadTexture("assets/icons/baseButtonFail.png");
     assets.baseButtonSpace = LoadTexture("assets/icons/basebuttonspaceBarra.png");
+    assets.keyButtonBox = LoadTexture("assets/icons/keyButtonBox.png");
 
     assets.exitButton = LoadTexture("assets/menu/exitButton.png");
     assets.startButton = LoadTexture("assets/menu/startButton.png");
