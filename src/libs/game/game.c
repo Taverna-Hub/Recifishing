@@ -17,6 +17,9 @@ int successfulCatch = 0;
 float waitingFish = -1;
 int waitingFrames = 0;
 bool isMiniGaming = false;
+bool showError = false;
+float errorStartTime = 0.0f;
+
 
 void updateArrow(Arrow *arrow);
 void drawElements(Assets assets, Location *location, int arrowFrames);
@@ -95,7 +98,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
     BeginDrawing();
     ClearBackground(RAYWHITE);
     Rectangle recBackButton = {50, 620, assets.button.width, assets.button.height};
-    printf("%d %f\n", waitingFrames, waitingFish);
+
     if (frame != DEFAULT && CheckCollisionPointRec(mousePos, recBackButton)) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
     } else {
@@ -108,7 +111,91 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
             DrawText("VOLTAR", 65, 632, 28, WHITE);
             break;
-        
+
+        case PIER:
+            DrawTexture(location->pier, 0, 0, RAYWHITE);
+            DrawRectangle(210, 0, 367, 360, (Color){255, 0, 0, 128});
+            DrawRectangle(210, 360, 367, 360, (Color){0, 255, 0, 128});
+            DrawRectangle(577, 0, 367, 360, (Color){0, 0, 255, 128});
+            DrawRectangle(577, 360, 367, 360, (Color){0, 155, 155, 128});
+
+            if ((*animationFrames)->throwingRodAnimation || (*animationFrames)->fishmanFishing->isUsing) {
+                throwRod(animationFrames);
+
+                if (waitingFrames >= waitingFish) {
+                    if (!isMiniGaming && !showError) {
+                        DrawTexture(assets.baseButtonSpace, 200, 150, RAYWHITE);
+
+                        if (IsKeyPressed(KEY_SPACE)) {
+                            isMiniGaming = true;
+                            currentSequenceIndex = 0;
+                            PlaySound(assets.keyPress);
+                        }
+                    } else if (isMiniGaming) {
+                        DrawTextureEx(assets.keyButtonBox, (Vector2){200, 150}, 0.0f, 0.8f, RAYWHITE);
+
+                        for (int i = 0; i < sizeof(catchSequence) / sizeof(int); i++) {
+                            if (i < currentSequenceIndex) {
+                                DrawTextureEx(assets.baseButtonPressed, (Vector2){223 + (100 * i), 172}, 0.0f, 1.0f, WHITE);
+                            } else {
+                                DrawTextureEx(assets.baseButton, (Vector2){223 + (100 * i), 172}, 0.0f, 1.0f, WHITE);
+                            }
+                            DrawTextCodepoint(GetFontDefault(), catchSequence[i], (Vector2){251 + (100 * i), 185}, 50, WHITE);
+                        }
+
+                        int key = GetKeyPressed();
+                        if (key != 0) {
+                            if (key == catchSequence[currentSequenceIndex]) {
+                                PlaySound(assets.keyPress);
+                                currentSequenceIndex++;
+                                if (currentSequenceIndex == 5) {
+                                    successfulCatch = 1;
+                                    currentSequenceIndex = 0;
+                                    waitingFrames = 0;
+                                    waitingFish = (rand() % 500) + 200;
+                                    isMiniGaming = false;
+                                }
+                            } else {
+                                PlaySound(assets.keyPress);
+                                showError = true;
+                                errorStartTime = GetTime();
+                                isMiniGaming = false;
+                            }
+                        }
+                    } else if (showError) {
+                        DrawTextureEx(assets.keyButtonBox, (Vector2){200, 150}, 0.0f, 0.8f, RAYWHITE);
+
+                        for (int i = 0; i < sizeof(catchSequence) / sizeof(int); i++) {
+                            if (i < currentSequenceIndex) {
+                                DrawTextureEx(assets.baseButtonPressed, (Vector2){223 + (100 * i), 172}, 0.0f, 1.0f, WHITE);
+                                DrawTextCodepoint(GetFontDefault(), catchSequence[i], (Vector2){251 + (100 * i), 185}, 50, WHITE);
+                            } else if (i == currentSequenceIndex) {
+                                DrawTextureEx(assets.baseButtonFail, (Vector2){223 + (100 * i), 172}, 0.0f, 1.0f, WHITE);
+                                DrawTextCodepoint(GetFontDefault(), catchSequence[i], (Vector2){251 + (100 * i), 185}, 50, WHITE);
+                            } else {
+                                DrawTextureEx(assets.baseButton, (Vector2){223 + (100 * i), 172}, 0.0f, 1.0f, WHITE);
+                                DrawTextCodepoint(GetFontDefault(), catchSequence[i], (Vector2){251 + (100 * i), 185}, 50, WHITE);
+                            }
+                        }
+
+                        if (GetTime() - errorStartTime >= 1.0f) {
+                            showError = false;
+                            currentSequenceIndex = 0;
+                            successfulCatch = 2;
+                        }
+                    }
+                } else {
+                    waitingFrames++;
+                }
+            } else if ((*animationFrames)->pullingRodAnimation || (*animationFrames)->fishmanHook->isUsing || successfulCatch == 2) {
+                pullRod(animationFrames, assets, successfulCatch);
+            }
+
+            updateAnimationFrames(*animationFrames, assets, mousePos);
+            DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+            DrawText("VOLTAR", 65, 632, 28, WHITE);
+            break;
+
         case FISHPEDIA:
             DrawText("Fishpedia", 300, 300, 28, BLACK);
             DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
@@ -121,86 +208,12 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             DrawText("VOLTAR", 65, 632, 28, WHITE);
             break;
 
-        case PIER:
-            int fishes[4]={1,2,3,4};
-            DrawTexture(location->pier, 0, 0, RAYWHITE);
-
-            DrawRectangle(210, 0, 367, 360, (Color){255, 0, 0, 128});
-            DrawRectangle(210, 360, 367, 360, (Color){0, 255, 0, 128});
-            DrawRectangle(577, 0, 367, 360, (Color){0, 0, 255, 128});
-            DrawRectangle(577, 360, 367, 360, (Color){0, 155, 155, 128});
-
-            Rectangle upperLeftSquare={210, 0, 367, 360};
-            Rectangle bottomLeftSquare={210, 360, 367, 360};
-            Rectangle upperRightSquare={577, 0, 367, 360};
-            Rectangle bottomRightSquare={577, 360, 367, 360};
-
-            if ((*animationFrames)->throwingRodAnimation || (*animationFrames)->fishmanFishing->isUsing) {
-                throwRod(animationFrames);
-
-                if (waitingFrames >= waitingFish) {
-                    
-                    if (!isMiniGaming) {
-                        DrawTexture(assets.baseButtonSpace, 200, 150,RAYWHITE);
-                    }
-
-                    if (IsKeyPressed(KEY_SPACE)) {
-                        isMiniGaming = true;
-                        PlaySound(assets.keyPress);
-                    }
-                    
-
-                    if (isMiniGaming) {
-                        DrawTextureEx(assets.keyButtonBox, (Vector2){200, 150}, 0.0f, 0.8f, RAYWHITE);
-
-                        for (int i = 0; i < sizeof(catchSequence)/sizeof(int); i++) {
-                            if (i+1 <= currentSequenceIndex) {
-                                DrawTextureEx(assets.baseButtonPressed, (Vector2){223 + (100 * i), 172}, 0.0f, 1.0f, RAYWHITE);
-                            } else {
-                                DrawTextureEx(assets.baseButton, (Vector2){223 + (100 * i), 172}, 0.0f, 1.0f, RAYWHITE);
-                            }
-                            DrawTextCodepoint(GetFontDefault(), catchSequence[i], (Vector2){251 + (100 * i), 185}, 50, WHITE);
-                        }
-
-                        if (IsKeyPressed(catchSequence[currentSequenceIndex])) {
-                            PlaySound(assets.keyPress);
-                            currentSequenceIndex++; 
-                            if (currentSequenceIndex == 5) { 
-                                successfulCatch = 1; 
-                                currentSequenceIndex = 0; 
-                                waitingFrames = 0; 
-                                waitingFish = (rand() % 500) + 200; 
-                            }
-                        } else if (GetKeyPressed() != catchSequence[currentSequenceIndex] && GetKeyPressed() != KEY_SPACE) { 
-                            printf("OXE\n");
-                            PlaySound(assets.keyPress);
-                            currentSequenceIndex = 0;
-                            successfulCatch = 2;
-                            DrawTextureEx(assets.baseButtonFail, (Vector2){223 + (100 * currentSequenceIndex), 172}, 0.0f, 1.0f, RAYWHITE);
-                            DrawTextCodepoint(GetFontDefault(), catchSequence[currentSequenceIndex], (Vector2){251 + (100 * currentSequenceIndex), 185}, 50, WHITE);
-                        }
-                    }
-
-                }else {
-                    waitingFrames++; 
-                }
-
-            } else if ((*animationFrames)->pullingRodAnimation || (*animationFrames)->fishmanHook->isUsing || successfulCatch == 2) {
-                pullRod(animationFrames, assets, successfulCatch);
-            } 
-
-            updateAnimationFrames(*animationFrames, assets, mousePos);
-
-            DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
-            DrawText("VOLTAR", 65, 632, 28, WHITE);
-            break;
-
         case FISHSHOP:
             DrawText("Peixaria", 300, 300, 28, BLACK);
             DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
             DrawText("VOLTAR", 65, 632, 28, WHITE);
             break;
-        
+
         case DEFAULT:
             drawElements(assets, location, arrowFrames);
 
@@ -222,7 +235,6 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
 
     EndDrawing();
 }
-
 Arrow* createArrow() {
     Arrow *arrow = (Arrow*)malloc(sizeof(Arrow));
     arrow->direction = 0;
