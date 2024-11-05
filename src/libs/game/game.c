@@ -388,10 +388,10 @@ void drawElements(Assets assets, Location *location, int arrowFrames) {
     DrawTexture(location->boat, -50, 115, RAYWHITE);
     DrawTexture(assets.fishPedia, 50, 40, RAYWHITE);
     DrawTexture(assets.fishBucket, 140, 40, RAYWHITE);
-    DrawTexture(location->fishShop, 730, 220, RAYWHITE);
+    DrawTexture(location->fishShop, 680, 228, RAYWHITE);
     DrawTextureEx(assets.portSign, (Vector2){30, 350}, 0.0f, 0.8f, WHITE);
     DrawTexture(location->sailor, 170, 250, RAYWHITE);
-    DrawTexture(location->salesman, 860, 350, RAYWHITE);
+    DrawTexture(location->salesman, 830, 350, RAYWHITE);
     DrawTextureEx(assets.coin, (Vector2){780, 40}, 0.0f, 0.7f, WHITE);
     DrawText("350", 858, 57, 45, BLACK);
     DrawText("350", 860, 55, 45, WHITE);
