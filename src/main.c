@@ -49,16 +49,6 @@ int main(void) {
 
             UpdateMenu(&currentScreen, &inTransition,&fadeAlpha, mousePos, assets, &isSoundPlayed);
             DrawMenu(&currentScreen, mousePos, inTransition, fadeAlpha, assets, &isSoundPlayed);
-<<<<<<< HEAD
-        }
-        else if (currentScreen == GAME) {
-        if (!inTransition && fadeAlpha == 255) {
-                inTransition = true;
-            }
-
-            UpdateGame(&inTransition, &currentScreen);
-            DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed);
-=======
 
         } else if (currentScreen == GAME) {
 
@@ -67,7 +57,6 @@ int main(void) {
             }
             UpdateGame(&inTransition, &currentScreen, arrow, mousePos, assets, &gameFrame, &animationFrames, location);
             DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed, arrow->arrowFrames, mousePos, gameFrame, &animationFrames, location);
->>>>>>> 8e47214a3fe250705c5eb0c95308052cb84ebf9d
 
         }
     }

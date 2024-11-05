@@ -136,9 +136,10 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                 throwRod(animationFrames);
                 if (waitingFrames == waitingFish) {
                     if (IsKeyPressed(32)) {
+                        PlaySound(assets.spacePress);
                         successfulCatch = 1;
                         waitingFrames = 0;
-                        waitingFish = -1;
+                        waitingFish = (rand() % 500) + 200; ;
                     } else {
                         DrawTexture(assets.baseButtonSpace, 200, 200, WHITE);
                     }
