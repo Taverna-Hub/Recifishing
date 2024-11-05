@@ -26,6 +26,8 @@ int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D
 void playSound(bool *isSoundPlayed, Music sound);
 void throwRod(AnimationFrames **animationFrames);
 void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCatch);
+int catchSequence[5] = {KEY_W, KEY_A, KEY_S, KEY_D, KEY_SPACE};
+int currentSequenceIndex = 0;
 
 void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vector2 mousePos, Assets assets, int *gameFrame, AnimationFrames **animationFrames, Location *location) {
     updateArrow(arrow);
@@ -134,18 +136,27 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
 
             if ((*animationFrames)->throwingRodAnimation || (*animationFrames)->fishmanFishing->isUsing) {
                 throwRod(animationFrames);
-                if (waitingFrames == waitingFish) {
-                    if (IsKeyPressed(32)) {
-                        PlaySound(assets.spacePress);
-                        successfulCatch = 1;
-                        waitingFrames = 0;
-                        waitingFish = (rand() % 500) + 200; ;
-                    } else {
-                        DrawTexture(assets.baseButtonSpace, 200, 200, WHITE);
+
+                if (waitingFrames >= waitingFish) {
+                    
+                    DrawTexture(assets.baseButton, 200, 150,RAYWHITE);
+                    
+                    if (IsKeyPressed(catchSequence[currentSequenceIndex])) {
+                        currentSequenceIndex++; 
+                        if (currentSequenceIndex == 5) { 
+                            successfulCatch = 1; 
+                            currentSequenceIndex = 0; 
+                            waitingFrames = 0; 
+                            waitingFish = (rand() % 500) + 200; 
+                        }
+                    } else if (IsKeyPressed(!catchSequence[currentSequenceIndex])) { 
+                        currentSequenceIndex = 0;
                     }
-                } else {
-                    waitingFrames++;
+
+                }else {
+                    waitingFrames++; 
                 }
+
             } else if ((*animationFrames)->pullingRodAnimation || (*animationFrames)->fishmanHook->isUsing) {
                 pullRod(animationFrames, assets, successfulCatch);
             } 
