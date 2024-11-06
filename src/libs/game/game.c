@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <string.h>
 
 #include "raylib.h"
 #include "raymath.h"
 
 #include "../utils/utils.h"
+#include "../init/init.h"
 
 #include "game.h"
 
@@ -19,7 +21,10 @@ int waitingFrames = 0;
 bool isMiniGaming = false;
 bool showError = false;
 float errorStartTime = 0.0f;
-
+int waterFrames = 0;
+int waterUpdateCounter = 0;
+bool caught = false;
+bool canThrow = true;
 
 void updateArrow(Arrow *arrow);
 void drawElements(Assets assets, Location *location, int arrowFrames);
@@ -28,20 +33,24 @@ void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vect
 int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D fishpedia, int gameFrame);
 
 void playSound(bool *isSoundPlayed, Music sound);
+int* getSequence(int letters);
 void throwRod(AnimationFrames **animationFrames);
 void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCatch);
 int catchSequence[5] = {KEY_W, KEY_A, KEY_S, KEY_D, KEY_F};
 int currentSequenceIndex = 0;
 
-void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vector2 mousePos, Assets assets, int *gameFrame, AnimationFrames **animationFrames, Location *location) {
+void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arrow *arrow2, Vector2 mousePos, Assets assets, int *gameFrame, AnimationFrames **animationFrames, Location *location) {
     updateArrow(arrow);
+    updateArrow(arrow2);
+
+    Rectangle fishZone = {280, 0, 688, 720};
 
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         *gameFrame = cursorHandle(mousePos, assets.button, assets.fishBucket, assets.fishPedia, *gameFrame);
     }
     
     if (*gameFrame == PIER) {
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || successfulCatch == 2) {
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || successfulCatch != 0) {
 
             if (entrou) {
                 if ((*animationFrames)->fishmanFishing->isUsing) {
@@ -56,7 +65,12 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vec
                     (*animationFrames)->fishmanHook->frame = 0;
                     waitingFrames = 0;
                     waitingFish = -1;
-                } else {
+                    if (successfulCatch == 1) {
+                        caught = true;
+                    }
+                    successfulCatch = 0;
+
+                } else if (successfulCatch != 2 && CheckCollisionPointRec(mousePos, fishZone) && canThrow){
                     (*animationFrames)->fishingRod->finalX = mousePos.x;
                     (*animationFrames)->fishingRod->finalY = mousePos.y;
                     (*animationFrames)->fishingRod->x = 240;
@@ -74,6 +88,7 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vec
                     Rectangle bottomRightSquare = {577, 360, 367, 360};
 
                     successfulCatch = 0;
+                    caught = false;
 
                     waitingFish = (rand() % 500) + 200; 
 
@@ -94,12 +109,21 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Vec
     }
 }
 
-void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, Vector2 mousePos, int frame, AnimationFrames **animationFrames, Location *location) {
+void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, int arrowFrames2, Vector2 mousePos, int frame, AnimationFrames **animationFrames, Location *location) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
-    Rectangle recBackButton = {50, 620, assets.button.width, assets.button.height};
+    Rectangle recBackButton = {50, 620, assets.button.width / 2, assets.button.height / 2};
+    Rectangle recArrow = {0, 340, 70, 120};
+    Rectangle fishZone = {280, 0, 688, 720};
 
-    if (frame != DEFAULT && CheckCollisionPointRec(mousePos, recBackButton)) {
+    if (canThrow) {
+        printf("JOGA AI\n");
+    } else {
+        printf(" \n");
+    }
+
+    if ((frame != DEFAULT && frame != PIER && CheckCollisionPointRec(mousePos, recBackButton)) || 
+    (frame == PIER && (CheckCollisionPointRec(mousePos, recArrow) || CheckCollisionPointRec(mousePos, fishZone) && (*animationFrames)->fishmanIdle->isUsing || (*animationFrames)->fishmanHook->isUsing))) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
     } else {
         SetMouseCursor(MOUSE_CURSOR_DEFAULT);
@@ -113,13 +137,33 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             break;
 
         case PIER:
-            DrawTexture(location->pier, 0, 0, RAYWHITE);
-            DrawRectangle(210, 0, 367, 360, (Color){255, 0, 0, 128});
-            DrawRectangle(210, 360, 367, 360, (Color){0, 255, 0, 128});
-            DrawRectangle(577, 0, 367, 360, (Color){0, 0, 255, 128});
-            DrawRectangle(577, 360, 367, 360, (Color){0, 155, 155, 128});
+            DrawTextureEx(assets.water[waterFrames], (Vector2){0, 0}, 0.0f, 1.0f, RAYWHITE);
+            DrawRectangle(0, 0, 1024, 720, (Color){0, 255, 51, 120});
+            DrawTexture(location->pier, 0, 100, RAYWHITE);
+            DrawTexture(location->pierRight, 0, 0, RAYWHITE);
+
+            DrawTextureEx(assets.arrow, (Vector2){65 + arrowFrames2 / 5, 370}, 90.0f, 1.0f, RAYWHITE);
+
+            if (waterUpdateCounter >= 13) {  
+                waterFrames = (waterFrames + 1) % 10;  
+                waterUpdateCounter = 0;
+            } else {
+                waterUpdateCounter++;
+            }
+
+            /* DrawRectangle(280, 0, 344, 360, (Color){255, 0, 0, 50});
+            DrawRectangle(280, 360, 344, 360, (Color){0, 255, 0, 50});
+            DrawRectangle(624, 0, 344, 360, (Color){0, 0, 255, 50});
+            DrawRectangle(624, 360, 344, 360, (Color){0, 155, 155, 50}); */
+
+            /* DrawRectangle(280, 0, 688, 720, (Color){255, 0, 0, 50}); */
+
+            if (!(*animationFrames)->pullingRodAnimation) {
+                canThrow = true;
+            }
 
             if ((*animationFrames)->throwingRodAnimation || (*animationFrames)->fishmanFishing->isUsing) {
+
                 throwRod(animationFrames);
 
                 if (waitingFrames >= waitingFish) {
@@ -156,7 +200,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                                     isMiniGaming = false;
                                 }
                             } else {
-                                PlaySound(assets.keyPress);
+                                PlaySound(assets.boowomp);
                                 showError = true;
                                 errorStartTime = GetTime();
                                 isMiniGaming = false;
@@ -182,18 +226,17 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                             showError = false;
                             currentSequenceIndex = 0;
                             successfulCatch = 2;
+                            isMiniGaming = false;
                         }
                     }
                 } else {
                     waitingFrames++;
                 }
-            } else if ((*animationFrames)->pullingRodAnimation || (*animationFrames)->fishmanHook->isUsing || successfulCatch == 2) {
+            } else if ((*animationFrames)->pullingRodAnimation || (*animationFrames)->fishmanHook->isUsing || successfulCatch != 2) {
                 pullRod(animationFrames, assets, successfulCatch);
             }
 
             updateAnimationFrames(*animationFrames, assets, mousePos);
-            DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
-            DrawText("VOLTAR", 65, 632, 28, WHITE);
             break;
 
         case FISHPEDIA:
@@ -223,6 +266,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             waitingFrames = 0;
             waitingFish = -1;
             successfulCatch = 0;
+            caught = false;
 
             cursorHandle(mousePos, assets.button, assets.fishBucket, assets.fishPedia, frame);
 
@@ -369,8 +413,9 @@ int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D
     Rectangle recBucket = {140, 40, bucket.width, bucket.height};
     Rectangle recFishpedia = {50, 40, fishpedia.width, fishpedia.height};
     Rectangle recBackButton = {50, 620, button.width / 2, button.height / 2};
+    Rectangle recArrow = {0, 340, 70, 120};
 
-    if (CheckCollisionPointRec(mousePos, recBackButton) && gameFrame != DEFAULT) {
+    if ((CheckCollisionPointRec(mousePos, recBackButton) && gameFrame != DEFAULT && gameFrame != PIER) || (gameFrame == PIER && CheckCollisionPointRec(mousePos, recArrow))) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         entrou = 0;
         return DEFAULT;
@@ -463,6 +508,20 @@ Location* startLocation(LocationName locationName, Assets assets) {
             location->salesman = assets.salesman;
             location->fishShop = assets.fishShop;
             location->pier = assets.marcoZeroPier;
+            location->pierRight = assets.marcoZeroPierRight;
+
+            Fish *first = NULL;
+
+            /* insertFish(&first, "Jacaré", 75, 8, assets.marcoZeroFishes[0], MARCO_ZERO);
+            insertFish(&first, "Peixe-CESAR", 50, 6, assets.marcoZeroFishes[1], MARCO_ZERO);
+            insertFish(&first, "Peixe-Chico", 50, 6, assets.marcoZeroFishes[2], MARCO_ZERO);
+            insertFish(&first, "Peixe-Frevo", 25, 4, assets.marcoZeroFishes[3], MARCO_ZERO);
+            insertFish(&first, "Peixe-Maloka", 20, 4, assets.marcoZeroFishes[4], MARCO_ZERO);
+            insertFish(&first, "Peixe-Náutico", 30, 5, assets.marcoZeroFishes[5], MARCO_ZERO);
+            insertFish(&first, "Peixe-Santa", 30, 5, assets.marcoZeroFishes[6], MARCO_ZERO);
+            insertFish(&first, "Peixe-Sport", 30, 5, assets.marcoZeroFishes[7], MARCO_ZERO); */
+
+            location->firstFish = first;
 
             break;
 
@@ -521,8 +580,9 @@ void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCat
 
         float angle = atan2f(tipPosition.y - prevPosition.y, tipPosition.x - prevPosition.x) * (180.0f / PI);
 
-        if (successfulCatch == 1) {
-            DrawTextureEx(assets.fish, (Vector2){tipPosition.x - assets.fish.width * 0.25f, tipPosition.y - assets.fish.height * 0.25f}, angle, 3.0f, WHITE);
+        if (caught) {
+            DrawTextureEx(assets.marcoZeroFishes[2], (Vector2){tipPosition.x - assets.marcoZeroFishes[2].width * 0.25f, tipPosition.y - assets.marcoZeroFishes[2].height * 0.25f}, angle, 0.4f, WHITE);
+            canThrow = false;
         }
     } else if (rodPointCount == 1) {
         Vector2 tipPosition = (*animationFrames)->rodPoints[rodPointCount - 1];
@@ -530,8 +590,77 @@ void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCat
         DrawCircleV(tipPosition, 7.0f, BLACK);
         DrawCircleV(tipPosition, 5.0f, GRAY);
 
-        if (successfulCatch == 1) {
-            DrawTextureEx(assets.fish, (Vector2){tipPosition.x - assets.fish.width * 0.25f, tipPosition.y - assets.fish.height * 0.25f}, 0.0f, 3.0f, WHITE);
+        if (caught) {
+            DrawTextureEx(assets.marcoZeroFishes[2], (Vector2){tipPosition.x - assets.marcoZeroFishes[2].width * 0.25f, tipPosition.y - assets.marcoZeroFishes[2].height * 0.25f}, 0.0f, 0.4f, WHITE);
+            canThrow = false;
         }
     }
 }
+
+/* int* getSequence(marcoZeroFishes[0] marcoZeroFishes[0]) {
+    int sequence[marcoZeroFishes[0].letters];
+
+    for (int i = 0; i < marcoZeroFishes[0].letters; i++) {
+        sequence[i] = (rand() % 26) + 65;
+    }
+
+    return sequence;
+} */
+
+Fish pescar(Vector2 mousePos) {
+
+    Rectangle zone1 = {280, 0, 344, 360};
+    Rectangle zone2 = {280, 360, 344, 360};
+    Rectangle zone3 = {624, 0, 344, 360};
+    Rectangle zone4 = {624, 360, 344, 360};
+
+    if (CheckCollisionPointRec(mousePos, zone1)) {
+
+    } else if ((CheckCollisionPointRec(mousePos, zone2))) {
+
+    } else if ((CheckCollisionPointRec(mousePos, zone3))) {
+
+    } else if ((CheckCollisionPointRec(mousePos, zone4))) {
+
+    }
+
+    
+
+}
+
+void insertFish(Fish **head, char *name, int price, int letters, Texture2D sprite, LocationName locationName) {
+		
+		Fish *new = (Fish *)malloc(sizeof(Fish));
+		
+		if (new != NULL) {
+			strcpy(new->name, name);
+			new->price = price;
+			new->sprite = sprite;
+			new->locationName = locationName;
+			new->next = *head;
+			new->letters = letters;
+			new->prev = NULL;
+			
+			if (*head != NULL) {
+				(*head)->prev = new;
+			} 
+			
+			*head = new;
+		}
+		
+	}
+
+	void removeFish(Fish **head) {
+
+		if (*head != NULL) {
+			Fish *aux = *head;
+			
+			*head = (*head)->next;
+			
+			free(aux);
+			
+			if (*head != NULL) {
+				(*head)->prev = NULL;
+			}
+		}
+	}

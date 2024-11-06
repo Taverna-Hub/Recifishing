@@ -25,6 +25,7 @@ typedef struct {
     Texture2D darkStartButton;
     Texture2D backgroundMarcoZero;
     Texture2D marcoZeroPier;
+    Texture2D marcoZeroPierRight;
 
     Texture2D fish;
     Texture2D baseButton;
@@ -36,11 +37,14 @@ typedef struct {
     Texture2D fishermanHook[6];
     Texture2D fishermanIdle[4];
     Texture2D fishermanFishing[4];
+    Texture2D water[10];
+    Texture2D marcoZeroFishes[8];
 
     Music anunciacao;
     Music labelledejour;
     Music morenaTropicana;
     Sound keyPress;
+    Sound boowomp;
 
 } Assets;
 

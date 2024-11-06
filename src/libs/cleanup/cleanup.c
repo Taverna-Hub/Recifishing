@@ -17,6 +17,7 @@ void UnloadAssets(Assets assets) {
     UnloadTexture(assets.startButton);
     UnloadTexture(assets.logoTexture);
     UnloadTexture(assets.marcoZeroPier);
+    UnloadTexture(assets.marcoZeroPierRight);
     UnloadTexture(assets.backgroundMenu);
     UnloadTexture(assets.darkExitButton);
     UnloadTexture(assets.darkStartButton);
@@ -27,26 +28,28 @@ void UnloadAssets(Assets assets) {
     UnloadTexture(assets.baseButtonFail);
     UnloadTexture(assets.baseButtonSpace);
 
-    UnloadTexture(assets.fishermanHook[0]);
-    UnloadTexture(assets.fishermanHook[1]);
-    UnloadTexture(assets.fishermanHook[2]);
-    UnloadTexture(assets.fishermanHook[3]);
-    UnloadTexture(assets.fishermanHook[4]);
-    UnloadTexture(assets.fishermanHook[5]);
+    for (int i = 0; i < 5; i++){
+        UnloadTexture(assets.fishermanHook[i]);
+    }
 
-    UnloadTexture(assets.fishermanIdle[0]);
-    UnloadTexture(assets.fishermanIdle[1]);
-    UnloadTexture(assets.fishermanIdle[2]);
-    UnloadTexture(assets.fishermanIdle[3]);
+    for (int i = 0; i < 3; i++) {
+        UnloadTexture(assets.fishermanFishing[i]);
+        UnloadTexture(assets.fishermanIdle[i]);
+    }
 
-    UnloadTexture(assets.fishermanFishing[0]);
-    UnloadTexture(assets.fishermanFishing[1]);
-    UnloadTexture(assets.fishermanFishing[2]);
-    UnloadTexture(assets.fishermanFishing[3]);
     UnloadTexture(assets.keyButtonBox);
+
+    for (int i = 0; i < 10; i++) {
+        UnloadTexture(assets.water[i]);
+    }
+
+    for (int i = 0; i < 8; i++){
+        UnloadTexture(assets.marcoZeroFishes[i]);
+    }
 
     UnloadMusicStream(assets.anunciacao);
     UnloadMusicStream(assets.labelledejour);
     UnloadMusicStream(assets.morenaTropicana);
     UnloadSound(assets.keyPress);
+    UnloadSound(assets.boowomp);
 }
