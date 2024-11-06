@@ -26,6 +26,10 @@ int waterUpdateCounter = 0;
 bool caught = false;
 bool canThrow = true;
 
+int catchSequence[20];
+int currentSequenceIndex = 0;
+Fish *hookedFish = NULL;
+
 void updateArrow(Arrow *arrow);
 void drawElements(Assets assets, Location *location, int arrowFrames);
 void fadeHandle(bool *inTransition, int *fadeAlpha);
@@ -33,11 +37,10 @@ void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vect
 int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D fishpedia, int gameFrame);
 
 void playSound(bool *isSoundPlayed, Music sound);
-int* getSequence(int letters);
+void updateSequence(Fish *fish);
 void throwRod(AnimationFrames **animationFrames);
-void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCatch);
-int catchSequence[5] = {KEY_W, KEY_A, KEY_S, KEY_D, KEY_F};
-int currentSequenceIndex = 0;
+void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCatch, Fish* hookedFish);
+Fish* pescar(Fish *head);
 
 void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arrow *arrow2, Vector2 mousePos, Assets assets, int *gameFrame, AnimationFrames **animationFrames, Location *location) {
     updateArrow(arrow);
@@ -67,8 +70,7 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arr
                     waitingFish = -1;
                     if (successfulCatch == 1) {
                         caught = true;
-                    }
-                    successfulCatch = 0;
+                    } 
 
                 } else if (successfulCatch != 2 && CheckCollisionPointRec(mousePos, fishZone) && canThrow){
                     (*animationFrames)->fishingRod->finalX = mousePos.x;
@@ -92,15 +94,8 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arr
 
                     waitingFish = (rand() % 500) + 200; 
 
-                    if (CheckCollisionPointRec(mousePos, upperLeftSquare)) {
-                        selectedQuadrant = 1;
-                    } else if (CheckCollisionPointRec(mousePos, bottomLeftSquare)) {
-                        selectedQuadrant = 2;
-                    } else if (CheckCollisionPointRec(mousePos, upperRightSquare)) {
-                        selectedQuadrant = 3;
-                    } else if (CheckCollisionPointRec(mousePos, bottomRightSquare)) {
-                        selectedQuadrant = 4;
-                    }
+                    hookedFish = NULL;
+                    currentSequenceIndex = 0;
                 }
             } else {
                 entrou = 1;
@@ -115,12 +110,6 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
     Rectangle recBackButton = {50, 620, assets.button.width / 2, assets.button.height / 2};
     Rectangle recArrow = {0, 340, 70, 120};
     Rectangle fishZone = {280, 0, 688, 720};
-
-    if (canThrow) {
-        printf("JOGA AI\n");
-    } else {
-        printf(" \n");
-    }
 
     if ((frame != DEFAULT && frame != PIER && CheckCollisionPointRec(mousePos, recBackButton)) || 
     (frame == PIER && (CheckCollisionPointRec(mousePos, recArrow) || CheckCollisionPointRec(mousePos, fishZone) && (*animationFrames)->fishmanIdle->isUsing || (*animationFrames)->fishmanHook->isUsing))) {
@@ -137,6 +126,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             break;
 
         case PIER:
+            playSound(isSoundPlayed, assets.labelledejour);
             DrawTextureEx(assets.water[waterFrames], (Vector2){0, 0}, 0.0f, 1.0f, RAYWHITE);
             DrawRectangle(0, 0, 1024, 720, (Color){0, 255, 51, 120});
             DrawTexture(location->pier, 0, 100, RAYWHITE);
@@ -151,20 +141,19 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                 waterUpdateCounter++;
             }
 
-            /* DrawRectangle(280, 0, 344, 360, (Color){255, 0, 0, 50});
-            DrawRectangle(280, 360, 344, 360, (Color){0, 255, 0, 50});
-            DrawRectangle(624, 0, 344, 360, (Color){0, 0, 255, 50});
-            DrawRectangle(624, 360, 344, 360, (Color){0, 155, 155, 50}); */
-
-            /* DrawRectangle(280, 0, 688, 720, (Color){255, 0, 0, 50}); */
-
             if (!(*animationFrames)->pullingRodAnimation) {
+                successfulCatch = 0;
                 canThrow = true;
             }
 
             if ((*animationFrames)->throwingRodAnimation || (*animationFrames)->fishmanFishing->isUsing) {
 
                 throwRod(animationFrames);
+
+                if (!hookedFish) {
+                    hookedFish = pescar(location->firstFish);
+                    updateSequence(hookedFish);
+                }
 
                 if (waitingFrames >= waitingFish) {
                     if (!isMiniGaming && !showError) {
@@ -178,7 +167,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                     } else if (isMiniGaming) {
                         DrawTextureEx(assets.keyButtonBox, (Vector2){200, 150}, 0.0f, 0.8f, RAYWHITE);
 
-                        for (int i = 0; i < sizeof(catchSequence) / sizeof(int); i++) {
+                        for (int i = 0; i < hookedFish->letters; i++) {
                             if (i < currentSequenceIndex) {
                                 DrawTextureEx(assets.baseButtonPressed, (Vector2){223 + (100 * i), 172}, 0.0f, 1.0f, WHITE);
                             } else {
@@ -192,7 +181,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                             if (key == catchSequence[currentSequenceIndex]) {
                                 PlaySound(assets.keyPress);
                                 currentSequenceIndex++;
-                                if (currentSequenceIndex == 5) {
+                                if (currentSequenceIndex == hookedFish->letters) {
                                     successfulCatch = 1;
                                     currentSequenceIndex = 0;
                                     waitingFrames = 0;
@@ -209,7 +198,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                     } else if (showError) {
                         DrawTextureEx(assets.keyButtonBox, (Vector2){200, 150}, 0.0f, 0.8f, RAYWHITE);
 
-                        for (int i = 0; i < sizeof(catchSequence) / sizeof(int); i++) {
+                        for (int i = 0; i < hookedFish->letters; i++) {
                             if (i < currentSequenceIndex) {
                                 DrawTextureEx(assets.baseButtonPressed, (Vector2){223 + (100 * i), 172}, 0.0f, 1.0f, WHITE);
                                 DrawTextCodepoint(GetFontDefault(), catchSequence[i], (Vector2){251 + (100 * i), 185}, 50, WHITE);
@@ -233,7 +222,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                     waitingFrames++;
                 }
             } else if ((*animationFrames)->pullingRodAnimation || (*animationFrames)->fishmanHook->isUsing || successfulCatch != 2) {
-                pullRod(animationFrames, assets, successfulCatch);
+                pullRod(animationFrames, assets, successfulCatch, hookedFish);
             }
 
             updateAnimationFrames(*animationFrames, assets, mousePos);
@@ -271,7 +260,6 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             cursorHandle(mousePos, assets.button, assets.fishBucket, assets.fishPedia, frame);
 
             playSound(isSoundPlayed, assets.morenaTropicana);
-            UpdateMusicStream(assets.morenaTropicana);
 
             fadeHandle(inTransition, fadeAlpha);
             break;
@@ -470,7 +458,7 @@ void fadeHandle(bool *inTransition, int *fadeAlpha) {
 }
 
 void playSound(bool *isSoundPlayed, Music sound) {
-    if (!(*isSoundPlayed)) {
+    if (!IsMusicStreamPlaying(sound)) {
         PlayMusicStream(sound);
         sound.looping = true;
         *isSoundPlayed = true;
@@ -512,14 +500,16 @@ Location* startLocation(LocationName locationName, Assets assets) {
 
             Fish *first = NULL;
 
-            /* insertFish(&first, "Jacaré", 75, 8, assets.marcoZeroFishes[0], MARCO_ZERO);
+            insertFish(&first, "Jacaré", 75, 8, assets.marcoZeroFishes[0], MARCO_ZERO);
             insertFish(&first, "Peixe-CESAR", 50, 6, assets.marcoZeroFishes[1], MARCO_ZERO);
             insertFish(&first, "Peixe-Chico", 50, 6, assets.marcoZeroFishes[2], MARCO_ZERO);
             insertFish(&first, "Peixe-Frevo", 25, 4, assets.marcoZeroFishes[3], MARCO_ZERO);
             insertFish(&first, "Peixe-Maloka", 20, 4, assets.marcoZeroFishes[4], MARCO_ZERO);
             insertFish(&first, "Peixe-Náutico", 30, 5, assets.marcoZeroFishes[5], MARCO_ZERO);
             insertFish(&first, "Peixe-Santa", 30, 5, assets.marcoZeroFishes[6], MARCO_ZERO);
-            insertFish(&first, "Peixe-Sport", 30, 5, assets.marcoZeroFishes[7], MARCO_ZERO); */
+            insertFish(&first, "Peixe-Sport", 30, 5, assets.marcoZeroFishes[7], MARCO_ZERO);
+            insertFish(&first, "Peixe-Sport", 30, 5, assets.marcoZeroFishes[8], MARCO_ZERO);
+            insertFish(&first, "Peixe-Sport", 30, 5, assets.marcoZeroFishes[9], MARCO_ZERO);
 
             location->firstFish = first;
 
@@ -556,7 +546,7 @@ void throwRod(AnimationFrames **animationFrames) {
     }
 }
 
-void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCatch) {
+void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCatch, Fish* fish) {
 
     Vector2 start;
     Vector2 end;
@@ -581,7 +571,7 @@ void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCat
         float angle = atan2f(tipPosition.y - prevPosition.y, tipPosition.x - prevPosition.x) * (180.0f / PI);
 
         if (caught) {
-            DrawTextureEx(assets.marcoZeroFishes[2], (Vector2){tipPosition.x - assets.marcoZeroFishes[2].width * 0.25f, tipPosition.y - assets.marcoZeroFishes[2].height * 0.25f}, angle, 0.4f, WHITE);
+            DrawTextureEx(fish->sprite, (Vector2){tipPosition.x - fish->sprite.width * 0.25f, tipPosition.y - fish->sprite.height * 0.25f}, angle, 0.4f, WHITE);
             canThrow = false;
         }
     } else if (rodPointCount == 1) {
@@ -591,42 +581,43 @@ void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCat
         DrawCircleV(tipPosition, 5.0f, GRAY);
 
         if (caught) {
-            DrawTextureEx(assets.marcoZeroFishes[2], (Vector2){tipPosition.x - assets.marcoZeroFishes[2].width * 0.25f, tipPosition.y - assets.marcoZeroFishes[2].height * 0.25f}, 0.0f, 0.4f, WHITE);
+            DrawTextureEx(fish->sprite, (Vector2){tipPosition.x - fish->sprite.width * 0.25f, tipPosition.y - fish->sprite.height * 0.25f}, 0.0f, 0.4f, WHITE);
             canThrow = false;
         }
     }
 }
 
-/* int* getSequence(marcoZeroFishes[0] marcoZeroFishes[0]) {
-    int sequence[marcoZeroFishes[0].letters];
+void updateSequence(Fish *fish) {
 
-    for (int i = 0; i < marcoZeroFishes[0].letters; i++) {
-        sequence[i] = (rand() % 26) + 65;
-    }
-
-    return sequence;
-} */
-
-Fish pescar(Vector2 mousePos) {
-
-    Rectangle zone1 = {280, 0, 344, 360};
-    Rectangle zone2 = {280, 360, 344, 360};
-    Rectangle zone3 = {624, 0, 344, 360};
-    Rectangle zone4 = {624, 360, 344, 360};
-
-    if (CheckCollisionPointRec(mousePos, zone1)) {
-
-    } else if ((CheckCollisionPointRec(mousePos, zone2))) {
-
-    } else if ((CheckCollisionPointRec(mousePos, zone3))) {
-
-    } else if ((CheckCollisionPointRec(mousePos, zone4))) {
-
-    }
-
-    
+    for (int i = 0; i < 20; i++) {
+        if (i <= fish->letters) {
+            catchSequence[i] = (rand() % 26) + 65;
+        } else {
+            catchSequence[i] = -1;
+        }
+    } 
 
 }
+
+Fish* pescar(Fish *head) {
+
+    int random = rand() % 10;
+
+    Fish *aux = head;
+    int index = 0;
+
+    while (aux != NULL) {
+        if (index == random) {
+            return aux;
+        }
+        aux = aux->next;
+        index++;
+    }
+
+    return NULL;
+}
+
+
 
 void insertFish(Fish **head, char *name, int price, int letters, Texture2D sprite, LocationName locationName) {
 		
