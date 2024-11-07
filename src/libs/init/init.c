@@ -17,7 +17,8 @@ Assets LoadAssets(void) {
     assets.boowomp = LoadSound("assets/sounds/boowomp.mp3");
     assets.tictac = LoadSound("assets/sounds/tictac.mp3");
     assets.fail = LoadSound("assets/sounds/fail.wav");
-    assets.success = LoadSound("assets/sounds/success.wav");
+    assets.alert = LoadSound("assets/sounds/alert.mp3");
+    assets.success = LoadSound("assets/sounds/success.mp3");
 
     assets.coin = LoadTexture("assets/icons/coin.png");
     assets.arrow = LoadTexture("assets/icons/arrow.png");

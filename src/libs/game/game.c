@@ -25,7 +25,9 @@ int waterFrames = 0;
 int waterUpdateCounter = 0;
 bool caught = false;
 bool canThrow = true;
+bool alert = true;
 bool ranOutOfTime = false;
+bool firstGame = true;
 
 int fishFrame = 0;
 
@@ -51,7 +53,7 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arr
     updateArrow(arrow);
     updateArrow(arrow2);
 
-    Rectangle fishZone = {280, 0, 688, 720};
+    Rectangle fishZone = {280, 0, 744, 720};
 
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         *gameFrame = cursorHandle(mousePos, assets.button, assets.fishBucket, assets.fishPedia, *gameFrame);
@@ -99,6 +101,7 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arr
                     successfulCatch = 0;
                     caught = false;
 
+                    firstGame = false;
                     waitingFish = (rand() % 500) + 200; 
 
                     hookedFish = NULL;
@@ -116,7 +119,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
     ClearBackground(RAYWHITE);
     Rectangle recBackButton = {50, 620, assets.button.width / 2, assets.button.height / 2};
     Rectangle recArrow = {0, 340, 70, 120};
-    Rectangle fishZone = {280, 0, 688, 720};
+    Rectangle fishZone = {280, 0, 744, 720};
 
     if ((frame != DEFAULT && frame != PIER && CheckCollisionPointRec(mousePos, recBackButton)) || 
     (frame == PIER && (CheckCollisionPointRec(mousePos, recArrow) || CheckCollisionPointRec(mousePos, fishZone) && (*animationFrames)->fishmanIdle->isUsing || (*animationFrames)->fishmanHook->isUsing))) {
@@ -134,10 +137,21 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
 
         case PIER:
             playSound(isSoundPlayed, assets.labelledejour);
+            SetMusicVolume(assets.labelledejour, 0.5f);
             DrawTextureEx(assets.water[waterFrames], (Vector2){0, 0}, 0.0f, 1.0f, RAYWHITE);
             DrawRectangle(0, 0, 1024, 720, (Color){0, 255, 51, 120});
             DrawTexture(location->pier, 0, 100, RAYWHITE);
             DrawTexture(location->pierRight, 0, 0, RAYWHITE);
+
+            if (firstGame) {
+                DrawRectangle(280, 0, 744, 720, (Color){0, 255, 0, 90});
+                DrawTextureEx(assets.button, (Vector2){268.25, 530}, 0.0f, 1.5f, WHITE);
+                DrawText("Clique em qualquer lugar", 325, 560, 30, WHITE);
+                DrawText("da", 365, 600, 30, WHITE);
+                DrawText("área verde", 408, 600, 30, GREEN);  
+                DrawText("para", 590, 600, 30, WHITE);
+                DrawText("lançar a vara", 400, 640, 30, YELLOW);
+            }
 
             DrawTextureEx(assets.arrow, (Vector2){65 + arrowFrames2 / 5, 370}, 90.0f, 1.0f, RAYWHITE);
             updateAnimationFrames(*animationFrames, assets, mousePos);
@@ -170,6 +184,11 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                     if (!isMiniGaming && !showError) {
                         DrawTextureEx(assets.baseButtonSpace, (Vector2){100, 250}, 0.0f, 0.5f, RAYWHITE);
 
+                        if (alert) {
+                            PlaySound(assets.alert);
+                            alert = false;
+                        }
+
                         float timeRatio = gameTime / 1000000.0f;
 
                         if (timeRatio > 0.75f) {
@@ -182,13 +201,20 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                             DrawRectangle(100, 240, 160 * timeRatio, 10, RED);
                         }
 
-                        gameTime-= 5000;
+                        gameTime-= 10000;
+
+                        if (!IsSoundPlaying(assets.tictac)) {
+                            PlaySound(assets.tictac);
+                            SetSoundVolume(assets.tictac, 1.0f);
+                        }
 
                         if (gameTime <= 0) {
                             waitingFish = (rand() % 500) + 200;
                             waitingFrames = 0;
                             gameTime = 1000000.0f;
                             hookedFish = NULL;
+                            alert = true;
+                            StopSound(assets.tictac);
                         }
 
                         if (IsKeyPressed(KEY_SPACE)) {
@@ -196,6 +222,8 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                             currentSequenceIndex = 0;
                             PlaySound(assets.keyPress);
                             gameTime = 1000000.0f;
+                            alert = true;
+                            StopSound(assets.tictac);
                         }
                     } else if (isMiniGaming) {
                         if (hookedFish->letters > 5 && hookedFish->letters < 15) {
@@ -337,11 +365,11 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             }
 
             if (fishFrame <= 250 && fishFrame > 0 && !(*animationFrames)->throwingRodAnimation) {
-                DrawTextureEx(assets.button, (Vector2){250, 530}, 0.0f, 1.5f, WHITE);
-                DrawTextureEx(assets.fishFraming, (Vector2){280, 560}, 0.0f, 0.8f, WHITE);
-                DrawTextureEx(hookedFish->sprite, (Vector2){300, 560}, 0.0f, 0.8f, WHITE);
-                DrawText("Você pescou um", 456, 580, 30, WHITE);
-                DrawText(hookedFish->name, 550 - (strlen(hookedFish->name) * 6), 620, 30, YELLOW);
+                DrawTextureEx(assets.button, (Vector2){268.25, 530}, 0.0f, 1.5f, WHITE);
+                DrawTextureEx(assets.fishFraming, (Vector2){298.25, 560}, 0.0f, 0.8f, WHITE);
+                DrawTextureEx(hookedFish->sprite, (Vector2){318.25, 560}, 0.0f, 0.8f, WHITE);
+                DrawText("Você pescou um", 474.25, 580, 30, WHITE);
+                DrawText(hookedFish->name, 568.25 - (strlen(hookedFish->name) * 6), 620, 30, YELLOW);
                 fishFrame++;
             } else {
                 fishFrame = 0;
@@ -377,6 +405,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             waitingFish = -1;
             successfulCatch = 0;
             caught = false;
+            firstGame = true;
 
             cursorHandle(mousePos, assets.button, assets.fishBucket, assets.fishPedia, frame);
 
@@ -618,7 +647,6 @@ Location* startLocation(LocationName locationName, Assets assets) {
             location->salesman = assets.salesman;
             location->fishShop = assets.fishShop;
             location->pier = assets.marcoZeroPier;
-            location->pierRight = assets.marcoZeroPierRight;
 
             Fish *first = NULL;
 

@@ -50,6 +50,7 @@ typedef struct {
     Sound tictac;
     Sound fail;
     Sound success;
+    Sound alert;
 
 } Assets;
 
