@@ -34,6 +34,7 @@ int main(void) {
     Vector2 mousePos = GetMousePosition();
 
     Arrow *arrow = createArrow();
+    Arrow *arrow2 = createArrow();
     AnimationFrames *animationFrames = createAnimationFrames();
 
     Location *marcoZero = startLocation(MARCO_ZERO, assets);
@@ -55,8 +56,8 @@ int main(void) {
             if (!inTransition && fadeAlpha == 255) {
                 inTransition = true; 
             }
-            UpdateGame(&inTransition, &currentScreen, arrow, mousePos, assets, &gameFrame, &animationFrames, location);
-            DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed, arrow->arrowFrames, mousePos, gameFrame, &animationFrames, location);
+            UpdateGame(&inTransition, &currentScreen, arrow, arrow2, mousePos, assets, &gameFrame, &animationFrames, location);
+            DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed, arrow->arrowFrames, arrow2->arrowFrames, mousePos, gameFrame, &animationFrames, location);
 
         }
     }

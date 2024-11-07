@@ -9,6 +9,4 @@ typedef enum GameScreen {
     GAME = 1
 } GameScreen;
 
-int len(int *arr);
-
 #endif 
