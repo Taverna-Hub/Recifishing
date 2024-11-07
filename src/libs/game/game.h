@@ -49,11 +49,17 @@ typedef struct Fish {
 
 }Fish;
 
-typedef struct CapturedFish {
+typedef struct Fishpedia {
     Fish *fish;
-    struct CapturedFish *next;
-    struct CapturedFish *prev;
-} CapturedFish;
+    struct Fishpedia *next;
+    struct Fishpedia *prev;
+} Fishpedia;
+
+typedef struct Bucket {
+    Fish *fish;
+    struct Bucket *next;
+    struct Bucket *prev;
+} Bucket;
 
 typedef struct Location {
 

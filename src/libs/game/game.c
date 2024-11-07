@@ -12,8 +12,11 @@
 
 #include "game.h"
 
-CapturedFish *capturedHead = NULL;
-CapturedFish *capturedTail = NULL;
+Fishpedia *fishpediaHead = NULL;
+Fishpedia *fishpediaTail = NULL;
+
+Bucket *bucketHead = NULL;
+Bucket *bucketTail = NULL;
 
 int cont = 0;
 int entrou = 0;
@@ -45,6 +48,9 @@ void drawElements(Assets assets, Location *location, int arrowFrames);
 void fadeHandle(bool *inTransition, int *fadeAlpha);
 void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vector2 mousePos);
 int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D fishpedia, int gameFrame);
+void DrawBucket(Assets assets);
+void DrawFishpedia(Assets assets);
+void addFishpedia(Fish *newFish);
 
 void playSound(bool *isSoundPlayed, Music sound);
 void updateSequence(Fish *fish);
@@ -133,9 +139,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
 
     switch (frame) {
         case BUCKET:
-            DrawText("Balde de peixes", 300, 300, 28, BLACK);
-            DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
-            DrawText("VOLTAR", 65, 632, 28, WHITE);
+            DrawBucket(assets);
             break;
 
         case PIER:
@@ -164,12 +168,12 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                 waterUpdateCounter = 0;
             } else {
                 waterUpdateCounter++;
-            }
+            } 
 
             if (!(*animationFrames)->pullingRodAnimation) {
                 successfulCatch = 0;
                 canThrow = true;
-            }
+            } 
 
             if ((*animationFrames)->throwingRodAnimation || (*animationFrames)->fishmanFishing->isUsing) {
 
@@ -387,13 +391,13 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
         case PORT:
             DrawText("Porto", 300, 300, 28, BLACK);
             DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
-            DrawText("VOLTAR", 65, 632, 28, WHITE);
+            DrawText("VOLTAR", 75, 632, 28, WHITE);
             break;
 
         case FISHSHOP:
             DrawText("Peixaria", 300, 300, 28, BLACK);
             DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
-            DrawText("VOLTAR", 65, 632, 28, WHITE);
+            DrawText("VOLTAR", 75, 632, 28, WHITE);
             break;
 
         case DEFAULT:
@@ -717,7 +721,7 @@ void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCat
         DrawCircleV(tipPosition, 5.0f, (rodPointCount > 2) ? RED : GRAY); 
 
         if (caught) {
-            addCapturedFish(fish);
+            addFishpedia(fish);
             float fishScale = 0.5f;
             
             Vector2 previousPoint = (*animationFrames)->rodPoints[rodPointCount - 2];
@@ -732,7 +736,6 @@ void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCat
         }
     }
 }
-
 
 void updateSequence(Fish *fish) {
 
@@ -807,32 +810,32 @@ void removeFish(Fish **head) {
 		}
 	}
 
-void addCapturedFish(Fish *newFish) {
-    CapturedFish *newCaptured = (CapturedFish *)malloc(sizeof(CapturedFish));
+void addFishpedia(Fish *newFish) {
+    Fishpedia *newCaptured = (Fishpedia *)malloc(sizeof(Fishpedia));
     newCaptured->fish = newFish;
     newCaptured->next = NULL;
     newCaptured->prev = NULL;
 
-    if (capturedHead == NULL) {  
-        capturedHead = newCaptured;
-        capturedTail = newCaptured;
+    if (fishpediaHead == NULL) {  
+        fishpediaHead = newCaptured;
+        fishpediaTail = newCaptured;
         return;
     }
 
-    CapturedFish *current = capturedHead;
+    Fishpedia *current = fishpediaHead;
 
     while (current != NULL && current->fish->letters < newFish->letters) {
         current = current->next;
     }
 
-    if (current == capturedHead) {  
-        newCaptured->next = capturedHead;
-        capturedHead->prev = newCaptured;
-        capturedHead = newCaptured;
+    if (current == fishpediaHead) {  
+        newCaptured->next = fishpediaHead;
+        fishpediaHead->prev = newCaptured;
+        fishpediaHead = newCaptured;
     } else if (current == NULL) {  
-        capturedTail->next = newCaptured;
-        newCaptured->prev = capturedTail;
-        capturedTail = newCaptured;
+        fishpediaTail->next = newCaptured;
+        newCaptured->prev = fishpediaTail;
+        fishpediaTail = newCaptured;
     } else {  
         newCaptured->next = current;
         newCaptured->prev = current->prev;
@@ -841,11 +844,54 @@ void addCapturedFish(Fish *newFish) {
     }
 }
 
+void DrawBucket(Assets assets) {
+    DrawTexture(assets.bucketBackground, 0, 0, WHITE);
+    DrawText("Balde de Pesca", 415, 40, 28, WHITE);
+
+    Bucket *current = bucketHead; 
+    int maxSlots = 8;
+
+    Vector2 framePositions[8] = {
+        {55, 100}, {55, 350}, {285, 100}, {285, 350},  
+        {525, 100}, {525, 350}, {765, 100}, {765, 350} 
+    };
+    Vector2 textPositions[8] = {
+        {130, 260}, {130, 510}, {350, 260}, {350, 510},
+        {620, 260}, {620, 510}, {840, 260}, {840, 510}
+    };
+
+    for (int i = 0; i < maxSlots; i++) {
+        Vector2 framePos = framePositions[i];
+        Vector2 textPos = textPositions[i];
+        DrawTextureEx(assets.fishFrame, framePos, 0.0f, 1.1f, RAYWHITE);
+        if (current != NULL) {
+            DrawTextureEx(current->fish->sprite, (Vector2){framePos.x + 75, framePos.y + 50}, 0.0f, 0.5f, WHITE);
+            DrawText(current->fish->name, textPos.x, textPos.y, 16, BLACK);
+            current = current->next;
+        } else {
+            DrawText("?????", textPos.x, textPos.y, 16, BLACK);
+        }
+    }
+
+    /* DrawTextureEx(assets.fishFrame, (Vector2){25, 100}, 0.0f, 1.2f, WHITE);
+    DrawTextureEx(assets.fishFrame, (Vector2){275, 100}, 0.0f, 1.2f, WHITE);
+    DrawTextureEx(assets.fishFrame, (Vector2){525, 100}, 0.0f, 1.2f, WHITE);
+    DrawTextureEx(assets.fishFrame, (Vector2){775, 100}, 0.0f, 1.2f, WHITE);
+
+    DrawTextureEx(assets.fishFrame, (Vector2){25, 350}, 0.0f, 1.2f, WHITE);
+    DrawTextureEx(assets.fishFrame, (Vector2){275, 350}, 0.0f, 1.2f, WHITE);
+    DrawTextureEx(assets.fishFrame, (Vector2){525, 350}, 0.0f, 1.2f, WHITE);
+    DrawTextureEx(assets.fishFrame, (Vector2){775, 350}, 0.0f, 1.2f, WHITE); */
+
+    DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+    DrawText("VOLTAR", 75, 632, 28, WHITE);
+}
+
 void DrawFishpedia(Assets assets) {
     DrawText("Fishpedia", 300, 300, 28, BLACK);
     DrawTexture(assets.fishpediaBackground, 0, 0, RAYWHITE);
 
-    CapturedFish *current = capturedHead;  
+    Fishpedia *current = fishpediaHead;  
     int maxSlots = 8;
 
     Vector2 framePositions[8] = {

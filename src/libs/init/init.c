@@ -17,7 +17,8 @@ Assets LoadAssets(void) {
     assets.boowomp = LoadSound("assets/sounds/boowomp.mp3");
     assets.tictac = LoadSound("assets/sounds/tictac.mp3");
     assets.fail = LoadSound("assets/sounds/fail.wav");
-    assets.success = LoadSound("assets/sounds/success.wav");
+    assets.alert = LoadSound("assets/sounds/alert.wav");
+    assets.success = LoadSound("assets/sounds/success.mp3");
     assets.bucketBackground=LoadTexture("assets/menu/bucketbg.png");
     assets.fishpediaBackground=LoadTexture("assets/menu/fishpediabg.png");
     assets.fishFrame=LoadTexture("assets/menu/fishframing.png");
