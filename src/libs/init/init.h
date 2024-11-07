@@ -37,6 +37,10 @@ typedef struct {
     Texture2D fishermanIdle[4];
     Texture2D fishermanFishing[4];
 
+    Texture2D bucketBackground;
+    Texture2D fishpediaBackground;
+    Texture2D fishFrame;
+
     Music anunciacao;
     Music labelledejour;
     Music morenaTropicana;

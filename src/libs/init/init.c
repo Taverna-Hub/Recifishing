@@ -13,6 +13,10 @@ Assets LoadAssets(void) {
     assets.morenaTropicana = LoadMusicStream("assets/sounds/morena-tropicana.WAV");
     assets.keyPress = LoadSound("assets/sounds/spacePress.wav");
 
+    assets.bucketBackground=LoadTexture("assets/menu/bucketbg.png");
+    assets.fishpediaBackground=LoadTexture("assets/menu/fishpediabg.png");
+    assets.fishFrame=LoadTexture("assets/menu/fishframing.png");
+
 
     assets.coin = LoadTexture("assets/icons/coin.png");
     assets.arrow = LoadTexture("assets/icons/arrow.png");

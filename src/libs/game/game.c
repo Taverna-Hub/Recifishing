@@ -198,6 +198,18 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
 
         case FISHPEDIA:
             DrawText("Fishpedia", 300, 300, 28, BLACK);
+            DrawTexture(assets.fishpediaBackground,0,0,RAYWHITE);
+            //left page
+            DrawTextureEx(assets.fishFrame,(Vector2){55,100},0.0f,1.1f,RAYWHITE);
+            DrawTextureEx(assets.fishFrame,(Vector2){55,350},0.0f,1.1f,RAYWHITE);
+            DrawTextureEx(assets.fishFrame,(Vector2){275,100},0.0f,1.1f,RAYWHITE);
+            DrawTextureEx(assets.fishFrame,(Vector2){275,350},0.0f,1.1f,RAYWHITE);
+            //right page
+            DrawTextureEx(assets.fishFrame,(Vector2){545,100},0.0f,1.1f,RAYWHITE);
+            DrawTextureEx(assets.fishFrame,(Vector2){545,350},0.0f,1.1f,RAYWHITE);
+            DrawTextureEx(assets.fishFrame,(Vector2){765,100},0.0f,1.1f,RAYWHITE);
+            DrawTextureEx(assets.fishFrame,(Vector2){765,350},0.0f,1.1f,RAYWHITE);
+            
             DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
             DrawText("VOLTAR", 65, 632, 28, WHITE);
             break;

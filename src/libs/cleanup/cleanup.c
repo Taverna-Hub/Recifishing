@@ -45,6 +45,10 @@ void UnloadAssets(Assets assets) {
     UnloadTexture(assets.fishermanFishing[3]);
     UnloadTexture(assets.keyButtonBox);
 
+    UnloadTexture(assets.fishpediaBackground);
+    UnloadTexture(assets.bucketBackground);
+    UnloadTexture(assets.fishFrame);
+
     UnloadMusicStream(assets.anunciacao);
     UnloadMusicStream(assets.labelledejour);
     UnloadMusicStream(assets.morenaTropicana);
