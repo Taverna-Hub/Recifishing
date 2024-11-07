@@ -49,6 +49,12 @@ typedef struct Fish {
 
 }Fish;
 
+typedef struct CapturedFish {
+    Fish *fish;
+    struct CapturedFish *next;
+    struct CapturedFish *prev;
+} CapturedFish;
+
 typedef struct Location {
 
     LocationName name;

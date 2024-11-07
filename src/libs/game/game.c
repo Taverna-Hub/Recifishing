@@ -12,6 +12,9 @@
 
 #include "game.h"
 
+CapturedFish *capturedHead = NULL;
+CapturedFish *capturedTail = NULL;
+
 int cont = 0;
 int entrou = 0;
 int selectedQuadrant = -1;
@@ -350,21 +353,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             break;
 
         case FISHPEDIA:
-            DrawText("Fishpedia", 300, 300, 28, BLACK);
-            DrawTexture(assets.fishpediaBackground,0,0,RAYWHITE);
-            //left page
-            DrawTextureEx(assets.fishFrame,(Vector2){55,100},0.0f,1.1f,RAYWHITE);
-            DrawTextureEx(assets.fishFrame,(Vector2){55,350},0.0f,1.1f,RAYWHITE);
-            DrawTextureEx(assets.fishFrame,(Vector2){275,100},0.0f,1.1f,RAYWHITE);
-            DrawTextureEx(assets.fishFrame,(Vector2){275,350},0.0f,1.1f,RAYWHITE);
-            //right page
-            DrawTextureEx(assets.fishFrame,(Vector2){545,100},0.0f,1.1f,RAYWHITE);
-            DrawTextureEx(assets.fishFrame,(Vector2){545,350},0.0f,1.1f,RAYWHITE);
-            DrawTextureEx(assets.fishFrame,(Vector2){765,100},0.0f,1.1f,RAYWHITE);
-            DrawTextureEx(assets.fishFrame,(Vector2){765,350},0.0f,1.1f,RAYWHITE);
-            
-            DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
-            DrawText("VOLTAR", 65, 632, 28, WHITE);
+            DrawFishpedia(assets);
             break;
 
         case PORT:
@@ -700,6 +689,7 @@ void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCat
         DrawCircleV(tipPosition, 5.0f, (rodPointCount > 2) ? RED : GRAY); 
 
         if (caught) {
+            addCapturedFish(fish);
             float fishScale = 0.5f;
             
             Vector2 previousPoint = (*animationFrames)->rodPoints[rodPointCount - 2];
@@ -788,3 +778,72 @@ void removeFish(Fish **head) {
 			}
 		}
 	}
+
+void addCapturedFish(Fish *newFish) {
+    CapturedFish *newCaptured = (CapturedFish *)malloc(sizeof(CapturedFish));
+    newCaptured->fish = newFish;
+    newCaptured->next = NULL;
+    newCaptured->prev = NULL;
+
+    if (capturedHead == NULL) {  
+        capturedHead = newCaptured;
+        capturedTail = newCaptured;
+        return;
+    }
+
+    CapturedFish *current = capturedHead;
+
+    while (current != NULL && current->fish->letters < newFish->letters) {
+        current = current->next;
+    }
+
+    if (current == capturedHead) {  
+        newCaptured->next = capturedHead;
+        capturedHead->prev = newCaptured;
+        capturedHead = newCaptured;
+    } else if (current == NULL) {  
+        capturedTail->next = newCaptured;
+        newCaptured->prev = capturedTail;
+        capturedTail = newCaptured;
+    } else {  
+        newCaptured->next = current;
+        newCaptured->prev = current->prev;
+        current->prev->next = newCaptured;
+        current->prev = newCaptured;
+    }
+}
+
+void DrawFishpedia(Assets assets) {
+    DrawText("Fishpedia", 300, 300, 28, BLACK);
+    DrawTexture(assets.fishpediaBackground, 0, 0, RAYWHITE);
+
+    CapturedFish *current = capturedHead;  
+    int maxSlots = 8;
+
+    Vector2 framePositions[8] = {
+        {55, 100}, {55, 350}, {275, 100}, {275, 350},  
+        {545, 100}, {545, 350}, {765, 100}, {765, 350} 
+    };
+    Vector2 textPositions[8] = {
+        {130, 260}, {130, 510}, {350, 260}, {350, 510},
+        {620, 260}, {620, 510}, {840, 260}, {840, 510}
+    };
+
+    for (int i = 0; i < maxSlots; i++) {
+        Vector2 framePos = framePositions[i];
+        Vector2 textPos = textPositions[i];
+        DrawTextureEx(assets.fishFrame, framePos, 0.0f, 1.1f, RAYWHITE);
+        if (current != NULL) {
+            DrawTextureEx(current->fish->sprite, (Vector2){framePos.x + 75, framePos.y + 50}, 0.0f, 0.5f, WHITE);
+            DrawText(current->fish->name, textPos.x, textPos.y, 16, BLACK);
+            current = current->next;
+        } else {
+            DrawText("?????", textPos.x, textPos.y, 16, BLACK);
+        }
+    }
+
+    
+    DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+    DrawText("VOLTAR", 65, 632, 28, WHITE);
+}
+
