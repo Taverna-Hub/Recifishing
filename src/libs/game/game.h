@@ -44,6 +44,7 @@ typedef struct Fish {
     Texture2D sprite;
     struct Fish *next;
     struct Fish *prev;
+    bool isTrash;
     LocationName locationName;
 
 }Fish;

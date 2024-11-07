@@ -15,6 +15,9 @@ Assets LoadAssets(void) {
     assets.morenaTropicana = LoadMusicStream("assets/sounds/morena-tropicana.WAV");
     assets.keyPress = LoadSound("assets/sounds/spacePress.wav");
     assets.boowomp = LoadSound("assets/sounds/boowomp.mp3");
+    assets.tictac = LoadSound("assets/sounds/tictac.mp3");
+    assets.fail = LoadSound("assets/sounds/fail.wav");
+    assets.success = LoadSound("assets/sounds/success.wav");
 
     assets.coin = LoadTexture("assets/icons/coin.png");
     assets.arrow = LoadTexture("assets/icons/arrow.png");
@@ -24,6 +27,7 @@ Assets LoadAssets(void) {
     assets.fishPedia2 = LoadTexture("assets/icons/fishpedia2.png");
     assets.fishBucket = LoadTexture("assets/icons/fishbucket.png");
     assets.baseButton = LoadTexture("assets/icons/baseButton.png");
+    assets.emptyButton = LoadTexture("assets/icons/emptyButton.png");
     assets.baseButtonPressed = LoadTexture("assets/icons/baseButtonPressed.png");
     assets.baseButtonFail = LoadTexture("assets/icons/baseButtonFail.png");
     assets.baseButtonSpace = LoadTexture("assets/icons/basebuttonspaceBarra.png");
@@ -67,6 +71,8 @@ Assets LoadAssets(void) {
     assets.marcoZeroFishes[5] = LoadTexture("assets/marco_zero/fishes/nauticofish.png");
     assets.marcoZeroFishes[6] = LoadTexture("assets/marco_zero/fishes/santacruzfish.png");
     assets.marcoZeroFishes[7] = LoadTexture("assets/marco_zero/fishes/sportfish.png");
+    assets.marcoZeroFishes[8] = LoadTexture("assets/marco_zero/fishes/bokus.png");
+    assets.marcoZeroFishes[9] = LoadTexture("assets/marco_zero/fishes/hairyleg.png");
     assets.sailor = LoadTexture("assets/marco_zero/sailor.png");
     assets.salesman = LoadTexture("assets/marco_zero/salesman.png");
     assets.fishShop = LoadTexture("assets/marco_zero/fishshop.png");

@@ -24,6 +24,7 @@ void UnloadAssets(Assets assets) {
     UnloadTexture(assets.backgroundMarcoZero);
     UnloadTexture(assets.fish);
     UnloadTexture(assets.baseButton);
+    UnloadTexture(assets.emptyButton);
     UnloadTexture(assets.baseButtonPressed);
     UnloadTexture(assets.baseButtonFail);
     UnloadTexture(assets.baseButtonSpace);
@@ -43,7 +44,7 @@ void UnloadAssets(Assets assets) {
         UnloadTexture(assets.water[i]);
     }
 
-    for (int i = 0; i < 8; i++){
+    for (int i = 0; i < 10; i++){
         UnloadTexture(assets.marcoZeroFishes[i]);
     }
 
@@ -52,4 +53,7 @@ void UnloadAssets(Assets assets) {
     UnloadMusicStream(assets.morenaTropicana);
     UnloadSound(assets.keyPress);
     UnloadSound(assets.boowomp);
+    UnloadSound(assets.tictac);
+    UnloadSound(assets.fail);
+    UnloadSound(assets.success);
 }
