@@ -61,4 +61,5 @@ void UnloadAssets(Assets assets) {
     UnloadSound(assets.tictac);
     UnloadSound(assets.fail);
     UnloadSound(assets.success);
+    UnloadSound(assets.alert);
 }

@@ -22,7 +22,6 @@ Assets LoadAssets(void) {
     assets.fishpediaBackground=LoadTexture("assets/menu/fishpediabg.png");
     assets.fishFrame=LoadTexture("assets/menu/fishframing.png");
 
-
     assets.coin = LoadTexture("assets/icons/coin.png");
     assets.arrow = LoadTexture("assets/icons/arrow.png");
     assets.button = LoadTexture("assets/icons/button.png");
