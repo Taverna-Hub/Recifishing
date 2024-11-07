@@ -29,6 +29,7 @@ typedef struct {
     Texture2D marcoZeroPierRight;
 
     Texture2D fish;
+    Texture2D fishFraming;
     Texture2D baseButton;
     Texture2D baseButtonSpace;
     Texture2D baseButtonFail;

@@ -11,6 +11,7 @@ void UnloadAssets(Assets assets) {
     UnloadTexture(assets.button);
     UnloadTexture(assets.portSign);
     UnloadTexture(assets.fishShop);
+    UnloadTexture(assets.fishFraming);
     UnloadTexture(assets.fishPedia);
     UnloadTexture(assets.exitButton);
     UnloadTexture(assets.fishBucket);

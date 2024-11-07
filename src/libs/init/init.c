@@ -32,6 +32,7 @@ Assets LoadAssets(void) {
     assets.baseButtonFail = LoadTexture("assets/icons/baseButtonFail.png");
     assets.baseButtonSpace = LoadTexture("assets/icons/basebuttonspaceBarra.png");
     assets.keyButtonBox = LoadTexture("assets/icons/keyButtonBox.png");
+    assets.fishFraming = LoadTexture("assets/icons/fishframing.png");
 
     assets.exitButton = LoadTexture("assets/menu/exitButton.png");
     assets.startButton = LoadTexture("assets/menu/startButton.png");
