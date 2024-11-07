@@ -42,6 +42,10 @@ typedef struct {
     Texture2D water[10];
     Texture2D marcoZeroFishes[10];
 
+    Texture2D bucketBackground;
+    Texture2D fishpediaBackground;
+    Texture2D fishFrame;
+
     Music anunciacao;
     Music labelledejour;
     Music morenaTropicana;

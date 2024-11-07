@@ -41,6 +41,10 @@ void UnloadAssets(Assets assets) {
 
     UnloadTexture(assets.keyButtonBox);
 
+    UnloadTexture(assets.fishpediaBackground);
+    UnloadTexture(assets.bucketBackground);
+    UnloadTexture(assets.fishFrame);
+
     for (int i = 0; i < 10; i++) {
         UnloadTexture(assets.water[i]);
     }
