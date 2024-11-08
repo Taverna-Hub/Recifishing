@@ -13,10 +13,10 @@
 #include "game.h"
 
 Fishpedia *fishpediaHead = NULL;
-Fishpedia *fishpediaTail = NULL;
+
 
 Bucket *bucketHead = NULL;
-Bucket *bucketTail = NULL;
+
 
 int cont = 0;
 int entrou = 0;
@@ -300,6 +300,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                                 currentSequenceIndex++;
                                 if (currentSequenceIndex == hookedFish->letters) {
                                     successfulCatch = 1;
+                                    addFishpedia(hookedFish);
                                     PlaySound(assets.success);
                                     currentSequenceIndex = 0;
                                     waitingFrames = 0;
@@ -721,7 +722,7 @@ void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCat
         DrawCircleV(tipPosition, 5.0f, (rodPointCount > 2) ? RED : GRAY); 
 
         if (caught) {
-            addFishpedia(fish);
+            
             float fishScale = 0.5f;
             
             Vector2 previousPoint = (*animationFrames)->rodPoints[rodPointCount - 2];
@@ -773,6 +774,7 @@ void insertFish(Fish **head, char *name, int price, int letters, Texture2D sprit
 		
 		if (new != NULL) {
 			strcpy(new->name, name);
+            new->wasCaptured = false;
 			new->price = price;
 			new->sprite = sprite;
 			new->locationName = locationName;
@@ -811,37 +813,7 @@ void removeFish(Fish **head) {
 	}
 
 void addFishpedia(Fish *newFish) {
-    Fishpedia *newCaptured = (Fishpedia *)malloc(sizeof(Fishpedia));
-    newCaptured->fish = newFish;
-    newCaptured->next = NULL;
-    newCaptured->prev = NULL;
-
-    if (fishpediaHead == NULL) {  
-        fishpediaHead = newCaptured;
-        fishpediaTail = newCaptured;
-        return;
-    }
-
-    Fishpedia *current = fishpediaHead;
-
-    while (current != NULL && current->fish->letters < newFish->letters) {
-        current = current->next;
-    }
-
-    if (current == fishpediaHead) {  
-        newCaptured->next = fishpediaHead;
-        fishpediaHead->prev = newCaptured;
-        fishpediaHead = newCaptured;
-    } else if (current == NULL) {  
-        fishpediaTail->next = newCaptured;
-        newCaptured->prev = fishpediaTail;
-        fishpediaTail = newCaptured;
-    } else {  
-        newCaptured->next = current;
-        newCaptured->prev = current->prev;
-        current->prev->next = newCaptured;
-        current->prev = newCaptured;
-    }
+   newFish->wasCaptured=true;
 }
 
 void DrawBucket(Assets assets) {
@@ -922,4 +894,5 @@ void DrawFishpedia(Assets assets) {
     DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
     DrawText("VOLTAR", 65, 632, 28, WHITE);
 }
+void LoadFishpedia(){}
 

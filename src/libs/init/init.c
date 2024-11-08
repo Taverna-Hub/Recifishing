@@ -78,6 +78,28 @@ Assets LoadAssets(void) {
     assets.marcoZeroFishes[7] = LoadTexture("assets/marco_zero/fishes/sportfish.png");
     assets.marcoZeroFishes[8] = LoadTexture("assets/marco_zero/fishes/bokus.png");
     assets.marcoZeroFishes[9] = LoadTexture("assets/marco_zero/fishes/hairyleg.png");
+
+    assets.portoFishes[0] = LoadTexture("assets/porto_de_galinhas/chicofish.png");
+    assets.portoFishes[1] = LoadTexture("assets/porto_de_galinhas/crab.png");
+    assets.portoFishes[2] = LoadTexture("assets/porto_de_galinhas/flounder.png");
+    assets.portoFishes[3] = LoadTexture("assets/porto_de_galinhas/goldfish.png");
+    assets.portoFishes[4] = LoadTexture("assets/porto_de_galinhas/magikarp.png");
+    assets.portoFishes[5] = LoadTexture("assets/porto_de_galinhas/maracatu.png");
+    assets.portoFishes[6] = LoadTexture("assets/porto_de_galinhas/pufferfish.png");
+    assets.portoFishes[7] = LoadTexture("assets/porto_de_galinhas/rossifish.png");
+
+    assets.noronhaFishes[0] = LoadTexture("assets/fernando_de_noronha/fishes/eel.png");
+    assets.noronhaFishes[1] = LoadTexture("assets/fernando_de_noronha/fishes/lionfish.png");
+    assets.noronhaFishes[2] = LoadTexture("assets/fernando_de_noronha/fishes/octopus.png");
+    assets.noronhaFishes[3] = LoadTexture("assets/fernando_de_noronha/fishes/salmon.png");
+    assets.noronhaFishes[4] = LoadTexture("assets/fernando_de_noronha/fishes/sardine.png");
+    assets.noronhaFishes[5] = LoadTexture("assets/fernando_de_noronha/fishes/shark.png");
+    assets.noronhaFishes[6] = LoadTexture("assets/fernando_de_noronha/fishes/stingray.png");
+    assets.noronhaFishes[7] = LoadTexture("assets/fernando_de_noronha/fishes/straw.png");
+    assets.noronhaFishes[8] = LoadTexture("assets/fernando_de_noronha/fishes/swordfish.png");
+    assets.noronhaFishes[9] = LoadTexture("assets/fernando_de_noronha/fishes/tuna.png");
+
+
     assets.sailor = LoadTexture("assets/marco_zero/sailor.png");
     assets.salesman = LoadTexture("assets/marco_zero/salesman.png");
     assets.fishShop = LoadTexture("assets/marco_zero/fishshop.png");

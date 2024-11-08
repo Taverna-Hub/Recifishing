@@ -45,6 +45,7 @@ typedef struct Fish {
     struct Fish *next;
     struct Fish *prev;
     bool isTrash;
+    bool wasCaptured;
     LocationName locationName;
 
 }Fish;

@@ -52,7 +52,13 @@ void UnloadAssets(Assets assets) {
     for (int i = 0; i < 10; i++){
         UnloadTexture(assets.marcoZeroFishes[i]);
     }
+    for (int i = 0; i < 8; i++){
+        UnloadTexture(assets.portoFishes[i]);
+    }
 
+    for (int i = 0; i < 10; i++){
+        UnloadTexture(assets.noronhaFishes[i]);
+    }
     UnloadMusicStream(assets.anunciacao);
     UnloadMusicStream(assets.labelledejour);
     UnloadMusicStream(assets.morenaTropicana);

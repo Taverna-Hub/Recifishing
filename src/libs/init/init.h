@@ -41,6 +41,8 @@ typedef struct {
     Texture2D fishermanFishing[4];
     Texture2D water[10];
     Texture2D marcoZeroFishes[10];
+    Texture2D portoFishes[8];
+    Texture2D noronhaFishes[10];
 
     Texture2D bucketBackground;
     Texture2D fishpediaBackground;
