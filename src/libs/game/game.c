@@ -857,8 +857,8 @@ void DrawBucket(Assets assets) {
         {525, 130}, {525, 380}, {765, 130}, {765, 380} 
     };
     Vector2 textPositions[8] = {
-        {130, 260}, {130, 510}, {380, 260}, {380, 510},
-        {620, 260}, {620, 510}, {840, 260}, {840, 510}
+        {130, 290}, {130, 540}, {360, 290}, {360, 540},
+        {605, 290}, {605, 540}, {840, 290}, {840, 540}
     };
 
     for (int i = 0; i < maxSlots; i++) {
@@ -867,10 +867,10 @@ void DrawBucket(Assets assets) {
         DrawTextureEx(assets.fishFrame, framePos, 0.0f, 1.1f, RAYWHITE);
         if (current != NULL) {
             DrawTextureEx(current->fish->sprite, (Vector2){framePos.x + 75, framePos.y + 50}, 0.0f, 0.5f, WHITE);
-            DrawText(current->fish->name, textPos.x, textPos.y, 16, BLACK);
+            DrawText(current->fish->name, textPos.x, textPos.y, 16, WHITE);
             current = current->next;
         } else {
-            DrawText("?????", textPos.x, textPos.y, 16, BLACK);
+            DrawText("?????", textPos.x, textPos.y, 16, WHITE);
         }
     }
 
