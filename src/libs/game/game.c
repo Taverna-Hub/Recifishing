@@ -57,6 +57,7 @@ int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D
 void createFish(Fish **head, char *name, int price, int letters, Texture2D sprite, LocationName locationName);
 void insertBucket(Bucket **head, Fish *fish);
 void DrawBucket(Assets assets, Vector2 mousePos);
+void DrawPort(Assets assets, Location *location, Vector2 mousePos);
 void DrawFishpedia(Assets assets, Location *MarcoZero, Location *PortoDeGalinhas, Location *FernandoDeNoronha, Vector2 mousePos);
 void addFishToFishpedia(Fish *newFish);
 void sell(Assets assets);
@@ -144,9 +145,11 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
     Rectangle recBucket = {140, 40, assets.fishBucket.width, assets.fishBucket.height};
     Rectangle recFishpedia = {50, 40, assets.fishPedia.width, assets.fishPedia.height};
     Rectangle recSellButton = {525, 575, assets.sellButton.width*1.3, assets.sellButton.height*1.3};
+    Rectangle yesButton = {400, 380, assets.button.width * 0.8, assets.button.height * 0.8};
+    Rectangle noButton = {725, 380, assets.button.width * 0.8, assets.button.height * 0.8};
 
     if ((frame != DEFAULT && frame != PIER && CheckCollisionPointRec(mousePos, recBackButton)) || 
-    (frame == PIER && (CheckCollisionPointRec(mousePos, recArrow) || CheckCollisionPointRec(mousePos, fishZone) && (*animationFrames)->fishmanIdle->isUsing || (*animationFrames)->fishmanHook->isUsing)) || (frame == PIER && CheckCollisionPointRec(mousePos, recBucket) || CheckCollisionPointRec(mousePos, recFishpedia)) || frame == FISHSHOP && CheckCollisionPointRec(mousePos, recSellButton)) {
+    (frame == PIER && (CheckCollisionPointRec(mousePos, recArrow) || CheckCollisionPointRec(mousePos, fishZone) && (*animationFrames)->fishmanIdle->isUsing || (*animationFrames)->fishmanHook->isUsing)) || (frame == PIER && CheckCollisionPointRec(mousePos, recBucket) || CheckCollisionPointRec(mousePos, recFishpedia)) || frame == FISHSHOP && CheckCollisionPointRec(mousePos, recSellButton) || (frame == PORT && (CheckCollisionPointRec(mousePos, yesButton) || CheckCollisionPointRec(mousePos, noButton)))) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
     } else {
         SetMouseCursor(MOUSE_CURSOR_DEFAULT);
@@ -409,10 +412,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
 
         case PORT:
             playSound(isSoundPlayed, assets.morenaTropicana);
-            DrawText("Porto", 300, 300, 28, BLACK);
-            DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
-            DrawText("VOLTAR", 75, 632, 28, WHITE);
-
+            DrawPort(assets, location, mousePos);
             break;
 
         case FISHSHOP:
@@ -1024,7 +1024,7 @@ void LoadFishpedia(Location MarcoZero, Location PortoDeGalinhas, Location Fernan
 }
 
 void DrawFishShop(Assets assets, Location *location, Vector2 mousePos) {
-    DrawTextureEx(location->backgroundBlur, (Vector2){-1200, -300}, 0.0f, 2.2f, WHITE);
+    DrawTextureEx(location->backgroundBlur, (Vector2){-1620, -400}, 0.0f, 2.6f, WHITE);
     DrawTextureEx(location->salesman, (Vector2){10, 260}, 0.0f, 2.1f,WHITE);
     DrawTextureEx(location->fishShopMenu, (Vector2){0, -30}, 0.0f, 1.1f,WHITE);
     DrawTextureEx(assets.fishShopMenuBG, (Vector2){475, 7}, 0.0f, 1.0f, WHITE);
@@ -1089,6 +1089,46 @@ void DrawFishShop(Assets assets, Location *location, Vector2 mousePos) {
     sprintf(totalText, "%03d", total);
     DrawText(totalText, 835, 605, 30, WHITE);
     
+    if (CheckCollisionPointRec(mousePos, (Rectangle){50, 620, assets.button.width / 2, assets.button.height / 2})){
+        DrawTextureEx(assets.buttonDark, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+    } else {
+        DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+    }
+    DrawText("VOLTAR", 75, 632, 28, WHITE);
+}
+
+void DrawPort(Assets assets, Location *location, Vector2 mousePos) {
+    DrawTextureEx(location->backgroundBlur, (Vector2){0, -400}, 0.0f, 2.55f, WHITE);
+    DrawTextureEx(location->boat, (Vector2){-130, 40}, 0.0f, 1.7f, WHITE);
+    DrawTextureEx(location->sailor, (Vector2){100, 230}, 0.0f, 2.2f, WHITE);
+    DrawTextureEx(assets.button, (Vector2){400, 160}, 0.0f, 1.8f, WHITE);
+
+    if (CheckCollisionPointRec(mousePos, (Rectangle){400, 380, assets.button.width * 0.8, assets.button.height * 0.8})) {
+        DrawTextureEx(assets.buttonDark, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
+    } else {
+        DrawTextureEx(assets.button, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
+    }
+
+    if (CheckCollisionPointRec(mousePos, (Rectangle){725, 380, assets.button.width * 0.8, assets.button.height * 0.8})) {
+        DrawTextureEx(assets.buttonDark, (Vector2){725, 380}, 0.0f, 0.8f, WHITE);
+    } else {
+        DrawTextureEx(assets.button, (Vector2){725, 380}, 0.0f, 0.8f, WHITE);
+    }
+
+    DrawText("SIM", 488, 400, 45, WHITE);
+    DrawText("NÃO", 810, 400, 45, WHITE);
+
+    DrawText("VIAJAR PARA", 435, 210, 28, WHITE);
+    DrawText("PORTO DE GALINHAS?", 637, 210, 28, YELLOW);
+    DrawTextureEx(assets.coin, (Vector2){610, 260}, 0.0f, 0.6f, WHITE);
+    DrawText("500", 680, 270, 45, WHITE);
+
+    DrawTextureEx(assets.coin, (Vector2){810, 40}, 0.0f, 0.7f, WHITE);
+    char balanceText[10];
+    sprintf(balanceText, "%03d", balance);
+    DrawText(balanceText, 888, 57, 45, BLACK);
+    DrawText(balanceText, 890, 55, 45, WHITE);
+
     if (CheckCollisionPointRec(mousePos, (Rectangle){50, 620, assets.button.width / 2, assets.button.height / 2})){
         DrawTextureEx(assets.buttonDark, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
     } else {
