@@ -32,6 +32,10 @@ bool canThrow = true;
 bool alert = true;
 bool ranOutOfTime = false;
 bool firstGame = true;
+int bucket = 0;
+char bucketStr[20];
+
+GameFrames called = DEFAULT;
 
 int fishFrame = 0;
 
@@ -46,6 +50,8 @@ void drawElements(Assets assets, Location *location, int arrowFrames);
 void fadeHandle(bool *inTransition, int *fadeAlpha);
 void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vector2 mousePos);
 int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D fishpedia, int gameFrame);
+void createFish(Fish **head, char *name, int price, int letters, Texture2D sprite, LocationName locationName);
+void insertBucket(Bucket **head, Fish *fish);
 void DrawBucket(Assets assets);
 void DrawFishpedia(Assets assets);
 void addFishpedia(Fish *newFish);
@@ -127,9 +133,11 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
     Rectangle recBackButton = {50, 620, assets.button.width / 2, assets.button.height / 2};
     Rectangle recArrow = {0, 340, 70, 120};
     Rectangle fishZone = {280, 0, 744, 720};
+    Rectangle recBucket = {140, 40, assets.fishBucket.width, assets.fishBucket.height};
+    Rectangle recFishpedia = {50, 40, assets.fishPedia.width, assets.fishPedia.height};
 
     if ((frame != DEFAULT && frame != PIER && CheckCollisionPointRec(mousePos, recBackButton)) || 
-    (frame == PIER && (CheckCollisionPointRec(mousePos, recArrow) || CheckCollisionPointRec(mousePos, fishZone) && (*animationFrames)->fishmanIdle->isUsing || (*animationFrames)->fishmanHook->isUsing))) {
+    (frame == PIER && (CheckCollisionPointRec(mousePos, recArrow) || CheckCollisionPointRec(mousePos, fishZone) && (*animationFrames)->fishmanIdle->isUsing || (*animationFrames)->fishmanHook->isUsing)) || (frame == PIER && CheckCollisionPointRec(mousePos, recBucket) || CheckCollisionPointRec(mousePos, recFishpedia))) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
     } else {
         SetMouseCursor(MOUSE_CURSOR_DEFAULT);
@@ -138,6 +146,12 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
     switch (frame) {
         case BUCKET:
             DrawBucket(assets);
+            waitingFrames = 0;
+            waitingFish = -1;
+            successfulCatch = 0;
+            fishFrame = 0;
+            caught = false;
+            firstGame = true;
             break;
 
         case PIER:
@@ -147,6 +161,8 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             DrawRectangle(0, 0, 1024, 720, (Color){0, 255, 51, 120});
             DrawTexture(location->pier, 0, 100, RAYWHITE);
             DrawTexture(location->pierRight, 0, 0, RAYWHITE);
+            DrawTexture(assets.fishPedia, 50, 40, RAYWHITE);
+            DrawTexture(assets.fishBucket, 140, 40, RAYWHITE);
 
             if (firstGame) {
                 DrawRectangle(280, 0, 744, 720, (Color){0, 255, 0, 90});
@@ -299,6 +315,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                                 if (currentSequenceIndex == hookedFish->letters) {
                                     successfulCatch = 1;
                                     addFishpedia(hookedFish);
+                                    insertBucket(&bucketHead, hookedFish);
                                     PlaySound(assets.success);
                                     currentSequenceIndex = 0;
                                     waitingFrames = 0;
@@ -385,6 +402,12 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
 
         case FISHPEDIA:
             DrawFishpedia(assets);
+            waitingFrames = 0;
+            waitingFish = -1;
+            successfulCatch = 0;
+            fishFrame = 0;
+            caught = false;
+            firstGame = true;
             break;
 
         case PORT:
@@ -408,6 +431,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             waitingFrames = 0;
             waitingFish = -1;
             successfulCatch = 0;
+            fishFrame = 0;
             caught = false;
             firstGame = true;
 
@@ -560,7 +584,10 @@ int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D
     if ((CheckCollisionPointRec(mousePos, recBackButton) && gameFrame != DEFAULT && gameFrame != PIER) || (gameFrame == PIER && CheckCollisionPointRec(mousePos, recArrow))) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         entrou = 0;
-        return DEFAULT;
+        if (CheckCollisionPointRec(mousePos, recArrow)) {
+            called = DEFAULT;
+        }
+        return called;
     } 
 
     if (CheckCollisionPointRec(mousePos, recPort) && gameFrame == DEFAULT) {
@@ -585,15 +612,15 @@ int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D
         return FISHSHOP;
     } 
 
-    if (CheckCollisionPointRec(mousePos, recBucket) && gameFrame == DEFAULT) {
+    if (CheckCollisionPointRec(mousePos, recBucket) && (gameFrame == DEFAULT || gameFrame == PIER)) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-
+        called = gameFrame;
         return BUCKET;
     } 
 
-    if (CheckCollisionPointRec(mousePos, recFishpedia) && gameFrame == DEFAULT) {
+    if (CheckCollisionPointRec(mousePos, recFishpedia) && (gameFrame == DEFAULT || gameFrame == PIER)) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-
+        called = gameFrame;
         return FISHPEDIA;
     } 
     
@@ -796,7 +823,7 @@ void createFish(Fish **head, char *name, int price, int letters, Texture2D sprit
 	}
 
 void insertBucket(Bucket **head, Fish *fish) {
-    if (fish == NULL) {
+    if (fish == NULL || fish->isTrash || bucket >= 8) {
         return;
     }
 
@@ -814,8 +841,9 @@ void insertBucket(Bucket **head, Fish *fish) {
     }
 
     *head = newBucket;
-}
 
+    bucket++;
+}
 
 void removeFish(Fish **head) {
 
@@ -838,6 +866,12 @@ void addFishpedia(Fish *newFish) {
 
 void DrawBucket(Assets assets) {
     DrawTexture(assets.bucketBackground, 0, 0, WHITE);
+    DrawTexture(assets.fishCounter, 832, 22, WHITE);
+    sprintf(bucketStr, "%d", bucket);
+    DrawText(bucketStr, 910, 43, 28, BLACK);
+    DrawText("/8", 925, 43, 28, BLACK);
+    DrawText(bucketStr, 912, 41, 28, WHITE);
+    DrawText("/8", 927, 41, 28, WHITE);
     DrawText("Balde de Pesca", 413, 42, 28, BLACK);
     DrawText("Balde de Pesca", 415, 40, 28, WHITE);
 
@@ -845,34 +879,25 @@ void DrawBucket(Assets assets) {
     int maxSlots = 8;
 
     Vector2 framePositions[8] = {
-        {55, 130}, {55, 380}, {285, 130}, {285, 380},  
-        {525, 130}, {525, 380}, {765, 130}, {765, 380} 
+        {55, 130}, {285, 130}, {525, 130}, {765, 130},  
+        {55, 380}, {285, 380}, {525, 380}, {765, 380}  
     };
+
     Vector2 textPositions[8] = {
-        {130, 290}, {130, 540}, {360, 290}, {360, 540},
-        {605, 290}, {605, 540}, {840, 290}, {840, 540}
+        {130, 290}, {360, 290}, {605, 290}, {840, 290}, 
+        {130, 540}, {360, 540}, {605, 540}, {840, 540}  
     };
 
     for (int i = 0; i < maxSlots; i++) {
+        Vector2 framePos = framePositions[i];
+        Vector2 textPos = textPositions[i];
+        DrawTextureEx(assets.fishFrame, framePos, 0.0f, 1.1f, RAYWHITE);
         if (current != NULL) {
-            Vector2 framePos = framePositions[i];
-            Vector2 textPos = textPositions[i];
-            DrawTextureEx(assets.fishFrame, framePos, 0.0f, 1.1f, RAYWHITE);
-            DrawTextureEx(current->fish->sprite, (Vector2){framePos.x + 75, framePos.y + 50}, 0.0f, 0.5f, WHITE);
-            DrawText(current->fish->name, textPos.x, textPos.y, 16, WHITE);
+            DrawTextureEx(current->fish->sprite, (Vector2){framePos.x + 35, framePos.y}, 0.0f, 1.0f, WHITE);
+            DrawText(current->fish->name, textPos.x - (strlen(current->fish->name) * 6), textPos.y, 30, WHITE);
             current = current->next;
         } 
     }
-
-    /* DrawTextureEx(assets.fishFrame, (Vector2){25, 130}, 0.0f, 1.2f, WHITE);
-    DrawTextureEx(assets.fishFrame, (Vector2){275, 130}, 0.0f, 1.2f, WHITE);
-    DrawTextureEx(assets.fishFrame, (Vector2){525, 130}, 0.0f, 1.2f, WHITE);
-    DrawTextureEx(assets.fishFrame, (Vector2){775, 130}, 0.0f, 1.2f, WHITE);
-
-    DrawTextureEx(assets.fishFrame, (Vector2){25, 380}, 0.0f, 1.2f, WHITE);
-    DrawTextureEx(assets.fishFrame, (Vector2){275, 380}, 0.0f, 1.2f, WHITE);
-    DrawTextureEx(assets.fishFrame, (Vector2){525, 380}, 0.0f, 1.2f, WHITE);
-    DrawTextureEx(assets.fishFrame, (Vector2){775, 380}, 0.0f, 1.2f, WHITE); */
 
     DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
     DrawText("VOLTAR", 75, 632, 28, WHITE);
@@ -910,7 +935,7 @@ void DrawFishpedia(Assets assets) {
 
     
     DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
-    DrawText("VOLTAR", 65, 632, 28, WHITE);
+    DrawText("VOLTAR", 75, 632, 28, WHITE);
 }
-void LoadFishpedia(){}
 
+void LoadFishpedia(){}

@@ -37,6 +37,7 @@ Assets LoadAssets(void) {
     assets.baseButtonSpace = LoadTexture("assets/icons/basebuttonspaceBarra.png");
     assets.keyButtonBox = LoadTexture("assets/icons/keyButtonBox.png");
     assets.fishFraming = LoadTexture("assets/icons/fishframing.png");
+    assets.fishCounter = LoadTexture("assets/icons/fishcounter.png");
 
     assets.exitButton = LoadTexture("assets/menu/exitButton.png");
     assets.startButton = LoadTexture("assets/menu/startButton.png");
@@ -98,7 +99,6 @@ Assets LoadAssets(void) {
     assets.noronhaFishes[7] = LoadTexture("assets/fernando_de_noronha/fishes/straw.png");
     assets.noronhaFishes[8] = LoadTexture("assets/fernando_de_noronha/fishes/swordfish.png");
     assets.noronhaFishes[9] = LoadTexture("assets/fernando_de_noronha/fishes/tuna.png");
-
 
     assets.sailor = LoadTexture("assets/marco_zero/sailor.png");
     assets.salesman = LoadTexture("assets/marco_zero/salesman.png");

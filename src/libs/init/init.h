@@ -13,6 +13,7 @@ typedef struct {
     Texture2D sailor;
     Texture2D button;
     Texture2D fishShop;
+    Texture2D fishCounter;
     Texture2D portSign;
     Texture2D fishPedia;
     Texture2D fishPedia2;
