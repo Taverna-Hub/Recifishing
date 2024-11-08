@@ -14,9 +14,7 @@
 
 Fishpedia *fishpediaHead = NULL;
 
-
 Bucket *bucketHead = NULL;
-
 
 int cont = 0;
 int entrou = 0;
@@ -656,16 +654,16 @@ Location* startLocation(LocationName locationName, Assets assets) {
 
             Fish *first = NULL;
 
-            insertFish(&first, "Jacaré", 75, 10, assets.marcoZeroFishes[0], MARCO_ZERO);
-            insertFish(&first, "Peixe-CESAR", 60, 8, assets.marcoZeroFishes[1], MARCO_ZERO);
-            insertFish(&first, "Peixe-Chico", 50, 7, assets.marcoZeroFishes[2], MARCO_ZERO);
-            insertFish(&first, "Perna Cabeluda", 0, 5, assets.marcoZeroFishes[9], MARCO_ZERO);
-            insertFish(&first, "Peixe-Frevo", 25, 4, assets.marcoZeroFishes[3], MARCO_ZERO);
-            insertFish(&first, "Peixe-Maloka", 25, 4, assets.marcoZeroFishes[4], MARCO_ZERO);
-            insertFish(&first, "Peixe-Náutico", 30, 5, assets.marcoZeroFishes[5], MARCO_ZERO);
-            insertFish(&first, "Peixe-Santa", 30, 5, assets.marcoZeroFishes[6], MARCO_ZERO);
-            insertFish(&first, "Saco de Pipoca", 0, 5, assets.marcoZeroFishes[8], MARCO_ZERO);
-            insertFish(&first, "Peixe-Sport", 30, 5, assets.marcoZeroFishes[7], MARCO_ZERO);
+            createFish(&first, "Jacaré", 75, 10, assets.marcoZeroFishes[0], MARCO_ZERO);
+            createFish(&first, "Peixe-CESAR", 60, 8, assets.marcoZeroFishes[1], MARCO_ZERO);
+            createFish(&first, "Peixe-Chico", 50, 7, assets.marcoZeroFishes[2], MARCO_ZERO);
+            createFish(&first, "Perna Cabeluda", 0, 5, assets.marcoZeroFishes[9], MARCO_ZERO);
+            createFish(&first, "Peixe-Frevo", 25, 4, assets.marcoZeroFishes[3], MARCO_ZERO);
+            createFish(&first, "Peixe-Maloka", 25, 4, assets.marcoZeroFishes[4], MARCO_ZERO);
+            createFish(&first, "Peixe-Náutico", 30, 5, assets.marcoZeroFishes[5], MARCO_ZERO);
+            createFish(&first, "Peixe-Santa", 30, 5, assets.marcoZeroFishes[6], MARCO_ZERO);
+            createFish(&first, "Saco de Pipoca", 0, 5, assets.marcoZeroFishes[8], MARCO_ZERO);
+            createFish(&first, "Peixe-Sport", 30, 5, assets.marcoZeroFishes[7], MARCO_ZERO);
 
             location->firstFish = first;
 
@@ -768,7 +766,7 @@ Fish* pescar(Fish *head) {
     return NULL;
 }
 
-void insertFish(Fish **head, char *name, int price, int letters, Texture2D sprite, LocationName locationName) {
+void createFish(Fish **head, char *name, int price, int letters, Texture2D sprite, LocationName locationName) {
 		
 		Fish *new = (Fish *)malloc(sizeof(Fish));
 		
@@ -796,6 +794,28 @@ void insertFish(Fish **head, char *name, int price, int letters, Texture2D sprit
 		}
 		
 	}
+
+void insertBucket(Bucket **head, Fish *fish) {
+    if (fish == NULL) {
+        return;
+    }
+
+    Bucket *newBucket = (Bucket *)malloc(sizeof(Bucket));
+    if (newBucket == NULL) {
+        return;
+    }
+
+    newBucket->fish = fish;
+    newBucket->next = *head;
+    newBucket->prev = NULL;
+
+    if (*head != NULL) {
+        (*head)->prev = newBucket;
+    }
+
+    *head = newBucket;
+}
+
 
 void removeFish(Fish **head) {
 
@@ -834,16 +854,14 @@ void DrawBucket(Assets assets) {
     };
 
     for (int i = 0; i < maxSlots; i++) {
-        Vector2 framePos = framePositions[i];
-        Vector2 textPos = textPositions[i];
-        DrawTextureEx(assets.fishFrame, framePos, 0.0f, 1.1f, RAYWHITE);
         if (current != NULL) {
+            Vector2 framePos = framePositions[i];
+            Vector2 textPos = textPositions[i];
+            DrawTextureEx(assets.fishFrame, framePos, 0.0f, 1.1f, RAYWHITE);
             DrawTextureEx(current->fish->sprite, (Vector2){framePos.x + 75, framePos.y + 50}, 0.0f, 0.5f, WHITE);
             DrawText(current->fish->name, textPos.x, textPos.y, 16, WHITE);
             current = current->next;
-        } else {
-            DrawText("?????", textPos.x, textPos.y, 16, WHITE);
-        }
+        } 
     }
 
     /* DrawTextureEx(assets.fishFrame, (Vector2){25, 130}, 0.0f, 1.2f, WHITE);
