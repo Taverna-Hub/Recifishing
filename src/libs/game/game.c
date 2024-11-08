@@ -846,17 +846,18 @@ void addFishpedia(Fish *newFish) {
 
 void DrawBucket(Assets assets) {
     DrawTexture(assets.bucketBackground, 0, 0, WHITE);
+    DrawText("Balde de Pesca", 413, 42, 28, BLACK);
     DrawText("Balde de Pesca", 415, 40, 28, WHITE);
 
     Bucket *current = bucketHead; 
     int maxSlots = 8;
 
     Vector2 framePositions[8] = {
-        {55, 100}, {55, 350}, {285, 100}, {285, 350},  
-        {525, 100}, {525, 350}, {765, 100}, {765, 350} 
+        {55, 130}, {55, 380}, {285, 130}, {285, 380},  
+        {525, 130}, {525, 380}, {765, 130}, {765, 380} 
     };
     Vector2 textPositions[8] = {
-        {130, 260}, {130, 510}, {350, 260}, {350, 510},
+        {130, 260}, {130, 510}, {380, 260}, {380, 510},
         {620, 260}, {620, 510}, {840, 260}, {840, 510}
     };
 
@@ -873,34 +874,35 @@ void DrawBucket(Assets assets) {
         }
     }
 
-    /* DrawTextureEx(assets.fishFrame, (Vector2){25, 100}, 0.0f, 1.2f, WHITE);
-    DrawTextureEx(assets.fishFrame, (Vector2){275, 100}, 0.0f, 1.2f, WHITE);
-    DrawTextureEx(assets.fishFrame, (Vector2){525, 100}, 0.0f, 1.2f, WHITE);
-    DrawTextureEx(assets.fishFrame, (Vector2){775, 100}, 0.0f, 1.2f, WHITE);
+    /* DrawTextureEx(assets.fishFrame, (Vector2){25, 130}, 0.0f, 1.2f, WHITE);
+    DrawTextureEx(assets.fishFrame, (Vector2){275, 130}, 0.0f, 1.2f, WHITE);
+    DrawTextureEx(assets.fishFrame, (Vector2){525, 130}, 0.0f, 1.2f, WHITE);
+    DrawTextureEx(assets.fishFrame, (Vector2){775, 130}, 0.0f, 1.2f, WHITE);
 
-    DrawTextureEx(assets.fishFrame, (Vector2){25, 350}, 0.0f, 1.2f, WHITE);
-    DrawTextureEx(assets.fishFrame, (Vector2){275, 350}, 0.0f, 1.2f, WHITE);
-    DrawTextureEx(assets.fishFrame, (Vector2){525, 350}, 0.0f, 1.2f, WHITE);
-    DrawTextureEx(assets.fishFrame, (Vector2){775, 350}, 0.0f, 1.2f, WHITE); */
+    DrawTextureEx(assets.fishFrame, (Vector2){25, 380}, 0.0f, 1.2f, WHITE);
+    DrawTextureEx(assets.fishFrame, (Vector2){275, 380}, 0.0f, 1.2f, WHITE);
+    DrawTextureEx(assets.fishFrame, (Vector2){525, 380}, 0.0f, 1.2f, WHITE);
+    DrawTextureEx(assets.fishFrame, (Vector2){775, 380}, 0.0f, 1.2f, WHITE); */
 
     DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
     DrawText("VOLTAR", 75, 632, 28, WHITE);
 }
 
 void DrawFishpedia(Assets assets) {
-    DrawText("Fishpedia", 300, 300, 28, BLACK);
     DrawTexture(assets.fishpediaBackground, 0, 0, RAYWHITE);
+    DrawText("Fishpedia", 448, 72, 28, BLACK);
+    DrawText("Fishpedia", 450, 70, 28, WHITE);
 
     Fishpedia *current = fishpediaHead;  
     int maxSlots = 8;
 
     Vector2 framePositions[8] = {
-        {55, 100}, {55, 350}, {275, 100}, {275, 350},  
-        {545, 100}, {545, 350}, {765, 100}, {765, 350} 
+        {55, 130}, {55, 380}, {275, 130}, {275, 380},  
+        {545, 130}, {545, 380}, {765, 130}, {765, 380} 
     };
     Vector2 textPositions[8] = {
-        {130, 260}, {130, 510}, {350, 260}, {350, 510},
-        {620, 260}, {620, 510}, {840, 260}, {840, 510}
+        {130, 290}, {130, 540}, {350, 290}, {350, 540},
+        {620, 290}, {620, 540}, {840, 290}, {840, 540}
     };
 
     for (int i = 0; i < maxSlots; i++) {
