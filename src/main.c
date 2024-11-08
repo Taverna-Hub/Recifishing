@@ -38,6 +38,8 @@ int main(void) {
     AnimationFrames *animationFrames = createAnimationFrames();
 
     Location *marcoZero = startLocation(MARCO_ZERO, assets);
+    Location *portoDeGalinhas = startLocation(PORTO_DE_GALINHAS, assets);
+    Location *fernandoDeNoronha = startLocation(FERNANDO_DE_NORONHA, assets);
     Location *location = marcoZero;
 
     int gameFrame = DEFAULT;
@@ -57,7 +59,7 @@ int main(void) {
                 inTransition = true; 
             }
             UpdateGame(&inTransition, &currentScreen, arrow, arrow2, mousePos, assets, &gameFrame, &animationFrames, location);
-            DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed, arrow->arrowFrames, arrow2->arrowFrames, mousePos, gameFrame, &animationFrames, location);
+            DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed, arrow->arrowFrames, arrow2->arrowFrames, mousePos, gameFrame, &animationFrames, location,marcoZero,portoDeGalinhas,fernandoDeNoronha);
 
         }
     }

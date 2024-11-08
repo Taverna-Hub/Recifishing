@@ -97,11 +97,11 @@ int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D
 void fadeHandle(bool *inTransition, int *fadeAlpha);
 
 void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arrow *arrow2, Vector2 mousePos, Assets assets, int *gameFrame, AnimationFrames **animationFrames, Location *location);
-void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, int arrowFrames2, Vector2 mousePos, int frame, AnimationFrames **animationFrames, Location *location);
-
+void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, int arrowFrames2, Vector2 mousePos, int frame, AnimationFrames **animationFrames, Location *location,Location *MarcoZero, Location *PortoDeGalinhas, Location *FernandoDeNoronha);
 Location* startLocation(LocationName locationName, Assets assets);
 void insertFish(Fish **head, char *name, int price, int letters, Texture2D sprite, LocationName locationName);
 void removeFish(Fish **head);
+Fish* findFishByName(Fish *head, const char *name);
 
 
 #endif

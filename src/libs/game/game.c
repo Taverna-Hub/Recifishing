@@ -53,8 +53,8 @@ int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D
 void createFish(Fish **head, char *name, int price, int letters, Texture2D sprite, LocationName locationName);
 void insertBucket(Bucket **head, Fish *fish);
 void DrawBucket(Assets assets);
-void DrawFishpedia(Assets assets);
-void addFishpedia(Fish *newFish);
+void DrawFishpedia(Assets assets, Location *MarcoZero, Location *PortoDeGalinhas, Location *FernandoDeNoronha);
+void addFishToFishpedia(Fish *newFish);
 
 void playSound(bool *isSoundPlayed, Music sound);
 void updateSequence(Fish *fish);
@@ -127,7 +127,7 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arr
     }
 }
 
-void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, int arrowFrames2, Vector2 mousePos, int frame, AnimationFrames **animationFrames, Location *location) {
+void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, int arrowFrames2, Vector2 mousePos, int frame, AnimationFrames **animationFrames, Location *location,Location *MarcoZero, Location *PortoDeGalinhas, Location *FernandoDeNoronha) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
     Rectangle recBackButton = {50, 620, assets.button.width / 2, assets.button.height / 2};
@@ -314,7 +314,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                                 currentSequenceIndex++;
                                 if (currentSequenceIndex == hookedFish->letters) {
                                     successfulCatch = 1;
-                                    addFishpedia(hookedFish);
+                                    addFishToFishpedia(hookedFish);
                                     insertBucket(&bucketHead, hookedFish);
                                     PlaySound(assets.success);
                                     currentSequenceIndex = 0;
@@ -401,7 +401,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             break;
 
         case FISHPEDIA:
-            DrawFishpedia(assets);
+            DrawFishpedia(assets,location,PortoDeGalinhas,FernandoDeNoronha);
             waitingFrames = 0;
             waitingFish = -1;
             successfulCatch = 0;
@@ -860,8 +860,25 @@ void removeFish(Fish **head) {
 		}
 	}
 
-void addFishpedia(Fish *newFish) {
-   newFish->wasCaptured=true;
+void addFishToFishpedia(Fish *fish) {
+    
+    Fishpedia *current = fishpediaHead;
+    while (current != NULL) {
+        if (current->fish == fish) {
+            return; 
+        }
+        current = current->next;
+    }
+
+    Fishpedia *newNode = (Fishpedia *)malloc(sizeof(Fishpedia));
+    fish->wasCaptured = true;
+    newNode->fish = fish;
+    newNode->next = fishpediaHead;
+    newNode->prev = NULL;
+    if (fishpediaHead != NULL) {
+        fishpediaHead->prev = newNode;
+    }
+    fishpediaHead = newNode;
 }
 
 void DrawBucket(Assets assets) {
@@ -903,39 +920,79 @@ void DrawBucket(Assets assets) {
     DrawText("VOLTAR", 75, 632, 28, WHITE);
 }
 
-void DrawFishpedia(Assets assets) {
+void DrawFishpedia(Assets assets, Location *MarcoZero, Location *PortoDeGalinhas, Location *FernandoDeNoronha) {
     DrawTexture(assets.fishpediaBackground, 0, 0, RAYWHITE);
     DrawText("Fishpedia", 448, 72, 28, BLACK);
     DrawText("Fishpedia", 450, 70, 28, WHITE);
 
-    Fishpedia *current = fishpediaHead;  
-    int maxSlots = 8;
-
     Vector2 framePositions[8] = {
-        {55, 130}, {55, 380}, {275, 130}, {275, 380},  
-        {545, 130}, {545, 380}, {765, 130}, {765, 380} 
+        {55, 130}, {275, 130}, {545, 130}, {765, 130},
+        {55, 380}, {275, 380}, {545, 380}, {765, 380}
     };
     Vector2 textPositions[8] = {
-        {130, 290}, {130, 540}, {350, 290}, {350, 540},
-        {620, 290}, {620, 540}, {840, 290}, {840, 540}
+        {130, 290}, {350, 290}, {620, 290}, {840, 290},
+        {130, 540}, {350, 540}, {620, 540}, {840, 540}
     };
 
-    for (int i = 0; i < maxSlots; i++) {
-        Vector2 framePos = framePositions[i];
-        Vector2 textPos = textPositions[i];
-        DrawTextureEx(assets.fishFrame, framePos, 0.0f, 1.1f, RAYWHITE);
-        if (current != NULL) {
-            DrawTextureEx(current->fish->sprite, (Vector2){framePos.x + 75, framePos.y + 50}, 0.0f, 0.5f, WHITE);
-            DrawText(current->fish->name, textPos.x, textPos.y, 16, BLACK);
-            current = current->next;
+    int index = 0;
+    Fish *fish;
+
+    const char *fishNames[8] = {
+        "Peixe-Frevo", "Peixe-Chico", "Jacaré", "Peixe-CESAR",
+        "Peixe-Maloka", "Peixe-Náutico", "Peixe-Santa", "Peixe-Sport"
+    };
+
+    for (int i = 0; i < 8; i++) {
+        fish = findFishByName(MarcoZero->firstFish, fishNames[i]);
+        DrawTextureEx(assets.fishFrame, framePositions[index], 0.0f, 1.1f, RAYWHITE);
+        if (fish && fish->wasCaptured) {
+            DrawTextureEx(fish->sprite, (Vector2){framePositions[index].x + 75, framePositions[index].y + 50}, 0.0f, 0.5f, WHITE);
+            DrawText(fish->name, textPositions[index].x, textPositions[index].y, 16, BLACK);
         } else {
-            DrawText("?????", textPos.x, textPos.y, 16, BLACK);
+            DrawText("?????", textPositions[index].x, textPositions[index].y, 16, BLACK);
         }
+        index++;
     }
 
-    
     DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
     DrawText("VOLTAR", 75, 632, 28, WHITE);
 }
+void LoadFishpedia(Location MarcoZero, Location PortoDeGalinhas, Location FernandoDeNoronha) {
+    Fish *currentFish;
 
-void LoadFishpedia(){}
+   
+    currentFish = MarcoZero.firstFish;
+    while (currentFish != NULL) {
+        if (currentFish->wasCaptured) {
+            addFishToFishpedia(currentFish);
+        }
+        currentFish = currentFish->next;
+    }
+
+    currentFish = PortoDeGalinhas.firstFish;
+    while (currentFish != NULL) {
+        if (currentFish->wasCaptured) {
+            addFishToFishpedia(currentFish);
+        }
+        currentFish = currentFish->next;
+    }
+
+    currentFish = FernandoDeNoronha.firstFish;
+    while (currentFish != NULL) {
+        if (currentFish->wasCaptured) {
+            addFishToFishpedia(currentFish);
+        }
+        currentFish = currentFish->next;
+    }
+}
+
+Fish* findFishByName(Fish *head, const char *name) {
+    Fish *currentFish = head;
+    while (currentFish != NULL) {
+        if (strcmp(currentFish->name, name) == 0) {
+            return currentFish;
+        }
+        currentFish = currentFish->next;
+    }
+    return NULL; 
+}
