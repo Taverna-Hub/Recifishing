@@ -19,6 +19,8 @@ Assets LoadAssets(void) {
     assets.fail = LoadSound("assets/sounds/fail.wav");
     assets.alert = LoadSound("assets/sounds/alert.wav");
     assets.success = LoadSound("assets/sounds/success.mp3");
+    assets.sellSound = LoadSound("assets/sounds/sellSound.mp3");
+
     assets.bucketBackground=LoadTexture("assets/menu/bucketbg.png");
     assets.fishpediaBackground=LoadTexture("assets/menu/fishpediabg.png");
     assets.fishFrame=LoadTexture("assets/menu/fishframing.png");
@@ -26,6 +28,7 @@ Assets LoadAssets(void) {
     assets.coin = LoadTexture("assets/icons/coin.png");
     assets.arrow = LoadTexture("assets/icons/arrow.png");
     assets.button = LoadTexture("assets/icons/button.png");
+    assets.buttonDark = LoadTexture("assets/icons/darkbuttonTemplate.png");
     assets.logoTexture = LoadTexture("assets/icons/logo.png");
     assets.fishPedia = LoadTexture("assets/icons/fishpedia.png");
     assets.fishPedia2 = LoadTexture("assets/icons/fishpedia2.png");
@@ -38,12 +41,15 @@ Assets LoadAssets(void) {
     assets.keyButtonBox = LoadTexture("assets/icons/keyButtonBox.png");
     assets.fishFraming = LoadTexture("assets/icons/fishframing.png");
     assets.fishCounter = LoadTexture("assets/icons/fishcounter.png");
+    assets.sellButton = LoadTexture("assets/icons/sellbutton.png");
+    assets.sellButtonHover = LoadTexture("assets/icons/sellbuttonHover.png");
 
     assets.exitButton = LoadTexture("assets/menu/exitButton.png");
     assets.startButton = LoadTexture("assets/menu/startButton.png");
     assets.backgroundMenu = LoadTexture("assets/menu/background.png");
     assets.darkExitButton = LoadTexture("assets/menu/darkExitButton.png");
     assets.darkStartButton = LoadTexture("assets/menu/darkStartButton.png");
+    assets.fishShopMenuBG = LoadTexture("assets/menu/fishingshopMenuBG.png");
 
     assets.fishermanHook[0] = LoadTexture("assets/frames/fisherman/hook/Fisherman_hook_01.png");
     assets.fishermanHook[1] = LoadTexture("assets/frames/fisherman/hook/Fisherman_hook_02.png");
@@ -103,10 +109,12 @@ Assets LoadAssets(void) {
     assets.sailor = LoadTexture("assets/marco_zero/sailor.png");
     assets.salesman = LoadTexture("assets/marco_zero/salesman.png");
     assets.fishShop = LoadTexture("assets/marco_zero/fishshop.png");
+    assets.fishShopMenu = LoadTexture("assets/marco_zero/fishshopMenu.png");
     assets.portSign = LoadTexture("assets/marco_zero/portoSign.png");
     assets.marcoZeroPier = LoadTexture("assets/marco_zero/pier.png");
     assets.marcoZeroPierRight = LoadTexture("assets/marco_zero/pierRight.png");
     assets.backgroundMarcoZero = LoadTexture("assets/marco_zero/background.png");
+    assets.backgroundMarcoZeroBlur = LoadTexture("assets/marco_zero/backgroundBlur.png");
 
     return assets;
 }

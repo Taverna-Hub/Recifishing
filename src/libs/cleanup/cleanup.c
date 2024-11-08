@@ -9,8 +9,11 @@ void UnloadAssets(Assets assets) {
     UnloadTexture(assets.sailor);
     UnloadTexture(assets.salesman);
     UnloadTexture(assets.button);
+    UnloadTexture(assets.buttonDark);
     UnloadTexture(assets.portSign);
     UnloadTexture(assets.fishShop);
+    UnloadTexture(assets.fishShopMenu);
+    UnloadTexture(assets.fishShopMenuBG);
     UnloadTexture(assets.fishCounter);
     UnloadTexture(assets.fishFraming);
     UnloadTexture(assets.fishPedia);
@@ -24,7 +27,10 @@ void UnloadAssets(Assets assets) {
     UnloadTexture(assets.darkExitButton);
     UnloadTexture(assets.darkStartButton);
     UnloadTexture(assets.backgroundMarcoZero);
+    UnloadTexture(assets.backgroundMarcoZeroBlur);
     UnloadTexture(assets.fish);
+    UnloadTexture(assets.sellButton);
+    UnloadTexture(assets.sellButtonHover);
     UnloadTexture(assets.baseButton);
     UnloadTexture(assets.emptyButton);
     UnloadTexture(assets.baseButtonPressed);
@@ -69,4 +75,5 @@ void UnloadAssets(Assets assets) {
     UnloadSound(assets.fail);
     UnloadSound(assets.success);
     UnloadSound(assets.alert);
+    UnloadSound(assets.sellSound);
 }

@@ -12,7 +12,10 @@ typedef struct {
     Texture2D salesman;
     Texture2D sailor;
     Texture2D button;
+    Texture2D buttonDark;
     Texture2D fishShop;
+    Texture2D fishShopMenu;
+    Texture2D fishShopMenuBG;
     Texture2D fishCounter;
     Texture2D portSign;
     Texture2D fishPedia;
@@ -26,8 +29,11 @@ typedef struct {
     Texture2D darkExitButton;
     Texture2D darkStartButton;
     Texture2D backgroundMarcoZero;
+    Texture2D backgroundMarcoZeroBlur;
     Texture2D marcoZeroPier;
     Texture2D marcoZeroPierRight;
+    Texture2D sellButton;
+    Texture2D sellButtonHover;
 
     Texture2D fish;
     Texture2D fishFraming;
@@ -58,6 +64,7 @@ typedef struct {
     Sound fail;
     Sound success;
     Sound alert;
+    Sound sellSound;
 
 } Assets;
 

@@ -16,6 +16,8 @@ Fishpedia *fishpediaHead = NULL;
 
 Bucket *bucketHead = NULL;
 
+int balance = 0;
+
 int cont = 0;
 int entrou = 0;
 int selectedQuadrant = -1;
@@ -33,7 +35,9 @@ bool alert = true;
 bool ranOutOfTime = false;
 bool firstGame = true;
 int bucket = 0;
+int fishpediaCount = 0;
 char bucketStr[20];
+char fishpediaCountStr[20];
 
 GameFrames called = DEFAULT;
 
@@ -52,9 +56,12 @@ void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vect
 int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D fishpedia, int gameFrame);
 void createFish(Fish **head, char *name, int price, int letters, Texture2D sprite, LocationName locationName);
 void insertBucket(Bucket **head, Fish *fish);
-void DrawBucket(Assets assets);
-void DrawFishpedia(Assets assets, Location *MarcoZero, Location *PortoDeGalinhas, Location *FernandoDeNoronha);
+void DrawBucket(Assets assets, Vector2 mousePos);
+void DrawFishpedia(Assets assets, Location *MarcoZero, Location *PortoDeGalinhas, Location *FernandoDeNoronha, Vector2 mousePos);
 void addFishToFishpedia(Fish *newFish);
+void sell(Assets assets);
+void insertFishpedia(Fishpedia **head, Fish *fish);
+void DrawFishShop(Assets assets, Location *location, Vector2 mousePos);
 
 void playSound(bool *isSoundPlayed, Music sound);
 void updateSequence(Fish *fish);
@@ -127,6 +134,7 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arr
     }
 }
 
+
 void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, int arrowFrames2, Vector2 mousePos, int frame, AnimationFrames **animationFrames, Location *location,Location *MarcoZero, Location *PortoDeGalinhas, Location *FernandoDeNoronha) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
@@ -135,9 +143,10 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
     Rectangle fishZone = {280, 0, 744, 720};
     Rectangle recBucket = {140, 40, assets.fishBucket.width, assets.fishBucket.height};
     Rectangle recFishpedia = {50, 40, assets.fishPedia.width, assets.fishPedia.height};
+    Rectangle recSellButton = {525, 575, assets.sellButton.width*1.3, assets.sellButton.height*1.3};
 
     if ((frame != DEFAULT && frame != PIER && CheckCollisionPointRec(mousePos, recBackButton)) || 
-    (frame == PIER && (CheckCollisionPointRec(mousePos, recArrow) || CheckCollisionPointRec(mousePos, fishZone) && (*animationFrames)->fishmanIdle->isUsing || (*animationFrames)->fishmanHook->isUsing)) || (frame == PIER && CheckCollisionPointRec(mousePos, recBucket) || CheckCollisionPointRec(mousePos, recFishpedia))) {
+    (frame == PIER && (CheckCollisionPointRec(mousePos, recArrow) || CheckCollisionPointRec(mousePos, fishZone) && (*animationFrames)->fishmanIdle->isUsing || (*animationFrames)->fishmanHook->isUsing)) || (frame == PIER && CheckCollisionPointRec(mousePos, recBucket) || CheckCollisionPointRec(mousePos, recFishpedia)) || frame == FISHSHOP && CheckCollisionPointRec(mousePos, recSellButton)) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
     } else {
         SetMouseCursor(MOUSE_CURSOR_DEFAULT);
@@ -145,13 +154,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
 
     switch (frame) {
         case BUCKET:
-            DrawBucket(assets);
-            waitingFrames = 0;
-            waitingFish = -1;
-            successfulCatch = 0;
-            fishFrame = 0;
-            caught = false;
-            firstGame = true;
+            DrawBucket(assets, mousePos);
             break;
 
         case PIER:
@@ -401,25 +404,20 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             break;
 
         case FISHPEDIA:
-            DrawFishpedia(assets,location,PortoDeGalinhas,FernandoDeNoronha);
-            waitingFrames = 0;
-            waitingFish = -1;
-            successfulCatch = 0;
-            fishFrame = 0;
-            caught = false;
-            firstGame = true;
+            DrawFishpedia(assets,location,PortoDeGalinhas,FernandoDeNoronha, mousePos);
             break;
 
         case PORT:
+            playSound(isSoundPlayed, assets.morenaTropicana);
             DrawText("Porto", 300, 300, 28, BLACK);
             DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
             DrawText("VOLTAR", 75, 632, 28, WHITE);
+
             break;
 
         case FISHSHOP:
-            DrawText("Peixaria", 300, 300, 28, BLACK);
-            DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
-            DrawText("VOLTAR", 75, 632, 28, WHITE);
+            playSound(isSoundPlayed, assets.morenaTropicana);
+            DrawFishShop(assets, location, mousePos);
             break;
 
         case DEFAULT:
@@ -658,9 +656,11 @@ void drawElements(Assets assets, Location *location, int arrowFrames) {
     DrawTextureEx(assets.portSign, (Vector2){30, 350}, 0.0f, 0.8f, WHITE);
     DrawTexture(location->sailor, 170, 250, RAYWHITE);
     DrawTexture(location->salesman, 830, 350, RAYWHITE);
-    DrawTextureEx(assets.coin, (Vector2){780, 40}, 0.0f, 0.7f, WHITE);
-    DrawText("350", 858, 57, 45, BLACK);
-    DrawText("350", 860, 55, 45, WHITE);
+    DrawTextureEx(assets.coin, (Vector2){810, 40}, 0.0f, 0.7f, WHITE);
+    char balanceText[10];
+    sprintf(balanceText, "%03d", balance);
+    DrawText(balanceText, 888, 57, 45, BLACK);
+    DrawText(balanceText, 890, 55, 45, WHITE);
 }
 
 Location* startLocation(LocationName locationName, Assets assets) {
@@ -673,10 +673,12 @@ Location* startLocation(LocationName locationName, Assets assets) {
         case MARCO_ZERO:
 
             location->background = assets.backgroundMarcoZero;
+            location->backgroundBlur = assets.backgroundMarcoZeroBlur;
             location->boat = assets.boat;
             location->sailor = assets.sailor;
             location->salesman = assets.salesman;
             location->fishShop = assets.fishShop;
+            location->fishShopMenu = assets.fishShopMenu;
             location->pier = assets.marcoZeroPier;
 
             Fish *first = NULL;
@@ -816,8 +818,9 @@ void createFish(Fish **head, char *name, int price, int letters, Texture2D sprit
 			if (*head != NULL) {
 				(*head)->prev = new;
 			} 
-			
+
 			*head = new;
+
 		}
 		
 	}
@@ -833,16 +836,48 @@ void insertBucket(Bucket **head, Fish *fish) {
     }
 
     newBucket->fish = fish;
-    newBucket->next = *head;
-    newBucket->prev = NULL;
+    newBucket->next = NULL;
 
-    if (*head != NULL) {
-        (*head)->prev = newBucket;
+    if (*head == NULL) {
+        newBucket->prev = NULL;
+        *head = newBucket;
+    } else {
+        Bucket *last = *head;
+        while (last->next != NULL) {
+            last = last->next;
+        }
+        last->next = newBucket;
+        newBucket->prev = last;
     }
 
-    *head = newBucket;
-
     bucket++;
+}
+
+void insertFishpedia(Fishpedia **head, Fish *fish) {
+    if (fish == NULL || fish->isTrash || fishpediaCount >= 24) {
+        return;
+    }
+
+    Fishpedia *newFishpedia = (Fishpedia *)malloc(sizeof(Fishpedia));
+    if (newFishpedia == NULL) {
+        return;
+    }
+
+    newFishpedia->fish = fish;
+    newFishpedia->next = NULL;
+
+    if (*head == NULL) {
+        newFishpedia->prev = NULL;
+        *head = newFishpedia;
+    } else {
+        Fishpedia *last = *head;
+        while (last->next != NULL) {
+            last = last->next;
+        }
+        last->next = newFishpedia;
+        newFishpedia->prev = last;
+    }
+
 }
 
 void removeFish(Fish **head) {
@@ -861,27 +896,22 @@ void removeFish(Fish **head) {
 	}
 
 void addFishToFishpedia(Fish *fish) {
-    
+    if (fish == NULL) {
+        return;
+    }
+
     Fishpedia *current = fishpediaHead;
     while (current != NULL) {
-        if (current->fish == fish) {
-            return; 
+        if (strcmp(current->fish->name, fish->name) == 0) {
+            fish->wasCaptured = true;
+            fishpediaCount++;
+            return;
         }
         current = current->next;
     }
-
-    Fishpedia *newNode = (Fishpedia *)malloc(sizeof(Fishpedia));
-    fish->wasCaptured = true;
-    newNode->fish = fish;
-    newNode->next = fishpediaHead;
-    newNode->prev = NULL;
-    if (fishpediaHead != NULL) {
-        fishpediaHead->prev = newNode;
-    }
-    fishpediaHead = newNode;
 }
 
-void DrawBucket(Assets assets) {
+void DrawBucket(Assets assets, Vector2 mousePos) {
     DrawTexture(assets.bucketBackground, 0, 0, WHITE);
     DrawTexture(assets.fishCounter, 832, 22, WHITE);
     sprintf(bucketStr, "%d", bucket);
@@ -916,12 +946,23 @@ void DrawBucket(Assets assets) {
         } 
     }
 
-    DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+    if (CheckCollisionPointRec(mousePos, (Rectangle){50, 620, assets.button.width / 2, assets.button.height / 2})) {
+        DrawTextureEx(assets.buttonDark, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+    } else {
+        DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+    }
     DrawText("VOLTAR", 75, 632, 28, WHITE);
 }
 
-void DrawFishpedia(Assets assets, Location *MarcoZero, Location *PortoDeGalinhas, Location *FernandoDeNoronha) {
+void DrawFishpedia(Assets assets, Location *MarcoZero, Location *PortoDeGalinhas, Location *FernandoDeNoronha, Vector2 mousePos) {
     DrawTexture(assets.fishpediaBackground, 0, 0, RAYWHITE);
+    DrawTexture(assets.fishCounter, 792, 48, WHITE);
+    sprintf(fishpediaCountStr, "%d", fishpediaCount);
+    DrawText(fishpediaCountStr, 870, 68, 28, BLACK);
+    DrawText("/24", 885, 68, 28, BLACK);
+    DrawText(fishpediaCountStr, 872, 66, 28, WHITE);
+    DrawText("/24", 887, 66, 28, WHITE);
+
     DrawText("Fishpedia", 448, 72, 28, BLACK);
     DrawText("Fishpedia", 450, 70, 28, WHITE);
 
@@ -935,64 +976,144 @@ void DrawFishpedia(Assets assets, Location *MarcoZero, Location *PortoDeGalinhas
     };
 
     int index = 0;
-    Fish *fish;
-
-    const char *fishNames[8] = {
-        "Peixe-Frevo", "Peixe-Chico", "Jacaré", "Peixe-CESAR",
-        "Peixe-Maloka", "Peixe-Náutico", "Peixe-Santa", "Peixe-Sport"
-    };
+    Fishpedia *fishpediaAux = fishpediaHead;
 
     for (int i = 0; i < 8; i++) {
-        fish = findFishByName(MarcoZero->firstFish, fishNames[i]);
         DrawTextureEx(assets.fishFrame, framePositions[index], 0.0f, 1.1f, RAYWHITE);
-        if (fish && fish->wasCaptured) {
-            DrawTextureEx(fish->sprite, (Vector2){framePositions[index].x + 75, framePositions[index].y + 50}, 0.0f, 0.5f, WHITE);
-            DrawText(fish->name, textPositions[index].x, textPositions[index].y, 16, BLACK);
+        if (fishpediaAux && fishpediaAux->fish->wasCaptured) {
+            DrawTextureEx(fishpediaAux->fish->sprite, (Vector2){framePositions[index].x + 40, framePositions[index].y}, 0.0f, 1.0f, WHITE);
+            DrawText(fishpediaAux->fish->name, textPositions[index].x - (strlen(fishpediaAux->fish->name) * 4), textPositions[index].y, 24, BLACK);
         } else {
-            DrawText("?????", textPositions[index].x, textPositions[index].y, 16, BLACK);
+            DrawTextureEx(fishpediaAux->fish->sprite, (Vector2){framePositions[index].x + 40, framePositions[index].y}, 0.0f, 1.0f, BLACK);
+            DrawText("?????", textPositions[index].x - 15, textPositions[index].y, 24, BLACK);
         }
         index++;
+        if (fishpediaAux){
+        fishpediaAux = fishpediaAux->next;
+        }
     }
 
-    DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+    if (CheckCollisionPointRec(mousePos, (Rectangle){50, 620, assets.button.width / 2, assets.button.height / 2})) {
+        DrawTextureEx(assets.buttonDark, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+    } else {
+        DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+    }
     DrawText("VOLTAR", 75, 632, 28, WHITE);
 }
+
 void LoadFishpedia(Location MarcoZero, Location PortoDeGalinhas, Location FernandoDeNoronha) {
     Fish *currentFish;
 
-   
     currentFish = MarcoZero.firstFish;
     while (currentFish != NULL) {
-        if (currentFish->wasCaptured) {
-            addFishToFishpedia(currentFish);
-        }
+        insertFishpedia(&fishpediaHead, currentFish);
         currentFish = currentFish->next;
     }
 
     currentFish = PortoDeGalinhas.firstFish;
     while (currentFish != NULL) {
-        if (currentFish->wasCaptured) {
-            addFishToFishpedia(currentFish);
-        }
+        insertFishpedia(&fishpediaHead, currentFish);
         currentFish = currentFish->next;
     }
 
     currentFish = FernandoDeNoronha.firstFish;
     while (currentFish != NULL) {
-        if (currentFish->wasCaptured) {
-            addFishToFishpedia(currentFish);
-        }
+        insertFishpedia(&fishpediaHead, currentFish);
         currentFish = currentFish->next;
     }
 }
 
-Fish* findFishByName(Fish *head, const char *name) {
-    Fish *currentFish = head;
-    while (currentFish != NULL) {
-        if (strcmp(currentFish->name, name) == 0) {
-            return currentFish;
-        }
-        currentFish = currentFish->next;
+void DrawFishShop(Assets assets, Location *location, Vector2 mousePos) {
+    DrawTextureEx(location->backgroundBlur, (Vector2){-1200, -300}, 0.0f, 2.2f, WHITE);
+    DrawTextureEx(location->salesman, (Vector2){10, 260}, 0.0f, 2.1f,WHITE);
+    DrawTextureEx(location->fishShopMenu, (Vector2){0, -30}, 0.0f, 1.1f,WHITE);
+    DrawTextureEx(assets.fishShopMenuBG, (Vector2){475, 7}, 0.0f, 1.0f, WHITE);
+
+    DrawTextureEx(assets.fishFrame, (Vector2){555, 40}, 0.0f, 0.8f, WHITE);
+    DrawTextureEx(assets.fishFrame, (Vector2){735, 40}, 0.0f, 0.8f, WHITE);
+
+    DrawTextureEx(assets.fishFrame, (Vector2){555, 40 + 131}, 0.0f, 0.8f, WHITE);
+    DrawTextureEx(assets.fishFrame, (Vector2){735, 40 + 131}, 0.0f, 0.8f, WHITE);
+
+    DrawTextureEx(assets.fishFrame, (Vector2){555, 40 + 131*2}, 0.0f, 0.8f, WHITE);
+    DrawTextureEx(assets.fishFrame, (Vector2){735, 40 + 131*2}, 0.0f, 0.8f, WHITE);
+
+    DrawTextureEx(assets.fishFrame, (Vector2){555, 40 + 131*3}, 0.0f, 0.8f, WHITE);
+    DrawTextureEx(assets.fishFrame, (Vector2){735, 40 + 131*3}, 0.0f, 0.8f, WHITE);
+
+    DrawTextureEx(assets.coin, (Vector2){20, 20}, 0.0f, 0.7f, WHITE);
+    char balanceText[10];
+    sprintf(balanceText, "%03d", balance);
+    DrawText(balanceText, 98, 37, 45, BLACK);
+    DrawText(balanceText, 100, 35, 45, WHITE);
+
+    int total = 0;
+
+    Bucket *current = bucketHead;
+
+    Vector2 framePositions[8] = {
+        {545, 35}, {725, 35}, {545, 166}, {725, 166},
+        {545, 297}, {725, 297}, {545, 428}, {725, 428}
+    };
+    Vector2 textPositions[8] = {
+        {630, 148}, {810, 148}, {630, 279}, {810, 279},
+        {630, 410}, {810, 410}, {630, 541}, {810, 541}
+    };
+
+    for (int i = 0; i < 8; i++) {
+        Vector2 framePos = framePositions[i];
+        Vector2 textPos = textPositions[i];
+        if (current != NULL) {
+            DrawTextureEx(current->fish->sprite, (Vector2){framePos.x + 35, framePos.y}, 0.0f, 0.8f, WHITE);
+            DrawTextureEx(assets.coin, (Vector2){framePos.x + 15, framePos.y + 13}, 0.0f, 0.18f, WHITE);
+            char priceText[10];
+            sprintf(priceText, "%03d", current->fish->price);
+            total += current->fish->price;
+            DrawText(priceText, framePos.x + 40, framePos.y + 13, 19, WHITE);
+            DrawText(current->fish->name, textPos.x - (strlen(current->fish->name) * 6), textPos.y, 20, WHITE);
+            current = current->next;
+        } 
     }
-    return NULL; 
+
+    if (CheckCollisionPointRec(mousePos, (Rectangle){525, 575, assets.sellButton.width*1.3, assets.sellButton.height*1.3})){
+        DrawTextureEx(assets.sellButtonHover, (Vector2){525, 575}, 0.0f, 1.3f, WHITE);
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            sell(assets);
+        }
+    } else {
+        DrawTextureEx(assets.sellButton, (Vector2){525, 575}, 0.0f, 1.3f, WHITE);
+    }
+    DrawText("VENDER TUDO", 550, 605, 30, WHITE);
+    DrawTextureEx(assets.coin, (Vector2){800, 50 + 555}, 0.0f, 0.3f, WHITE);
+    char totalText[10];
+    sprintf(totalText, "%03d", total);
+    DrawText(totalText, 835, 605, 30, WHITE);
+    
+    if (CheckCollisionPointRec(mousePos, (Rectangle){50, 620, assets.button.width / 2, assets.button.height / 2})){
+        DrawTextureEx(assets.buttonDark, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+    } else {
+        DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+    }
+    DrawText("VOLTAR", 75, 632, 28, WHITE);
+}
+
+void sell(Assets assets) {
+    bool vendeu = false;
+    while (bucketHead != NULL) {
+        Bucket *current = bucketHead;
+        balance += current->fish->price;
+        if (balance > 999) {
+            balance = 999;
+        }
+        bucketHead = bucketHead->next;
+        if (bucketHead != NULL) {
+            bucketHead->prev = NULL;
+        }
+        free(current);
+        vendeu = true;
+    }
+    if (vendeu) {
+        PlaySound(assets.sellSound);
+    }
+    bucket = 0;
 }

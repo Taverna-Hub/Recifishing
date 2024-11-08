@@ -67,12 +67,14 @@ typedef struct Location {
     LocationName name;
     Fish *firstFish;
     Texture2D background;
+    Texture2D backgroundBlur;
     Texture2D sailor;
     Texture2D salesman;
     Texture2D pier;
     Texture2D pierRight;
     Texture2D boat;
     Texture2D fishShop;
+    Texture2D fishShopMenu;
 
 }Location;
 
@@ -101,7 +103,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
 Location* startLocation(LocationName locationName, Assets assets);
 void insertFish(Fish **head, char *name, int price, int letters, Texture2D sprite, LocationName locationName);
 void removeFish(Fish **head);
-Fish* findFishByName(Fish *head, const char *name);
+void LoadFishpedia(Location MarcoZero, Location PortoDeGalinhas, Location FernandoDeNoronha);
 
 
 #endif

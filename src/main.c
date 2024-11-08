@@ -41,6 +41,7 @@ int main(void) {
     Location *portoDeGalinhas = startLocation(PORTO_DE_GALINHAS, assets);
     Location *fernandoDeNoronha = startLocation(FERNANDO_DE_NORONHA, assets);
     Location *location = marcoZero;
+    LoadFishpedia(*marcoZero, *portoDeGalinhas, *fernandoDeNoronha);
 
     int gameFrame = DEFAULT;
 
