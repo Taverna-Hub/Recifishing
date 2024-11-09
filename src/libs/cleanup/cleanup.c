@@ -66,6 +66,11 @@ void UnloadAssets(Assets assets) {
     for (int i = 0; i < 10; i++){
         UnloadTexture(assets.noronhaFishes[i]);
     }
+
+    UnloadTexture(assets.MarcoSign);
+    UnloadTexture(assets.PortoSign);
+    UnloadTexture(assets.NoronhaSign);
+
     UnloadMusicStream(assets.anunciacao);
     UnloadMusicStream(assets.labelledejour);
     UnloadMusicStream(assets.morenaTropicana);

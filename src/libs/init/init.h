@@ -54,6 +54,9 @@ typedef struct {
     Texture2D bucketBackground;
     Texture2D fishpediaBackground;
     Texture2D fishFrame;
+    Texture2D MarcoSign;
+    Texture2D PortoSign;
+    Texture2D NoronhaSign;
 
     Music anunciacao;
     Music labelledejour;

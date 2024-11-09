@@ -1019,30 +1019,29 @@ void DrawFishpedia(Assets assets, Location *MarcoZero, Location *PortoDeGalinhas
     DrawText("Fishpedia", 448, 72, 28, BLACK);
     DrawText("Fishpedia", 450, 70, 28, WHITE);
 
-    if (currentFishpediaPage == MARCO_ZERO_PAGE) {
-        DrawText("Localidade: Marco Zero", 20, 20, 24, BLACK);
-        DrawText("Localidade: Marco Zero", 22, 22, 24, WHITE);
-        sprintf(fishpediaCountStr, "%d", marcoZeroCapturedCount); 
-        DrawText(fishpediaCountStr, 870, 100, 28, BLACK);
-        DrawText(fishpediaCountStr, 872, 98, 28, WHITE);
-        DrawText("/8", 889, 96, 28, BLACK);
-        DrawText("/8", 887, 98, 28, WHITE);
+     if (currentFishpediaPage == MARCO_ZERO_PAGE) {
+        DrawTexture(assets.MarcoSign, 50, 56, RAYWHITE);
+        sprintf(fishpediaCountStr, "%d", marcoZeroCapturedCount);
+        DrawText(fishpediaCountStr, 100, 68, 28, BLACK);
+        DrawText(fishpediaCountStr, 102, 66, 28, WHITE);
+        DrawText("/8", 120, 68, 28, BLACK);
+        DrawText("/8", 118, 70, 28, WHITE);
+
     } else if (currentFishpediaPage == PORTO_DE_GALINHAS_PAGE) {
-        DrawText("Localidade: Porto de Galinhas", 20, 20, 24, BLACK);
-        DrawText("Localidade: Porto de Galinhas", 22, 22, 24, WHITE);
-        sprintf(fishpediaCountStr, "%d", portoDeGalinhasCapturedCount);  
-        DrawText(fishpediaCountStr, 870, 100, 28, BLACK);
-        DrawText(fishpediaCountStr, 872, 98, 28, WHITE);
-        DrawText("/8", 889, 96, 28, BLACK);
-        DrawText("/8", 887, 98, 28, WHITE);
+        DrawTexture(assets.PortoSign, 50, 56, RAYWHITE);
+        sprintf(fishpediaCountStr, "%d", portoDeGalinhasCapturedCount);
+        DrawText(fishpediaCountStr, 100, 68, 28, BLACK);
+        DrawText(fishpediaCountStr, 102, 66, 28, WHITE);
+        DrawText("/8", 120, 68, 28, BLACK);
+        DrawText("/8", 118, 70, 28, WHITE);
+
     } else if (currentFishpediaPage == FERNANDO_DE_NORONHA_PAGE) {
-        DrawText("Localidade: Fernando de Noronha", 20, 20, 24, BLACK);
-        DrawText("Localidade: Fernando de Noronha", 22, 22, 24, WHITE);
-        sprintf(fishpediaCountStr, "%d", fernandoDeNoronhaCapturedCount);  
-        DrawText(fishpediaCountStr, 870, 100, 28, BLACK);
-        DrawText(fishpediaCountStr, 872, 98, 28, WHITE);
-        DrawText("/8", 889, 96, 28, BLACK);
-        DrawText("/8", 887, 98, 28, WHITE);
+        DrawTexture(assets.NoronhaSign, 50, 56, RAYWHITE);
+        sprintf(fishpediaCountStr, "%d", fernandoDeNoronhaCapturedCount);
+        DrawText(fishpediaCountStr, 100, 68, 28, BLACK);
+        DrawText(fishpediaCountStr, 102, 66, 28, WHITE);
+        DrawText("/8", 120, 68, 28, BLACK);
+        DrawText("/8", 118, 70, 28, WHITE);
     }
 
     Vector2 framePositions[8] = {
