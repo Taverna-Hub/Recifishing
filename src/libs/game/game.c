@@ -17,6 +17,9 @@ Fishpedia *fishpediaHead = NULL;
 Bucket *bucketHead = NULL;
 
 int balance = 0;
+int marcoZeroCapturedCount = 0;
+int portoDeGalinhasCapturedCount = 0;
+int fernandoDeNoronhaCapturedCount = 0;
 
 int cont = 0;
 int entrou = 0;
@@ -36,6 +39,7 @@ bool ranOutOfTime = false;
 bool firstGame = true;
 int bucket = 0;
 int fishpediaCount = 0;
+FishpediaPage currentFishpediaPage = MARCO_ZERO_PAGE;
 char bucketStr[20];
 char fishpediaCountStr[20];
 
@@ -686,22 +690,49 @@ Location* startLocation(LocationName locationName, Assets assets) {
             createFish(&first, "Jacaré", 75, 10, assets.marcoZeroFishes[0], MARCO_ZERO);
             createFish(&first, "Peixe-CESAR", 60, 8, assets.marcoZeroFishes[1], MARCO_ZERO);
             createFish(&first, "Peixe-Chico", 50, 7, assets.marcoZeroFishes[2], MARCO_ZERO);
-            createFish(&first, "Perna Cabeluda", 0, 5, assets.marcoZeroFishes[9], MARCO_ZERO);
             createFish(&first, "Peixe-Frevo", 25, 4, assets.marcoZeroFishes[3], MARCO_ZERO);
             createFish(&first, "Peixe-Maloka", 25, 4, assets.marcoZeroFishes[4], MARCO_ZERO);
             createFish(&first, "Peixe-Náutico", 30, 5, assets.marcoZeroFishes[5], MARCO_ZERO);
             createFish(&first, "Peixe-Santa", 30, 5, assets.marcoZeroFishes[6], MARCO_ZERO);
-            createFish(&first, "Saco de Pipoca", 0, 5, assets.marcoZeroFishes[8], MARCO_ZERO);
             createFish(&first, "Peixe-Sport", 30, 5, assets.marcoZeroFishes[7], MARCO_ZERO);
+            createFish(&first, "Saco de Pipoca", 0, 5, assets.marcoZeroFishes[8], MARCO_ZERO);
+            createFish(&first, "Perna Cabeluda", 0, 5, assets.marcoZeroFishes[9], MARCO_ZERO);
 
             location->firstFish = first;
 
             break;
 
         case PORTO_DE_GALINHAS:
+            Fish *firstPorto = NULL;
+
+            createFish(&firstPorto, "Peixe-Chico", 50, 7, assets.portoFishes[0], PORTO_DE_GALINHAS);
+            createFish(&firstPorto, "Caranguejo", 60, 6, assets.portoFishes[1], PORTO_DE_GALINHAS);
+            createFish(&firstPorto, "Linguado", 40, 5, assets.portoFishes[2], PORTO_DE_GALINHAS);
+            createFish(&firstPorto, "Peixe-Dourado", 55, 6, assets.portoFishes[3], PORTO_DE_GALINHAS);
+            createFish(&firstPorto, "Magikarp", 30, 4, assets.portoFishes[4], PORTO_DE_GALINHAS);
+            createFish(&firstPorto, "Maracatu", 25, 4, assets.portoFishes[5], PORTO_DE_GALINHAS);
+            createFish(&firstPorto, "Peixe-Balão", 35, 5, assets.portoFishes[6], PORTO_DE_GALINHAS);
+            createFish(&firstPorto, "Peixe-Rossi", 70, 8, assets.portoFishes[7], PORTO_DE_GALINHAS);
+
+            location->firstFish = firstPorto;
             break;
 
+       
         case FERNANDO_DE_NORONHA:
+            Fish *firstNoronha = NULL;
+
+            createFish(&firstNoronha, "Enguia", 100, 10, assets.noronhaFishes[0], FERNANDO_DE_NORONHA);
+            createFish(&firstNoronha, "Peixe-Leão", 80, 9, assets.noronhaFishes[1], FERNANDO_DE_NORONHA);
+            createFish(&firstNoronha, "Polvo", 90, 8, assets.noronhaFishes[2], FERNANDO_DE_NORONHA);
+            createFish(&firstNoronha, "Salmão", 95, 9, assets.noronhaFishes[3], FERNANDO_DE_NORONHA);
+            createFish(&firstNoronha, "Sardinha", 20, 3, assets.noronhaFishes[4], FERNANDO_DE_NORONHA);
+            createFish(&firstNoronha, "Tubarão", 150, 12, assets.noronhaFishes[5], FERNANDO_DE_NORONHA);
+            createFish(&firstNoronha, "Arraia", 120, 11, assets.noronhaFishes[6], FERNANDO_DE_NORONHA);
+            createFish(&firstNoronha, "Canudo", 0, 6, assets.noronhaFishes[7], FERNANDO_DE_NORONHA);
+            createFish(&firstNoronha, "Peixe-Espada", 130, 11, assets.noronhaFishes[8], FERNANDO_DE_NORONHA);
+            createFish(&firstNoronha, "Atum", 110, 10, assets.noronhaFishes[9], FERNANDO_DE_NORONHA);
+
+            location->firstFish = firstNoronha;
             break;
 
         default:
@@ -880,6 +911,27 @@ void insertFishpedia(Fishpedia **head, Fish *fish) {
 
 }
 
+void updateLocationCaptureCount(Fish *capturedFish) {
+    if (capturedFish == NULL) {
+        return;
+    }
+
+    switch (capturedFish->locationName) {
+        case MARCO_ZERO:
+            marcoZeroCapturedCount++;
+            break;
+        case PORTO_DE_GALINHAS:
+            portoDeGalinhasCapturedCount++;
+            break;
+        case FERNANDO_DE_NORONHA:
+            fernandoDeNoronhaCapturedCount++;
+            break;
+        default:
+            break;
+    }
+}
+
+
 void removeFish(Fish **head) {
 
 		if (*head != NULL) {
@@ -905,6 +957,7 @@ void addFishToFishpedia(Fish *fish) {
         if (strcmp(current->fish->name, fish->name) == 0) {
             fish->wasCaptured = true;
             fishpediaCount++;
+            updateLocationCaptureCount(fish);
             return;
         }
         current = current->next;
@@ -966,6 +1019,32 @@ void DrawFishpedia(Assets assets, Location *MarcoZero, Location *PortoDeGalinhas
     DrawText("Fishpedia", 448, 72, 28, BLACK);
     DrawText("Fishpedia", 450, 70, 28, WHITE);
 
+    if (currentFishpediaPage == MARCO_ZERO_PAGE) {
+        DrawText("Localidade: Marco Zero", 20, 20, 24, BLACK);
+        DrawText("Localidade: Marco Zero", 22, 22, 24, WHITE);
+        sprintf(fishpediaCountStr, "%d", marcoZeroCapturedCount); 
+        DrawText(fishpediaCountStr, 870, 100, 28, BLACK);
+        DrawText(fishpediaCountStr, 872, 98, 28, WHITE);
+        DrawText("/8", 889, 96, 28, BLACK);
+        DrawText("/8", 887, 98, 28, WHITE);
+    } else if (currentFishpediaPage == PORTO_DE_GALINHAS_PAGE) {
+        DrawText("Localidade: Porto de Galinhas", 20, 20, 24, BLACK);
+        DrawText("Localidade: Porto de Galinhas", 22, 22, 24, WHITE);
+        sprintf(fishpediaCountStr, "%d", portoDeGalinhasCapturedCount);  
+        DrawText(fishpediaCountStr, 870, 100, 28, BLACK);
+        DrawText(fishpediaCountStr, 872, 98, 28, WHITE);
+        DrawText("/8", 889, 96, 28, BLACK);
+        DrawText("/8", 887, 98, 28, WHITE);
+    } else if (currentFishpediaPage == FERNANDO_DE_NORONHA_PAGE) {
+        DrawText("Localidade: Fernando de Noronha", 20, 20, 24, BLACK);
+        DrawText("Localidade: Fernando de Noronha", 22, 22, 24, WHITE);
+        sprintf(fishpediaCountStr, "%d", fernandoDeNoronhaCapturedCount);  
+        DrawText(fishpediaCountStr, 870, 100, 28, BLACK);
+        DrawText(fishpediaCountStr, 872, 98, 28, WHITE);
+        DrawText("/8", 889, 96, 28, BLACK);
+        DrawText("/8", 887, 98, 28, WHITE);
+    }
+
     Vector2 framePositions[8] = {
         {55, 130}, {275, 130}, {545, 130}, {765, 130},
         {55, 380}, {275, 380}, {545, 380}, {765, 380}
@@ -976,30 +1055,72 @@ void DrawFishpedia(Assets assets, Location *MarcoZero, Location *PortoDeGalinhas
     };
 
     int index = 0;
-    Fishpedia *fishpediaAux = fishpediaHead;
+    Fish *fish = NULL;
 
-    for (int i = 0; i < 8; i++) {
+    if (currentFishpediaPage == MARCO_ZERO_PAGE) {
+        fish = MarcoZero->firstFish;
+    } else if (currentFishpediaPage == PORTO_DE_GALINHAS_PAGE) {
+        fish = PortoDeGalinhas->firstFish;
+    } else if (currentFishpediaPage == FERNANDO_DE_NORONHA_PAGE) {
+        fish = FernandoDeNoronha->firstFish;
+    }
+
+    while (fish != NULL && index < 8) {
+        while (fish->isTrash)
+        {
+            fish=fish->next;
+        }
+        
         DrawTextureEx(assets.fishFrame, framePositions[index], 0.0f, 1.1f, RAYWHITE);
-        if (fishpediaAux && fishpediaAux->fish->wasCaptured) {
-            DrawTextureEx(fishpediaAux->fish->sprite, (Vector2){framePositions[index].x + 40, framePositions[index].y}, 0.0f, 1.0f, WHITE);
-            DrawText(fishpediaAux->fish->name, textPositions[index].x - (strlen(fishpediaAux->fish->name) * 4), textPositions[index].y, 24, BLACK);
+        if (fish->wasCaptured && !fish->isTrash) {
+            DrawTextureEx(fish->sprite, (Vector2){framePositions[index].x + 40, framePositions[index].y}, 0.0f, 1.0f, WHITE);
+            DrawText(fish->name, textPositions[index].x - (strlen(fish->name) * 4), textPositions[index].y, 24, BLACK);
         } else {
-            DrawTextureEx(fishpediaAux->fish->sprite, (Vector2){framePositions[index].x + 40, framePositions[index].y}, 0.0f, 1.0f, BLACK);
-            DrawText("?????", textPositions[index].x - 15, textPositions[index].y, 24, BLACK);
+            if (!fish->isTrash)
+            {
+                DrawTextureEx(fish->sprite, (Vector2){framePositions[index].x + 40, framePositions[index].y}, 0.0f, 1.0f, BLACK);
+                DrawText("?????", textPositions[index].x - 15, textPositions[index].y, 24, BLACK);
+                
+            }
         }
         index++;
-        if (fishpediaAux){
-        fishpediaAux = fishpediaAux->next;
-        }
+        fish = fish->next;
     }
 
-    if (CheckCollisionPointRec(mousePos, (Rectangle){50, 620, assets.button.width / 2, assets.button.height / 2})) {
-        DrawTextureEx(assets.buttonDark, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
-    } else {
-        DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+    
+    DrawTextureEx(assets.arrow, (Vector2){870, 600}, 90.0f, 1.0f, RAYWHITE); 
+    DrawTextureEx(assets.arrow, (Vector2){900, 650}, 270.0f, 1.0f, RAYWHITE); 
+    DrawRectangle(810, 600, 60, 50, (Color){0, 255, 0, 100});
+    DrawRectangle(900, 600, 60, 50, (Color){255, 0, 0, 100});
+
+    if (currentFishpediaPage == MARCO_ZERO_PAGE) {
+        if (CheckCollisionPointRec(mousePos, (Rectangle){810, 600, 60, 50}) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            currentFishpediaPage = FERNANDO_DE_NORONHA_PAGE;
+        } else if (CheckCollisionPointRec(mousePos, (Rectangle){900, 600, 60, 50}) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            currentFishpediaPage = PORTO_DE_GALINHAS_PAGE;
+        }
+
+    } else if (currentFishpediaPage == PORTO_DE_GALINHAS_PAGE) {
+        if (CheckCollisionPointRec(mousePos, (Rectangle){810, 600, 60, 50}) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            currentFishpediaPage = MARCO_ZERO_PAGE;
+        } else if (CheckCollisionPointRec(mousePos, (Rectangle){900, 600, 60, 50}) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            currentFishpediaPage = FERNANDO_DE_NORONHA_PAGE;
+        }
+
+    } else if (currentFishpediaPage == FERNANDO_DE_NORONHA_PAGE) {
+        if (CheckCollisionPointRec(mousePos, (Rectangle){810, 600, 60, 50}) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            currentFishpediaPage = PORTO_DE_GALINHAS_PAGE;
+        } else if (CheckCollisionPointRec(mousePos, (Rectangle){900, 600, 60, 50}) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+            currentFishpediaPage = MARCO_ZERO_PAGE;
+        }
     }
+    
+    
+    
+
     DrawText("VOLTAR", 75, 632, 28, WHITE);
 }
+
 
 void LoadFishpedia(Location MarcoZero, Location PortoDeGalinhas, Location FernandoDeNoronha) {
     Fish *currentFish;

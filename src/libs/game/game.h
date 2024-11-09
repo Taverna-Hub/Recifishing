@@ -90,6 +90,11 @@ typedef struct AnimationFrames {
     int rodPointCount;
 } AnimationFrames;
 
+typedef enum FishpediaPage {
+    MARCO_ZERO_PAGE,
+    PORTO_DE_GALINHAS_PAGE,
+    FERNANDO_DE_NORONHA_PAGE
+} FishpediaPage;
 
 Arrow* createArrow();
 AnimationFrames* createAnimationFrames();

@@ -86,14 +86,14 @@ Assets LoadAssets(void) {
     assets.marcoZeroFishes[8] = LoadTexture("assets/marco_zero/fishes/bokus.png");
     assets.marcoZeroFishes[9] = LoadTexture("assets/marco_zero/fishes/hairyleg.png");
 
-    assets.portoFishes[0] = LoadTexture("assets/porto_de_galinhas/chicofish.png");
-    assets.portoFishes[1] = LoadTexture("assets/porto_de_galinhas/crab.png");
-    assets.portoFishes[2] = LoadTexture("assets/porto_de_galinhas/flounder.png");
-    assets.portoFishes[3] = LoadTexture("assets/porto_de_galinhas/goldfish.png");
-    assets.portoFishes[4] = LoadTexture("assets/porto_de_galinhas/magikarp.png");
-    assets.portoFishes[5] = LoadTexture("assets/porto_de_galinhas/maracatu.png");
-    assets.portoFishes[6] = LoadTexture("assets/porto_de_galinhas/pufferfish.png");
-    assets.portoFishes[7] = LoadTexture("assets/porto_de_galinhas/rossifish.png");
+    assets.portoFishes[0] = LoadTexture("assets/porto_de_galinhas/fishes/chicofish.png");
+    assets.portoFishes[1] = LoadTexture("assets/porto_de_galinhas/fishes/crab.png");
+    assets.portoFishes[2] = LoadTexture("assets/porto_de_galinhas/fishes/flounder.png");
+    assets.portoFishes[3] = LoadTexture("assets/porto_de_galinhas/fishes/goldfish.png");
+    assets.portoFishes[4] = LoadTexture("assets/porto_de_galinhas/fishes/magikarp.png");
+    assets.portoFishes[5] = LoadTexture("assets/porto_de_galinhas/fishes/maracatu.png");
+    assets.portoFishes[6] = LoadTexture("assets/porto_de_galinhas/fishes/pufferfish.png");
+    assets.portoFishes[7] = LoadTexture("assets/porto_de_galinhas/fishes/rossifish.png");
 
     assets.noronhaFishes[0] = LoadTexture("assets/fernando_de_noronha/fishes/eel.png");
     assets.noronhaFishes[1] = LoadTexture("assets/fernando_de_noronha/fishes/lionfish.png");
