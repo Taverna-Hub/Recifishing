@@ -43,6 +43,14 @@ typedef struct {
     Texture2D portal;
     Texture2D backgroundPorto;
 
+    Texture2D sailorNoronha;
+    Texture2D salesmanNoronha;
+    Texture2D coral;
+    Texture2D islands;
+    Texture2D sharkfin;
+    Texture2D star;
+    Texture2D turtle;
+
     Texture2D fish;
     Texture2D fishFraming;
     Texture2D baseButton;

@@ -127,6 +127,14 @@ Assets LoadAssets(void) {
     assets.portal = LoadTexture("assets/porto_de_galinhas/portal.png");
     assets.backgroundPorto = LoadTexture("assets/porto_de_galinhas/porto_galinhas_bg.png");
 
+    assets.sailorNoronha = LoadTexture("assets/fernando_de_noronha/sailornoronha.png");
+    assets.salesmanNoronha = LoadTexture("assets/fernando_de_noronha/salesmannoronha.png");
+    assets.coral = LoadTexture("assets/fernando_de_noronha/coral.png");
+    assets.islands = LoadTexture("assets/fernando_de_noronha/islands.png");
+    assets.sharkfin = LoadTexture("assets/fernando_de_noronha/sharkfin.png");
+    assets.star = LoadTexture("assets/fernando_de_noronha/star.png");
+    assets.turtle = LoadTexture("assets/fernando_de_noronha/turtle.png");
+
 
     return assets;
 }

@@ -11,7 +11,8 @@
 
 Fishpedia *fishpediaHead = NULL;
 Bucket *bucketHead = NULL;
-int balance = 800;
+bool visitedNoronha = false;
+int balance = 1800;
 int marcoZeroCapturedCount = 0;
 int portoDeGalinhasCapturedCount = 0;
 int fernandoDeNoronhaCapturedCount = 0;
@@ -76,15 +77,22 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arr
         *gameFrame = cursorHandle(mousePos, assets.button, assets.fishBucket, assets.fishPedia, *gameFrame);
     }
     if (*gameFrame == PORT) {
-        Rectangle simButtonRec = {400, 380, assets.button.width * 0.8, assets.button.height * 0.8};
-        Rectangle noButtonRec = {725, 380, assets.button.width * 0.8, assets.button.height * 0.8};
-        if (CheckCollisionPointRec(mousePos, simButtonRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && balance >= 500) {
+    Rectangle simButtonRec = {400, 380, assets.button.width * 0.8, assets.button.height * 0.8};
+    if (CheckCollisionPointRec(mousePos, simButtonRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+        if (balance >= 500 && location->name == MARCO_ZERO) {
             balance -= 500;
             *location = *startLocation(PORTO_DE_GALINHAS, assets);
             *gameFrame = DEFAULT;
             return;
+        } else if (balance >= 800 && location->name == PORTO_DE_GALINHAS) {
+            balance -= 800;
+            *location = *startLocation(FERNANDO_DE_NORONHA, assets);
+            visitedNoronha = true;
+            *gameFrame = DEFAULT;
+            return;
         }
     }
+}
     if (*gameFrame == PIER) {
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || successfulCatch != 0) {
             if (entrou) {
@@ -450,6 +458,8 @@ void initializeFishLists(Assets assets) {
     createFish(&marcoZeroFishList, "Peixe-Sport", 30, 5, assets.marcoZeroFishes[7], MARCO_ZERO);
     createFish(&marcoZeroFishList, "Saco de Pipoca", 0, 5, assets.marcoZeroFishes[8], MARCO_ZERO);
     createFish(&marcoZeroFishList, "Perna Cabeluda", 0, 5, assets.marcoZeroFishes[9], MARCO_ZERO);
+    sortFishListByDifficulty(&marcoZeroFishList);
+
 
     createFish(&portoDeGalinhasFishList, "Peixe-Chico", 50, 7, assets.portoFishes[0], PORTO_DE_GALINHAS);
     createFish(&portoDeGalinhasFishList, "Caranguejo", 60, 6, assets.portoFishes[1], PORTO_DE_GALINHAS);
@@ -459,6 +469,8 @@ void initializeFishLists(Assets assets) {
     createFish(&portoDeGalinhasFishList, "Maracatu", 25, 4, assets.portoFishes[5], PORTO_DE_GALINHAS);
     createFish(&portoDeGalinhasFishList, "Peixe-Balão", 35, 5, assets.portoFishes[6], PORTO_DE_GALINHAS);
     createFish(&portoDeGalinhasFishList, "Peixe-Rossi", 70, 8, assets.portoFishes[7], PORTO_DE_GALINHAS);
+    sortFishListByDifficulty(&portoDeGalinhasFishList);
+
 
     createFish(&fernandoDeNoronhaFishList, "Enguia", 100, 10, assets.noronhaFishes[0], FERNANDO_DE_NORONHA);
     createFish(&fernandoDeNoronhaFishList, "Peixe-Leão", 80, 9, assets.noronhaFishes[1], FERNANDO_DE_NORONHA);
@@ -470,6 +482,7 @@ void initializeFishLists(Assets assets) {
     createFish(&fernandoDeNoronhaFishList, "Canudo", 0, 6, assets.noronhaFishes[7], FERNANDO_DE_NORONHA);
     createFish(&fernandoDeNoronhaFishList, "Peixe-Espada", 130, 11, assets.noronhaFishes[8], FERNANDO_DE_NORONHA);
     createFish(&fernandoDeNoronhaFishList, "Atum", 110, 10, assets.noronhaFishes[9], FERNANDO_DE_NORONHA);
+    sortFishListByDifficulty(&fernandoDeNoronhaFishList);
 }
 
 AnimationFrames* createAnimationFrames() {
@@ -702,6 +715,14 @@ Location* startLocation(LocationName locationName, Assets assets) {
             break;
 
         case FERNANDO_DE_NORONHA:
+            location->background = assets.backgroundPorto;
+            location->backgroundBlur = assets.backgroundMarcoZeroBlur;
+            location->boat = assets.boat;
+            location->sailor = assets.sailorNoronha;
+            location->salesman = assets.salesmanNoronha;
+            location->fishShop = assets.fishShop;
+            location->fishShopMenu = assets.fishShopMenu;
+            location->pier = assets.marcoZeroPier;
             location->firstFish = fernandoDeNoronhaFishList;
             break;
 
@@ -1139,39 +1160,8 @@ void DrawPort(Assets assets, Location *location, Vector2 mousePos) {
     DrawTextureEx(location->sailor, (Vector2){100, 230}, 0.0f, 2.2f, WHITE);
     DrawTextureEx(assets.button, (Vector2){400, 160}, 0.0f, 1.8f, WHITE);
 
-    Rectangle simButtonRec = {400, 380, assets.button.width * 0.8, assets.button.height * 0.8};
-    if (CheckCollisionPointRec(mousePos, simButtonRec)) {
-        DrawTextureEx(assets.buttonDark, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && balance >= 500) {
-            balance -= 500;
-            *location = *startLocation(PORTO_DE_GALINHAS, assets);
-        }
-    } else {
-        DrawTextureEx(assets.button, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
-    }
-
-    Rectangle naoButtonRec = {725, 380, assets.button.width * 0.8, assets.button.height * 0.8};
-    if (CheckCollisionPointRec(mousePos, naoButtonRec)) {
-        DrawTextureEx(assets.buttonDark, (Vector2){725, 380}, 0.0f, 0.8f, WHITE);
-    } else {
-        DrawTextureEx(assets.button, (Vector2){725, 380}, 0.0f, 0.8f, WHITE);
-    }
-
-    DrawRectangleRec(simButtonRec, (Color){0, 255, 0, 120});
-    DrawRectangleRec(naoButtonRec, (Color){255, 0, 0, 120});
-
-    DrawText("SIM", 488, 400, 45, WHITE);
-    DrawText("NÃO", 810, 400, 45, WHITE);
-    DrawText("VIAJAR PARA", 435, 210, 28, WHITE);
-    DrawText("PORTO DE GALINHAS?", 637, 210, 28, YELLOW);
-    DrawTextureEx(assets.coin, (Vector2){610, 260}, 0.0f, 0.6f, WHITE);
-    DrawText("500", 680, 270, 45, WHITE);
-
-    DrawTextureEx(assets.coin, (Vector2){810, 40}, 0.0f, 0.7f, WHITE);
-    char balanceText[10];
-    sprintf(balanceText, "%03d", balance);
-    DrawText(balanceText, 888, 57, 45, BLACK);
-    DrawText(balanceText, 890, 55, 45, WHITE);
+    Rectangle firstButtonRec = {400, 380, assets.button.width * 0.8f, assets.button.height * 0.8f};
+    Rectangle secondButtonRec = {725, 380, assets.button.width * 0.8f, assets.button.height * 0.8f};
 
     Rectangle voltarButtonRec = {50, 620, assets.button.width / 2, assets.button.height / 2};
     if (CheckCollisionPointRec(mousePos, voltarButtonRec)) {
@@ -1180,6 +1170,139 @@ void DrawPort(Assets assets, Location *location, Vector2 mousePos) {
         DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
     }
     DrawText("VOLTAR", 75, 632, 28, WHITE);
+
+    DrawTextureEx(assets.coin, (Vector2){810, 40}, 0.0f, 0.7f, WHITE);
+    char balanceText[10];
+    sprintf(balanceText, "%03d", balance);
+    DrawText(balanceText, 888, 57, 45, BLACK);
+    DrawText(balanceText, 890, 55, 45, WHITE);
+
+    if (location->name == MARCO_ZERO) {
+        if (visitedNoronha) {
+            DrawText("ESCOLHA O DESTINO", 460, 210, 28, WHITE);
+            DrawText("PARA VIAJAR", 640, 210, 28, YELLOW);
+            DrawText("VIAGEM GRÁTIS", 590, 270, 45, WHITE);
+
+            if (CheckCollisionPointRec(mousePos, firstButtonRec)) {
+                DrawTextureEx(assets.buttonDark, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
+                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                    *location = *startLocation(PORTO_DE_GALINHAS, assets);
+                }
+            } else {
+                DrawTextureEx(assets.button, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
+            }
+            DrawText("PORTO DE GALINHAS", 435, 400, 24, WHITE);
+
+            if (CheckCollisionPointRec(mousePos, secondButtonRec)) {
+                DrawTextureEx(assets.buttonDark, (Vector2){725, 380}, 0.0f, 0.8f, WHITE);
+                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                    *location = *startLocation(FERNANDO_DE_NORONHA, assets);
+                }
+            } else {
+                DrawTextureEx(assets.button, (Vector2){725, 380}, 0.0f, 0.8f, WHITE);
+            }
+            DrawText("FERNANDO DE NORONHA", 750, 400, 18, WHITE);
+
+        } else {
+            DrawText("VIAJAR PARA", 435, 210, 28, WHITE);
+            DrawText("PORTO DE GALINHAS?", 637, 210, 28, YELLOW);
+            DrawTextureEx(assets.coin, (Vector2){610, 260}, 0.0f, 0.6f, WHITE);
+            DrawText("500", 680, 270, 45, WHITE);
+
+            if (CheckCollisionPointRec(mousePos, firstButtonRec)) {
+                DrawTextureEx(assets.buttonDark, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
+                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && balance >= 500) {
+                    balance -= 500;
+                    *location = *startLocation(PORTO_DE_GALINHAS, assets);
+                }
+            } else {
+                DrawTextureEx(assets.button, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
+            }
+            DrawText("SIM", 488, 400, 45, WHITE);
+
+            if (CheckCollisionPointRec(mousePos, secondButtonRec)) {
+                DrawTextureEx(assets.buttonDark, (Vector2){725, 380}, 0.0f, 0.8f, WHITE);
+            } else {
+                DrawTextureEx(assets.button, (Vector2){725, 380}, 0.0f, 0.8f, WHITE);
+            }
+            DrawText("NÃO", 810, 400, 45, WHITE);
+        }
+    } else if (location->name == PORTO_DE_GALINHAS) {
+        if (visitedNoronha) {
+            DrawText("ESCOLHA O DESTINO", 460, 210, 28, WHITE);
+            DrawText("PARA VIAJAR", 640, 210, 28, YELLOW);
+            DrawText("VIAGEM GRÁTIS", 590, 270, 45, WHITE);
+
+            if (CheckCollisionPointRec(mousePos, firstButtonRec)) {
+                DrawTextureEx(assets.buttonDark, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
+                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                    *location = *startLocation(MARCO_ZERO, assets);
+                }
+            } else {
+                DrawTextureEx(assets.button, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
+            }
+            DrawText("MARCO ZERO", 465, 400, 35, WHITE);
+
+            if (CheckCollisionPointRec(mousePos, secondButtonRec)) {
+                DrawTextureEx(assets.buttonDark, (Vector2){725, 380}, 0.0f, 0.8f, WHITE);
+                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                    *location = *startLocation(FERNANDO_DE_NORONHA, assets);
+                }
+            } else {
+                DrawTextureEx(assets.button, (Vector2){725, 380}, 0.0f, 0.8f, WHITE);
+            }
+            DrawText("FERNANDO DE NORONHA", 740, 400, 18, WHITE);
+
+        } else {
+            DrawText("VIAJAR PARA", 435, 210, 28, WHITE);
+            DrawText("FERNANDO DE NORONHA?", 637, 210, 28, YELLOW);
+            DrawTextureEx(assets.coin, (Vector2){610, 260}, 0.0f, 0.6f, WHITE);
+            DrawText("800", 680, 270, 45, WHITE);
+
+            if (CheckCollisionPointRec(mousePos, firstButtonRec)) {
+                DrawTextureEx(assets.buttonDark, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
+                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && balance >= 800) {
+                    balance -= 800;
+                    *location = *startLocation(FERNANDO_DE_NORONHA, assets);
+                    visitedNoronha = true;
+                }
+            } else {
+                DrawTextureEx(assets.button, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
+            }
+            DrawText("SIM", 488, 400, 45, WHITE);
+
+            if (CheckCollisionPointRec(mousePos, secondButtonRec)) {
+                DrawTextureEx(assets.buttonDark, (Vector2){725, 380}, 0.0f, 0.8f, WHITE);
+            } else {
+                DrawTextureEx(assets.button, (Vector2){725, 380}, 0.0f, 0.8f, WHITE);
+            }
+            DrawText("NÃO", 810, 400, 45, WHITE);
+        }
+    } else if (location->name == FERNANDO_DE_NORONHA) {
+        DrawText("ESCOLHA O DESTINO", 460, 210, 28, WHITE);
+        DrawText("PARA VIAJAR", 460, 230, 28, YELLOW);
+        
+
+        if (CheckCollisionPointRec(mousePos, firstButtonRec)) {
+            DrawTextureEx(assets.buttonDark, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
+            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                *location = *startLocation(MARCO_ZERO, assets);
+            }
+        } else {
+            DrawTextureEx(assets.button, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
+        }
+        DrawText("MARCO ZERO", 465, 400, 35, WHITE);
+
+        if (CheckCollisionPointRec(mousePos, secondButtonRec)) {
+            DrawTextureEx(assets.buttonDark, (Vector2){725, 380}, 0.0f, 0.8f, WHITE);
+            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+                *location = *startLocation(PORTO_DE_GALINHAS, assets);
+            }
+        } else {
+            DrawTextureEx(assets.button, (Vector2){725, 380}, 0.0f, 0.8f, WHITE);
+        }
+        DrawText("PORTO DE GALINHAS", 740, 400, 24, WHITE);
+    }
 }
 
 void sell(Assets assets) {
@@ -1201,4 +1324,54 @@ void sell(Assets assets) {
         PlaySound(assets.sellSound);
     }
     bucket = 0;
+}
+void sortFishListByDifficulty(Fish **head) {
+    if (*head == NULL) return;
+
+    bool swapped = true;
+    Fish *current;
+    Fish *last = NULL;
+
+    while (swapped) {
+        swapped = false;
+        current = *head;
+
+        while (current->next != last) {
+            if (current->letters > current->next->letters) {
+                char tempName[30];
+                int tempPrice = current->price;
+                int tempLetters = current->letters;
+                Texture2D tempSprite = current->sprite;
+                bool tempIsTrash = current->isTrash;
+                bool tempWasCaptured = current->wasCaptured;
+                LocationName tempLocationName = current->locationName;
+
+                strcpy(tempName, current->name);
+                strcpy(current->name, current->next->name);
+                strcpy(current->next->name, tempName);
+
+                current->price = current->next->price;
+                current->next->price = tempPrice;
+
+                current->letters = current->next->letters;
+                current->next->letters = tempLetters;
+
+                current->sprite = current->next->sprite;
+                current->next->sprite = tempSprite;
+
+                current->isTrash = current->next->isTrash;
+                current->next->isTrash = tempIsTrash;
+
+                current->wasCaptured = current->next->wasCaptured;
+                current->next->wasCaptured = tempWasCaptured;
+
+                current->locationName = current->next->locationName;
+                current->next->locationName = tempLocationName;
+
+                swapped = true;
+            }
+            current = current->next;
+        }
+        last = current;
+    }
 }
