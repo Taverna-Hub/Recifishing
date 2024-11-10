@@ -44,6 +44,9 @@ void UnloadAssets(Assets assets) {
     UnloadTexture(assets.chicken);
     UnloadTexture(assets.portal);
     UnloadTexture(assets.backgroundPorto);
+    UnloadTexture(assets.fishShopPorto);
+    UnloadTexture(assets.fishShopPortoMenu);
+    UnloadTexture(assets.backgroundPortoBlur);
 
 
     for (int i = 0; i < 5; i++){
@@ -68,11 +71,11 @@ void UnloadAssets(Assets assets) {
     for (int i = 0; i < 10; i++){
         UnloadTexture(assets.marcoZeroFishes[i]);
     }
-    for (int i = 0; i < 8; i++){
+    for (int i = 0; i < 10; i++){
         UnloadTexture(assets.portoFishes[i]);
     }
 
-    for (int i = 0; i < 10; i++){
+    for (int i = 0; i < 11; i++){
         UnloadTexture(assets.noronhaFishes[i]);
     }
 

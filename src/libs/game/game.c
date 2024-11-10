@@ -80,20 +80,12 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arr
     Rectangle simButtonRec = {400, 380, assets.button.width * 0.8, assets.button.height * 0.8};
     if (CheckCollisionPointRec(mousePos, simButtonRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
         if (balance >= 500 && location->name == MARCO_ZERO) {
-            if (!visitedNoronha)
-            {
-                balance -= 500;
-            }
-            
+            balance -= 500;
             *location = *startLocation(PORTO_DE_GALINHAS, assets);
             *gameFrame = DEFAULT;
             return;
         } else if (balance >= 800 && location->name == PORTO_DE_GALINHAS) {
-            if (!visitedNoronha)
-            {
-                balance -= 800;
-            }
-            
+            balance -= 800;
             *location = *startLocation(FERNANDO_DE_NORONHA, assets);
             visitedNoronha = true;
             *gameFrame = DEFAULT;
@@ -1220,11 +1212,7 @@ void DrawPort(Assets assets, Location *location, Vector2 mousePos) {
             if (CheckCollisionPointRec(mousePos, firstButtonRec)) {
                 DrawTextureEx(assets.buttonDark, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
                 if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && balance >= 500) {
-                    if (!visitedNoronha)
-                    {
-                        balance -= 500;
-                    }
-                    
+                    balance -= 500;
                     *location = *startLocation(PORTO_DE_GALINHAS, assets);
                 }
             } else {
@@ -1274,11 +1262,7 @@ void DrawPort(Assets assets, Location *location, Vector2 mousePos) {
             if (CheckCollisionPointRec(mousePos, firstButtonRec)) {
                 DrawTextureEx(assets.buttonDark, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
                 if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && balance >= 800) {
-                    if (!visitedNoronha)
-                    {
-                        balance -= 800;
-                    }
-                    
+                    balance -= 800;
                     *location = *startLocation(FERNANDO_DE_NORONHA, assets);
                     visitedNoronha = true;
                 }

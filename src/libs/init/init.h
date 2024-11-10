@@ -15,6 +15,8 @@ typedef struct {
     Texture2D buttonDark;
     Texture2D fishShop;
     Texture2D fishShopMenu;
+    Texture2D fishShopPorto;
+    Texture2D fishShopPortoMenu;
     Texture2D fishShopMenuBG;
     Texture2D fishCounter;
     Texture2D portSign;
@@ -42,6 +44,7 @@ typedef struct {
     Texture2D chicken;
     Texture2D portal;
     Texture2D backgroundPorto;
+    Texture2D backgroundPortoBlur;
 
     Texture2D sailorNoronha;
     Texture2D salesmanNoronha;
@@ -64,8 +67,8 @@ typedef struct {
     Texture2D fishermanFishing[4];
     Texture2D water[10];
     Texture2D marcoZeroFishes[10];
-    Texture2D portoFishes[8];
-    Texture2D noronhaFishes[10];
+    Texture2D portoFishes[10];
+    Texture2D noronhaFishes[11];
 
     Texture2D bucketBackground;
     Texture2D fishpediaBackground;
