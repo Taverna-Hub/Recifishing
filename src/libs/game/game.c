@@ -53,6 +53,7 @@ void fadeHandle(bool *inTransition, int *fadeAlpha);
 void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vector2 mousePos);
 int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D fishpedia, int gameFrame);
 void createFish(Fish **head, char *name, int price, int letters, Texture2D sprite, LocationName locationName);
+void sortFishListByDifficulty(Fish **head);
 void insertBucket(Bucket **head, Fish *fish);
 void DrawBucket(Assets assets, Vector2 mousePos);
 void DrawPort(Assets assets, Location *location, Vector2 mousePos);
@@ -189,7 +190,6 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             }
 
             DrawTextureEx(assets.arrow, (Vector2){65 + arrowFrames2 / 5, 370}, 90.0f, 1.0f, RAYWHITE);
-            updateAnimationFrames(*animationFrames, assets, mousePos);
 
             if (waterUpdateCounter >= 13) {
                 waterFrames = (waterFrames + 1) % 10;
@@ -396,6 +396,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                 pullRod(animationFrames, assets, successfulCatch, hookedFish);
                 StopSound(assets.tictac);
             }
+            updateAnimationFrames(*animationFrames, assets, mousePos);
 
             if (fishFrame <= 250 && fishFrame > 0 && !(*animationFrames)->throwingRodAnimation) {
                 DrawTextureEx(assets.button, (Vector2){268.25, 530}, 0.0f, 1.5f, WHITE);
@@ -453,38 +454,41 @@ Arrow* createArrow() {
 void initializeFishLists(Assets assets) {
     createFish(&marcoZeroFishList, "Jacaré", 75, 10, assets.marcoZeroFishes[0], MARCO_ZERO);
     createFish(&marcoZeroFishList, "Peixe-CESAR", 60, 8, assets.marcoZeroFishes[1], MARCO_ZERO);
+    createFish(&marcoZeroFishList, "Saco de Pipoca", 0, 5, assets.marcoZeroFishes[8], MARCO_ZERO);
     createFish(&marcoZeroFishList, "Peixe-Chico", 50, 7, assets.marcoZeroFishes[2], MARCO_ZERO);
     createFish(&marcoZeroFishList, "Peixe-Frevo", 25, 4, assets.marcoZeroFishes[3], MARCO_ZERO);
     createFish(&marcoZeroFishList, "Peixe-Maloka", 25, 4, assets.marcoZeroFishes[4], MARCO_ZERO);
     createFish(&marcoZeroFishList, "Peixe-Náutico", 30, 5, assets.marcoZeroFishes[5], MARCO_ZERO);
+    createFish(&marcoZeroFishList, "Perna Cabeluda", 0, 5, assets.marcoZeroFishes[9], MARCO_ZERO);
     createFish(&marcoZeroFishList, "Peixe-Santa", 30, 5, assets.marcoZeroFishes[6], MARCO_ZERO);
     createFish(&marcoZeroFishList, "Peixe-Sport", 30, 5, assets.marcoZeroFishes[7], MARCO_ZERO);
-    createFish(&marcoZeroFishList, "Saco de Pipoca", 0, 5, assets.marcoZeroFishes[8], MARCO_ZERO);
-    createFish(&marcoZeroFishList, "Perna Cabeluda", 0, 5, assets.marcoZeroFishes[9], MARCO_ZERO);
     sortFishListByDifficulty(&marcoZeroFishList);
 
 
-    createFish(&portoDeGalinhasFishList, "Peixe-Chico", 50, 7, assets.portoFishes[0], PORTO_DE_GALINHAS);
-    createFish(&portoDeGalinhasFishList, "Caranguejo", 60, 6, assets.portoFishes[1], PORTO_DE_GALINHAS);
-    createFish(&portoDeGalinhasFishList, "Linguado", 40, 5, assets.portoFishes[2], PORTO_DE_GALINHAS);
-    createFish(&portoDeGalinhasFishList, "Peixe-Dourado", 55, 6, assets.portoFishes[3], PORTO_DE_GALINHAS);
-    createFish(&portoDeGalinhasFishList, "Magikarp", 30, 4, assets.portoFishes[4], PORTO_DE_GALINHAS);
-    createFish(&portoDeGalinhasFishList, "Maracatu", 25, 4, assets.portoFishes[5], PORTO_DE_GALINHAS);
-    createFish(&portoDeGalinhasFishList, "Peixe-Balão", 35, 5, assets.portoFishes[6], PORTO_DE_GALINHAS);
-    createFish(&portoDeGalinhasFishList, "Peixe-Rossi", 70, 8, assets.portoFishes[7], PORTO_DE_GALINHAS);
+    createFish(&portoDeGalinhasFishList, "Peixe-Galinha", 120, 10, assets.portoFishes[0], PORTO_DE_GALINHAS);
+    createFish(&portoDeGalinhasFishList, "Caranguejo", 75, 4, assets.portoFishes[1], PORTO_DE_GALINHAS);
+    createFish(&portoDeGalinhasFishList, "Heineken", 0, 6, assets.portoFishes[9], PORTO_DE_GALINHAS);
+    createFish(&portoDeGalinhasFishList, "Linguado", 80, 5, assets.portoFishes[2], PORTO_DE_GALINHAS);
+    createFish(&portoDeGalinhasFishList, "Peixe-Dourado", 80, 5, assets.portoFishes[3], PORTO_DE_GALINHAS);
+    createFish(&portoDeGalinhasFishList, "Magikarp", 90, 6, assets.portoFishes[4], PORTO_DE_GALINHAS);
+    createFish(&portoDeGalinhasFishList, "Maracatu", 100, 8, assets.portoFishes[5], PORTO_DE_GALINHAS);
+    createFish(&portoDeGalinhasFishList, "CD Quebrado", 0, 5, assets.portoFishes[8], PORTO_DE_GALINHAS);
+    createFish(&portoDeGalinhasFishList, "Peixe-Balão", 90, 6, assets.portoFishes[6], PORTO_DE_GALINHAS);
+    createFish(&portoDeGalinhasFishList, "Peixe-Rossi", 100, 8, assets.portoFishes[7], PORTO_DE_GALINHAS);
     sortFishListByDifficulty(&portoDeGalinhasFishList);
 
 
-    createFish(&fernandoDeNoronhaFishList, "Enguia", 100, 10, assets.noronhaFishes[0], FERNANDO_DE_NORONHA);
-    createFish(&fernandoDeNoronhaFishList, "Peixe-Leão", 80, 9, assets.noronhaFishes[1], FERNANDO_DE_NORONHA);
-    createFish(&fernandoDeNoronhaFishList, "Polvo", 90, 8, assets.noronhaFishes[2], FERNANDO_DE_NORONHA);
-    createFish(&fernandoDeNoronhaFishList, "Salmão", 95, 9, assets.noronhaFishes[3], FERNANDO_DE_NORONHA);
-    createFish(&fernandoDeNoronhaFishList, "Sardinha", 20, 3, assets.noronhaFishes[4], FERNANDO_DE_NORONHA);
-    createFish(&fernandoDeNoronhaFishList, "Tubarão", 150, 12, assets.noronhaFishes[5], FERNANDO_DE_NORONHA);
-    createFish(&fernandoDeNoronhaFishList, "Arraia", 120, 11, assets.noronhaFishes[6], FERNANDO_DE_NORONHA);
+    createFish(&fernandoDeNoronhaFishList, "Enguia", 200, 6, assets.noronhaFishes[0], FERNANDO_DE_NORONHA);
+    createFish(&fernandoDeNoronhaFishList, "Peixe-Leão", 250, 8, assets.noronhaFishes[1], FERNANDO_DE_NORONHA);
     createFish(&fernandoDeNoronhaFishList, "Canudo", 0, 6, assets.noronhaFishes[7], FERNANDO_DE_NORONHA);
-    createFish(&fernandoDeNoronhaFishList, "Peixe-Espada", 130, 11, assets.noronhaFishes[8], FERNANDO_DE_NORONHA);
-    createFish(&fernandoDeNoronhaFishList, "Atum", 110, 10, assets.noronhaFishes[9], FERNANDO_DE_NORONHA);
+    createFish(&fernandoDeNoronhaFishList, "Polvo", 200, 6, assets.noronhaFishes[2], FERNANDO_DE_NORONHA);
+    createFish(&fernandoDeNoronhaFishList, "Salmão", 150, 5, assets.noronhaFishes[3], FERNANDO_DE_NORONHA);
+    createFish(&fernandoDeNoronhaFishList, "Sardinha", 120, 4, assets.noronhaFishes[4], FERNANDO_DE_NORONHA);
+    createFish(&fernandoDeNoronhaFishList, "Tubarão", 999, 15, assets.noronhaFishes[5], FERNANDO_DE_NORONHA);
+    createFish(&fernandoDeNoronhaFishList, "Arraia", 250, 8, assets.noronhaFishes[6], FERNANDO_DE_NORONHA);
+    createFish(&fernandoDeNoronhaFishList, "Saco de Lixo", 0, 5, assets.noronhaFishes[10], FERNANDO_DE_NORONHA);
+    createFish(&fernandoDeNoronhaFishList, "Peixe-Espada", 300, 10, assets.noronhaFishes[8], FERNANDO_DE_NORONHA);
+    createFish(&fernandoDeNoronhaFishList, "Atum", 150, 5, assets.noronhaFishes[9], FERNANDO_DE_NORONHA);
     sortFishListByDifficulty(&fernandoDeNoronhaFishList);
 }
 
@@ -535,7 +539,7 @@ void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vect
     }
 
     if (animationFrames->fishingRod->isUsing && animationFrames->throwingRodAnimation) {
-        Vector2 rodPos = {animationFrames->fishingRod->x, animationFrames->fishingRod->y};
+        Vector2 rodPos = {animationFrames->fishingRod->x-20, animationFrames->fishingRod->y+10};
         Vector2 targetPos = {animationFrames->fishingRod->finalX, animationFrames->fishingRod->finalY};
         float speed = 15.0f;
         float distance = Vector2Distance(rodPos, targetPos);
@@ -555,7 +559,7 @@ void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vect
     }
 
     if (animationFrames->fishingRod->isUsing && animationFrames->pullingRodAnimation) {
-        Vector2 targetPos = {240, 350};
+        Vector2 targetPos = {220, 360};
         float speed = 15.0f;
         Vector2 rodPos = {animationFrames->fishingRod->x, animationFrames->fishingRod->y};
         float distance = Vector2Distance(rodPos, targetPos);
@@ -604,8 +608,9 @@ int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D
     Rectangle recFishpedia = {50, 40, fishpedia.width, fishpedia.height};
     Rectangle recBackButton = {50, 620, button.width / 2, button.height / 2};
     Rectangle recArrow = {0, 340, 70, 120};
+    Rectangle recNoButton = {725, 380, button.width*0.8, button.height*0.8};
 
-    if ((CheckCollisionPointRec(mousePos, recBackButton) && gameFrame != DEFAULT && gameFrame != PIER) || (gameFrame == PIER && CheckCollisionPointRec(mousePos, recArrow))) {
+    if ((CheckCollisionPointRec(mousePos, recBackButton) && gameFrame != DEFAULT && gameFrame != PIER) || (gameFrame == PIER && CheckCollisionPointRec(mousePos, recArrow)) || (gameFrame == PORT && CheckCollisionPointRec(mousePos, recNoButton) && !visitedNoronha)) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         entrou = 0;
         if (CheckCollisionPointRec(mousePos, recArrow)) {
@@ -677,8 +682,18 @@ void drawElements(Assets assets, Location *location, int arrowFrames) {
     DrawTexture(location->boat, -50, 115, RAYWHITE);
     DrawTexture(assets.fishPedia, 50, 40, RAYWHITE);
     DrawTexture(assets.fishBucket, 140, 40, RAYWHITE);
+
+    if (location->name == PORTO_DE_GALINHAS) {
+        DrawTexture(assets.portal, 325, 170, RAYWHITE);
+        DrawTextureEx(assets.chicken, (Vector2){300, 350}, 0.0f, 0.5f, RAYWHITE);
+        DrawTextureEx(assets.chicken, (Vector2){635, 350}, 0.0f, 0.5f, RAYWHITE);
+        DrawTextureEx(assets.coconutRight, (Vector2){835, 170}, 0.0f, 0.8f, RAYWHITE);
+    }
+
     DrawTexture(location->fishShop, 680, 228, RAYWHITE);
     DrawTextureEx(assets.portSign, (Vector2){30, 350}, 0.0f, 0.8f, WHITE);
+
+
     DrawTexture(location->sailor, 170, 250, RAYWHITE);
     DrawTexture(location->salesman, 830, 350, RAYWHITE);
     DrawTextureEx(assets.coin, (Vector2){810, 40}, 0.0f, 0.7f, WHITE);
@@ -686,6 +701,7 @@ void drawElements(Assets assets, Location *location, int arrowFrames) {
     sprintf(balanceText, "%03d", balance);
     DrawText(balanceText, 888, 57, 45, BLACK);
     DrawText(balanceText, 890, 55, 45, WHITE);
+    
 }
 
 Location* startLocation(LocationName locationName, Assets assets) {
@@ -709,12 +725,12 @@ Location* startLocation(LocationName locationName, Assets assets) {
 
         case PORTO_DE_GALINHAS:
             location->background = assets.backgroundPorto;
-            location->backgroundBlur = assets.backgroundMarcoZeroBlur;
+            location->backgroundBlur = assets.backgroundPorto;
             location->boat = assets.boat;
             location->sailor = assets.sailorPorto;
             location->salesman = assets.salesmanPorto;
-            location->fishShop = assets.fishShop;
-            location->fishShopMenu = assets.fishShopMenu;
+            location->fishShop = assets.fishShopPorto;
+            location->fishShopMenu = assets.fishShopPortoMenu;
             location->pier = assets.marcoZeroPier;
             location->firstFish = portoDeGalinhasFishList;
             location->pierFilter = (Color){0, 0, 0, 0};
@@ -1172,6 +1188,7 @@ void DrawPort(Assets assets, Location *location, Vector2 mousePos) {
     Rectangle secondButtonRec = {725, 380, assets.button.width * 0.8f, assets.button.height * 0.8f};
 
     Rectangle voltarButtonRec = {50, 620, assets.button.width / 2, assets.button.height / 2};
+
     if (CheckCollisionPointRec(mousePos, voltarButtonRec)) {
         DrawTextureEx(assets.buttonDark, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
     } else {
@@ -1262,8 +1279,8 @@ void DrawPort(Assets assets, Location *location, Vector2 mousePos) {
             DrawText("FERNANDO DE NORONHA", 740, 400, 18, WHITE);
 
         } else {
-            DrawText("VIAJAR PARA", 435, 210, 28, WHITE);
-            DrawText("FERNANDO DE NORONHA?", 637, 210, 28, YELLOW);
+            DrawText("VIAJAR PARA", 415, 210, 28, WHITE);
+            DrawText("FERNANDO DE NORONHA?", 617, 210, 28, YELLOW);
             DrawTextureEx(assets.coin, (Vector2){610, 260}, 0.0f, 0.6f, WHITE);
             DrawText("800", 680, 270, 45, WHITE);
 
@@ -1333,6 +1350,7 @@ void sell(Assets assets) {
     }
     bucket = 0;
 }
+
 void sortFishListByDifficulty(Fish **head) {
     if (*head == NULL) return;
 
