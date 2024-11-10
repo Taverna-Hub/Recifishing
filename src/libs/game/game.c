@@ -1020,26 +1020,26 @@ void DrawFishpedia(Assets assets, Location *MarcoZero, Location *PortoDeGalinhas
     DrawText("Fishpedia", 450, 70, 28, WHITE);
 
      if (currentFishpediaPage == MARCO_ZERO_PAGE) {
-        DrawTexture(assets.MarcoSign, 50, 56, RAYWHITE);
+        DrawTextureEx(assets.MarcoSign, (Vector2){50, 56}, 0.0f, 0.5f, RAYWHITE);
         sprintf(fishpediaCountStr, "%d", marcoZeroCapturedCount);
-        DrawText(fishpediaCountStr, 100, 68, 28, BLACK);
-        DrawText(fishpediaCountStr, 102, 66, 28, WHITE);
+        DrawText(fishpediaCountStr, 100, 72, 28, BLACK);
+        DrawText(fishpediaCountStr, 102, 70, 28, WHITE);
         DrawText("/8", 120, 68, 28, BLACK);
         DrawText("/8", 118, 70, 28, WHITE);
 
     } else if (currentFishpediaPage == PORTO_DE_GALINHAS_PAGE) {
-        DrawTexture(assets.PortoSign, 50, 56, RAYWHITE);
+        DrawTextureEx(assets.PortoSign, (Vector2){50, 56}, 0.0f, 0.5f, RAYWHITE);
         sprintf(fishpediaCountStr, "%d", portoDeGalinhasCapturedCount);
-        DrawText(fishpediaCountStr, 100, 68, 28, BLACK);
-        DrawText(fishpediaCountStr, 102, 66, 28, WHITE);
+        DrawText(fishpediaCountStr, 100, 72, 28, BLACK);
+        DrawText(fishpediaCountStr, 102, 70, 28, WHITE);
         DrawText("/8", 120, 68, 28, BLACK);
         DrawText("/8", 118, 70, 28, WHITE);
 
     } else if (currentFishpediaPage == FERNANDO_DE_NORONHA_PAGE) {
-        DrawTexture(assets.NoronhaSign, 50, 56, RAYWHITE);
+        DrawTextureEx(assets.NoronhaSign, (Vector2){50, 56}, 0.0f, 0.5f, RAYWHITE);
         sprintf(fishpediaCountStr, "%d", fernandoDeNoronhaCapturedCount);
-        DrawText(fishpediaCountStr, 100, 68, 28, BLACK);
-        DrawText(fishpediaCountStr, 102, 66, 28, WHITE);
+        DrawText(fishpediaCountStr, 100, 72, 28, BLACK);
+        DrawText(fishpediaCountStr, 102, 70, 28, WHITE);
         DrawText("/8", 120, 68, 28, BLACK);
         DrawText("/8", 118, 70, 28, WHITE);
     }
