@@ -37,6 +37,15 @@ void UnloadAssets(Assets assets) {
     UnloadTexture(assets.baseButtonFail);
     UnloadTexture(assets.baseButtonSpace);
 
+    UnloadTexture(assets.sailorPorto);
+    UnloadTexture(assets.salesmanPorto);
+    UnloadTexture(assets.coconutLeft);
+    UnloadTexture(assets.coconutRight);
+    UnloadTexture(assets.chicken);
+    UnloadTexture(assets.portal);
+    UnloadTexture(assets.backgroundPorto);
+
+
     for (int i = 0; i < 5; i++){
         UnloadTexture(assets.fishermanHook[i]);
     }

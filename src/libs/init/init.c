@@ -119,5 +119,14 @@ Assets LoadAssets(void) {
     assets.backgroundMarcoZero = LoadTexture("assets/marco_zero/background.png");
     assets.backgroundMarcoZeroBlur = LoadTexture("assets/marco_zero/backgroundBlur.png");
 
+    assets.sailorPorto = LoadTexture("assets/porto_de_galinhas/sailorporto.png");
+    assets.salesmanPorto = LoadTexture("assets/porto_de_galinhas/salesmanporto.png");
+    assets.coconutLeft = LoadTexture("assets/porto_de_galinhas/coconutL.png");
+    assets.coconutRight = LoadTexture("assets/porto_de_galinhas/coconutR.png");
+    assets.chicken = LoadTexture("assets/porto_de_galinhas/chicken.png");
+    assets.portal = LoadTexture("assets/porto_de_galinhas/portal.png");
+    assets.backgroundPorto = LoadTexture("assets/porto_de_galinhas/porto_galinhas_bg.png");
+
+
     return assets;
 }

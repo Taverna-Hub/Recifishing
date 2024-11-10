@@ -35,6 +35,14 @@ typedef struct {
     Texture2D sellButton;
     Texture2D sellButtonHover;
 
+    Texture2D sailorPorto;
+    Texture2D salesmanPorto;
+    Texture2D coconutLeft;
+    Texture2D coconutRight;
+    Texture2D chicken;
+    Texture2D portal;
+    Texture2D backgroundPorto;
+
     Texture2D fish;
     Texture2D fishFraming;
     Texture2D baseButton;

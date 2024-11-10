@@ -31,6 +31,10 @@ int main(void) {
 
     Assets assets = LoadAssets();
 
+    initializeFishLists(assets);
+
+   
+
     Vector2 mousePos = GetMousePosition();
 
     Arrow *arrow = createArrow();
@@ -41,7 +45,6 @@ int main(void) {
     Location *portoDeGalinhas = startLocation(PORTO_DE_GALINHAS, assets);
     Location *fernandoDeNoronha = startLocation(FERNANDO_DE_NORONHA, assets);
     Location *location = marcoZero;
-    LoadFishpedia(*marcoZero, *portoDeGalinhas, *fernandoDeNoronha);
 
     int gameFrame = DEFAULT;
 
@@ -60,7 +63,7 @@ int main(void) {
                 inTransition = true; 
             }
             UpdateGame(&inTransition, &currentScreen, arrow, arrow2, mousePos, assets, &gameFrame, &animationFrames, location);
-            DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed, arrow->arrowFrames, arrow2->arrowFrames, mousePos, gameFrame, &animationFrames, location,marcoZero,portoDeGalinhas,fernandoDeNoronha);
+            DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed, arrow->arrowFrames, arrow2->arrowFrames, mousePos, gameFrame, &animationFrames, location);
 
         }
     }
