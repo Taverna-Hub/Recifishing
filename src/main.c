@@ -33,8 +33,6 @@ int main(void) {
 
     initializeFishLists(assets);
 
-   
-
     Vector2 mousePos = GetMousePosition();
 
     Arrow *arrow = createArrow();

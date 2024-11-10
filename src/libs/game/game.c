@@ -150,12 +150,15 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
     Rectangle recSellButton = {525, 575, assets.sellButton.width*1.3, assets.sellButton.height*1.3};
     Rectangle yesButton = {400, 380, assets.button.width * 0.8, assets.button.height * 0.8};
     Rectangle noButton = {725, 380, assets.button.width * 0.8, assets.button.height * 0.8};
+    Rectangle leftArrow = {810, 600, 60, 50};
+    Rectangle rightArrow = {900, 600, 60, 50};
 
     if ((frame != DEFAULT && frame != PIER && CheckCollisionPointRec(mousePos, recBackButton)) ||
         (frame == PIER && (CheckCollisionPointRec(mousePos, recArrow) || CheckCollisionPointRec(mousePos, fishZone) && (*animationFrames)->fishmanIdle->isUsing || (*animationFrames)->fishmanHook->isUsing)) ||
         (frame == PIER && CheckCollisionPointRec(mousePos, recBucket) || CheckCollisionPointRec(mousePos, recFishpedia)) ||
         frame == FISHSHOP && CheckCollisionPointRec(mousePos, recSellButton) ||
-        (frame == PORT && (CheckCollisionPointRec(mousePos, yesButton) || CheckCollisionPointRec(mousePos, noButton)))) {
+        (frame == PORT && (CheckCollisionPointRec(mousePos, yesButton) || CheckCollisionPointRec(mousePos, noButton))) ||
+        (frame == FISHPEDIA && (CheckCollisionPointRec(mousePos, leftArrow) || CheckCollisionPointRec(mousePos, rightArrow)))) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
     } else {
         SetMouseCursor(MOUSE_CURSOR_DEFAULT);
@@ -169,14 +172,14 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             playSound(isSoundPlayed, assets.labelledejour);
             SetMusicVolume(assets.labelledejour, 0.5f);
             DrawTextureEx(assets.water[waterFrames], (Vector2){0, 0}, 0.0f, 1.0f, RAYWHITE);
-            DrawRectangle(0, 0, 1024, 720, (Color){0, 255, 51, 120});
+            DrawRectangle(0, 0, 1024, 720, location->pierFilter);
             DrawTexture(location->pier, 0, 100, RAYWHITE);
             DrawTexture(location->pierRight, 0, 0, RAYWHITE);
             DrawTexture(assets.fishPedia, 50, 40, RAYWHITE);
             DrawTexture(assets.fishBucket, 140, 40, RAYWHITE);
 
             if (firstGame) {
-                DrawRectangle(280, 0, 744, 720, (Color){0, 255, 0, 90});
+                DrawRectangle(280, 0, 744, 720, (Color){0, 255, 0, 130});
                 DrawTextureEx(assets.button, (Vector2){268.25, 530}, 0.0f, 1.5f, WHITE);
                 DrawText("Clique em qualquer lugar", 325, 560, 30, WHITE);
                 DrawText("da", 365, 600, 30, WHITE);
@@ -700,6 +703,8 @@ Location* startLocation(LocationName locationName, Assets assets) {
             location->fishShopMenu = assets.fishShopMenu;
             location->pier = assets.marcoZeroPier;
             location->firstFish = marcoZeroFishList;
+            location->pierFilter = (Color){0, 255, 51, 120};
+
             break;
 
         case PORTO_DE_GALINHAS:
@@ -712,6 +717,7 @@ Location* startLocation(LocationName locationName, Assets assets) {
             location->fishShopMenu = assets.fishShopMenu;
             location->pier = assets.marcoZeroPier;
             location->firstFish = portoDeGalinhasFishList;
+            location->pierFilter = (Color){0, 0, 0, 0};
             break;
 
         case FERNANDO_DE_NORONHA:
@@ -724,6 +730,7 @@ Location* startLocation(LocationName locationName, Assets assets) {
             location->fishShopMenu = assets.fishShopMenu;
             location->pier = assets.marcoZeroPier;
             location->firstFish = fernandoDeNoronhaFishList;
+            location->pierFilter = (Color){42, 0, 255, 120};
             break;
 
         default:
@@ -1052,8 +1059,6 @@ void DrawFishpedia(Assets assets, Vector2 mousePos) {
 
     DrawTextureEx(assets.arrow, (Vector2){870, 600}, 90.0f, 1.0f, RAYWHITE);
     DrawTextureEx(assets.arrow, (Vector2){900, 650}, 270.0f, 1.0f, RAYWHITE);
-    DrawRectangle(810, 600, 60, 50, (Color){0, 255, 0, 100});
-    DrawRectangle(900, 600, 60, 50, (Color){255, 0, 0, 100});
 
     if (currentFishpediaPage == MARCO_ZERO_PAGE) {
         if (CheckCollisionPointRec(mousePos, (Rectangle){810, 600, 60, 50}) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
@@ -1075,10 +1080,13 @@ void DrawFishpedia(Assets assets, Vector2 mousePos) {
         }
     }
 
+    if (CheckCollisionPointRec(mousePos, (Rectangle){50, 620, assets.button.width / 2, assets.button.height / 2})) {
+        DrawTextureEx(assets.buttonDark, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+    } else {
+        DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
+    }
     DrawText("VOLTAR", 75, 632, 28, WHITE);
 }
-
-
 
 void DrawFishShop(Assets assets, Location *location, Vector2 mousePos) {
     DrawTextureEx(location->backgroundBlur, (Vector2){-1620, -400}, 0.0f, 2.6f, WHITE);

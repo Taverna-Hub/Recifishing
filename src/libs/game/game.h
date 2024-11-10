@@ -75,6 +75,7 @@ typedef struct Location {
     Texture2D boat;
     Texture2D fishShop;
     Texture2D fishShopMenu;
+    Color pierFilter;
 
 }Location;
 
