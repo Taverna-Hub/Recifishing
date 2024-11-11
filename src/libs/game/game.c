@@ -314,10 +314,18 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                             StopSound(assets.tictac);
                         }
                     } else if (isMiniGaming) {
-                        if (hookedFish->letters > 5 && hookedFish->letters < 15) {
+                        int maxButtons;
+                        if (hookedFish->letters > 10) {
+                            maxButtons = 15;
+                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
+                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 150}, 0.0f, 0.4f, RAYWHITE);
+                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 225}, 0.0f, 0.4f, RAYWHITE);
+                        } else if (hookedFish->letters > 5) {
+                            maxButtons = 10;
                             DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
                             DrawTextureEx(assets.keyButtonBox, (Vector2){350, 150}, 0.0f, 0.4f, RAYWHITE);
                         } else {
+                            maxButtons = 5;
                             DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
                         }
 
@@ -349,7 +357,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                             PlaySound(assets.fail);
                         }
 
-                        for (int i = 0; i < 10; i++) {
+                        for (int i = 0; i < maxButtons; i++) {
                             int row = i / 5;
                             int col = i % 5;
                             float startX = 361.5f + (50 * col);
@@ -363,16 +371,9 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                                 }
                                 DrawTextCodepoint(GetFontDefault(), catchSequence[i], (Vector2){startX + 14.0f, startY + 6.5f}, 25, WHITE);
                             } else {
-                                if (hookedFish->letters < 6) {
-                                    if (i <= 4) {
-                                        DrawTextureEx(assets.emptyButton, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
-                                    }
-                                } else {
-                                    DrawTextureEx(assets.emptyButton, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
-                                }
+                                DrawTextureEx(assets.emptyButton, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
                             }
                         }
-
                         int key = GetKeyPressed();
                         if (key != 0) {
                             if (key == catchSequence[currentSequenceIndex]) {
@@ -396,14 +397,33 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                             }
                         }
                     } else if (showError) {
-                        if (hookedFish->letters > 5 && hookedFish->letters < 15) {
+                        if (hookedFish->letters > 10 && hookedFish->letters < 15) {
                             DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
                             DrawTextureEx(assets.keyButtonBox, (Vector2){350, 150}, 0.0f, 0.4f, RAYWHITE);
-                        } else {
+                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 225}, 0.0f, 0.4f, RAYWHITE);
+                        } else if (hookedFish->letters > 5 && hookedFish->letters < 11) {
+                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
+                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 150}, 0.0f, 0.4f, RAYWHITE);
+                        } else if (hookedFish->letters < 6) {
                             DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
                         }
 
-                        for (int i = 0; i < 10; i++) {
+                         int maxButtons;
+                        if (hookedFish->letters > 10) {
+                            maxButtons = 15;
+                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
+                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 150}, 0.0f, 0.4f, RAYWHITE);
+                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 225}, 0.0f, 0.4f, RAYWHITE);
+                        } else if (hookedFish->letters > 5) {
+                            maxButtons = 10;
+                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
+                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 150}, 0.0f, 0.4f, RAYWHITE);
+                        } else {
+                            maxButtons = 5;
+                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
+                        }
+
+                        for (int i = 0; i < maxButtons; i++) {
                             int row = i / 5;
                             int col = i % 5;
                             float startX = 361.5f + (50 * col);
@@ -424,15 +444,10 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
 
                                 DrawTextCodepoint(GetFontDefault(), catchSequence[i], (Vector2){startX + 14.0f, startY + 6.5f}, 25, WHITE);
                             } else {
-                                if (hookedFish->letters < 6) {
-                                    if (i <= 4) {
-                                        DrawTextureEx(assets.emptyButton, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
-                                    }
-                                } else {
-                                    DrawTextureEx(assets.emptyButton, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
-                                }
+                                DrawTextureEx(assets.emptyButton, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
                             }
                         }
+
                         if (GetTime() - errorStartTime >= 1.0f) {
                             showError = false;
                             currentSequenceIndex = 0;
@@ -859,11 +874,18 @@ void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCat
 }
 
 void updateSequence(Fish *fish) {
-    for (int i = 0; i < 20; i++) {
-        if (i <= fish->letters) {
-            catchSequence[i] = (rand() % 26) + 65;
-        } else {
-            catchSequence[i] = -1;
+    if (strcmp(fish->name, "Tubarão") == 0) {
+        char sequence[] = "EUAMOPERNAMBUCO";
+        for (int i = 0; i < fish->letters; i++) {
+            catchSequence[i] = sequence[i];
+        }
+    } else {
+        for (int i = 0; i < 20; i++) {
+            if (i < fish->letters) {
+                catchSequence[i] = (rand() % 26) + 65;
+            } else {
+                catchSequence[i] = -1;
+            }
         }
     }
 }
@@ -981,13 +1003,25 @@ void updateLocationCaptureCount(Fish *capturedFish) {
 
     switch (capturedFish->locationName) {
         case MARCO_ZERO:
-            marcoZeroCapturedCount++;
+            if (!capturedFish->isTrash)
+            {
+                marcoZeroCapturedCount++;
+            }
+        
             break;
         case PORTO_DE_GALINHAS:
-            portoDeGalinhasCapturedCount++;
+            if (!capturedFish->isTrash)
+            {
+                portoDeGalinhasCapturedCount++;
+            }
+            
             break;
         case FERNANDO_DE_NORONHA:
-            fernandoDeNoronhaCapturedCount++;
+            if (!capturedFish->isTrash)
+            {
+                fernandoDeNoronhaCapturedCount++;
+            }
+        
             break;
         default:
             break;
@@ -1001,7 +1035,11 @@ void addFishToFishpedia(Fish *fish) {
 
     if (!fish->wasCaptured) {
         fish->wasCaptured = true;
-        fishpediaCount++;
+        if (!fish->isTrash)
+        {
+            fishpediaCount++;
+        }
+        
         updateLocationCaptureCount(fish);
     }
 }
