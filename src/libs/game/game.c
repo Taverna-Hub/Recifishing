@@ -119,8 +119,8 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arr
                     isTransitioning = true;
                 }
             } else {
-                if (CheckCollisionPointRec(mousePos, firstButtonRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && balance >= 500) {
-                    balance -= 500;
+                if (CheckCollisionPointRec(mousePos, firstButtonRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && balance >= 350) {
+                    balance -= 350;
                     nextLocation = startLocation(PORTO_DE_GALINHAS, assets);
                     isTransitioning = true;
                 }
@@ -1275,14 +1275,14 @@ void DrawPort(Assets assets, Location *location, Vector2 mousePos) {
             DrawText("VIAJAR PARA", 435, 210, 28, WHITE);
             DrawText("PORTO DE GALINHAS?", 637, 210, 28, YELLOW);
             DrawTextureEx(assets.coin, (Vector2){610, 260}, 0.0f, 0.6f, WHITE);
-            DrawText("500", 680, 270, 45, WHITE);
+            DrawText("350", 680, 270, 45, WHITE);
 
             if (CheckCollisionPointRec(mousePos, firstButtonRec)) {
                 DrawTextureEx(assets.buttonDark, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
-                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && balance >= 500) {
+                if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && balance >= 350) {
                     if (!visitedNoronha)
                     {
-                        balance -= 500;
+                        balance -= 350;
                     }
                     
                     *location = *startLocation(PORTO_DE_GALINHAS, assets);
