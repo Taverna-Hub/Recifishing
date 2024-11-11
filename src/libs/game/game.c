@@ -67,10 +67,14 @@ Location* startLocation(LocationName locationName, Assets assets);
 
 int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D fishpedia, int gameFrame);
 
+void updateWaterFrames();
 void sell(Assets assets);
 void updateArrow(Arrow *arrow);
 void updateSequence(Fish *fish);
+void fishingMiniGame(Assets assets);
+void spaceKeyMiniGame(Assets assets);
 void addFishToFishpedia(Fish *newFish);
+void showMiniGameMistake(Assets assets);
 void sortFishListByDifficulty(Fish **head);
 void insertBucket(Bucket **head, Fish *fish);
 void DrawBucket(Assets assets, Vector2 mousePos);
@@ -79,9 +83,13 @@ void throwRod(AnimationFrames **animationFrames);
 void insertFishpedia(Fishpedia **head, Fish *fish);
 void fadeHandle(bool *inTransition, int *fadeAlpha);
 void DrawFishpedia(Assets assets, Vector2 mousePos);
+void resetGameStates(AnimationFrames **animationFrames);
 void DrawPort(Assets assets, Location *location, Vector2 mousePos);
 void drawElements(Assets assets, Location *location, int arrowFrames);
 void DrawFishShop(Assets assets, Location *location, Vector2 mousePos);
+void setHookedFish(Assets assets, Location *location, Vector2 mousePos);
+void showCatchedFishAlert(Assets assets, AnimationFrames **animationFrames);
+void DrawPier(Assets assets, Location *location, Vector2 mousePos, int arrowFrames2);
 void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vector2 mousePos);
 void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCatch, Fish* hookedFish);
 void createFish(Fish **head, char *name, int price, int letters, Texture2D sprite, LocationName locationName);
@@ -209,8 +217,10 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arr
 }
 
 void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, int arrowFrames2, Vector2 mousePos, int frame, AnimationFrames **animationFrames, Location *location) {
+
     BeginDrawing();
     ClearBackground(RAYWHITE);
+
     Rectangle recBackButton = {50, 620, assets.button.width / 2, assets.button.height / 2};
     Rectangle recArrow = {0, 340, 70, 120};
     Rectangle fishZone = {280, 0, 744, 720};
@@ -235,52 +245,30 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
 
     switch (frame) {
         case BUCKET:
-            DrawBucket(assets, mousePos);
-            if (calledGameFrame == DEFAULT)
-            {
+
+            if (calledGameFrame == DEFAULT) {
                 playSound(isSoundPlayed,location->defaultMusic);
-            }else if (calledGameFrame == PIER)
-            {
+            } else if (calledGameFrame == PIER) {
                 playSound(isSoundPlayed,location->fishingMusic);
             }  
+
+            DrawBucket(assets, mousePos);
+
             break;
+
         case PIER:
-            playSound(isSoundPlayed, location->fishingMusic);
-            SetMusicVolume(assets.labelledejour, 0.5f);
-            DrawTextureEx(assets.water[waterFrames], (Vector2){0, 0}, 0.0f, 1.0f, RAYWHITE);
-            DrawRectangle(0, 0, 1024, 720, location->pierFilter);
-            DrawTexture(location->pier, 0, 100, RAYWHITE);
-            DrawTexture(location->pierRight, 0, 0, RAYWHITE);
-            DrawTexture(assets.fishPedia, 50, 40, RAYWHITE);
-            DrawTexture(assets.fishBucket, 140, 40, RAYWHITE);
 
-            if (location->name==FERNANDO_DE_NORONHA)
-            {
-                DrawTexture(assets.sharkfin,900,360,RAYWHITE);
-            }
-            Rectangle sharkFinArea = {900, 360, assets.sharkfin.width, assets.sharkfin.height};
-            if (firstGame) {
-                DrawRectangle(280, 0, 744, 720, (Color){0, 255, 0, 130});
-                DrawTextureEx(assets.button, (Vector2){268.25, 530}, 0.0f, 1.5f, WHITE);
-                DrawText("Clique em qualquer lugar", 325, 560, 30, WHITE);
-                DrawText("da", 365, 600, 30, WHITE);
-                DrawText("área verde", 408, 600, 30, GREEN);
-                DrawText("para", 590, 600, 30, WHITE);
-                DrawText("lançar a vara", 400, 640, 30, YELLOW);
-            }
-
-               
-            
-            
-            
-            DrawTextureEx(assets.arrow, (Vector2){65 + arrowFrames2 / 5, 370}, 90.0f, 1.0f, RAYWHITE);
-
-            if (waterUpdateCounter >= 13) {
-                waterFrames = (waterFrames + 1) % 10;
-                waterUpdateCounter = 0;
+            if (hookedFish) {
+                printf("%s\n", hookedFish->name);
             } else {
-                waterUpdateCounter++;
+                printf("\nSem peixe");
             }
+
+            playSound(isSoundPlayed, location->fishingMusic);
+
+            DrawPier(assets, location, mousePos, arrowFrames2);
+
+            updateWaterFrames();
 
             if (!(*animationFrames)->pullingRodAnimation) {
                 successfulCatch = 0;
@@ -288,275 +276,88 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             }
 
             if ((*animationFrames)->throwingRodAnimation || (*animationFrames)->fishmanFishing->isUsing) {
+
                 throwRod(animationFrames);
 
-                if (!hookedFish) {
-                    if (CheckCollisionPointRec(mousePos,sharkFinArea)&& !sharkCaught)
-                    {
-                        hookedFish=getSharkFish(); 
-                    }else
-                    {
-                        hookedFish = pescar(location->firstFish);   
-                    }
-                    
-                    updateSequence(hookedFish);
-                    gameTime = 1000000.0f;
-                    ranOutOfTime = false;
-                    StopSound(assets.tictac);
-                    
-                }
+                setHookedFish(assets, location, mousePos);
 
                 if (waitingFrames >= waitingFish) {
+
                     if (!isMiniGaming && !showError) {
-                        DrawTextureEx(assets.baseButtonSpace, (Vector2){100, 250}, 0.0f, 0.5f, RAYWHITE);
+                        
+                        spaceKeyMiniGame(assets);
 
-                        if (alert) {
-                            PlaySound(assets.alert);
-                            alert = false;
-                        }
-
-                        float timeRatio = gameTime / 1000000.0f;
-
-                        if (timeRatio > 0.75f) {
-                            DrawRectangle(100, 240, 160 * timeRatio, 10, GREEN);
-                        } else if (timeRatio >= 0.5f) {
-                            DrawRectangle(100, 240, 160 * timeRatio, 10, YELLOW);
-                        } else if (timeRatio > 0.35f) {
-                            DrawRectangle(100, 240, 160 * timeRatio, 10, ORANGE);
-                        } else {
-                            DrawRectangle(100, 240, 160 * timeRatio, 10, RED);
-                        }
-
-                        gameTime -= 10000;
-
-                        if (!IsSoundPlaying(assets.tictac)) {
-                            PlaySound(assets.tictac);
-                            SetSoundVolume(assets.tictac, 1.0f);
-                        }
-
-                        if (gameTime <= 0) {
-                            waitingFish = (rand() % 500) + 200;
-                            waitingFrames = 0;
-                            gameTime = 1000000.0f;
-                            hookedFish = NULL;
-                            alert = true;
-                            StopSound(assets.tictac);
-                        }
-
-                        if (IsKeyPressed(KEY_SPACE)) {
-                            isMiniGaming = true;
-                            currentSequenceIndex = 0;
-                            PlaySound(assets.keyPress);
-                            gameTime = 1000000.0f;
-                            alert = true;
-                            StopSound(assets.tictac);
-                        }
                     } else if (isMiniGaming) {
-                        int maxButtons;
-                        if (hookedFish->letters > 10) {
-                            maxButtons = 15;
-                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
-                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 150}, 0.0f, 0.4f, RAYWHITE);
-                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 225}, 0.0f, 0.4f, RAYWHITE);
-                        } else if (hookedFish->letters > 5) {
-                            maxButtons = 10;
-                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
-                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 150}, 0.0f, 0.4f, RAYWHITE);
-                        } else {
-                            maxButtons = 5;
-                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
-                        }
 
-                        float timeRatio = gameTime / 1000000.0f;
+                        fishingMiniGame(assets);
 
-                        if (timeRatio > 0.75f) {
-                            DrawRectangle(350, 63, 267 * timeRatio, 10, GREEN);
-                        } else if (timeRatio >= 0.5f) {
-                            DrawRectangle(350, 63, 267 * timeRatio, 10, YELLOW);
-                        } else if (timeRatio > 0.35f) {
-                            DrawRectangle(350, 63, 267 * timeRatio, 10, ORANGE);
-                        } else {
-                            DrawRectangle(350, 63, 267 * timeRatio, 10, RED);
-                        }
-
-                        gameTime -= 5000;
-
-                        if (!IsSoundPlaying(assets.tictac)) {
-                            PlaySound(assets.tictac);
-                            SetSoundVolume(assets.tictac, 1.0f);
-                        }
-
-                        if (gameTime <= 0) {
-                            showError = true;
-                            errorStartTime = GetTime();
-                            isMiniGaming = false;
-                            ranOutOfTime = true;
-                            StopSound(assets.tictac);
-                            PlaySound(assets.fail);
-                        }
-
-                        for (int i = 0; i < maxButtons; i++) {
-                            int row = i / 5;
-                            int col = i % 5;
-                            float startX = 361.5f + (50 * col);
-                            float startY = 86 + (75 * row);
-
-                            if (i < hookedFish->letters) {
-                                if (i < currentSequenceIndex) {
-                                    DrawTextureEx(assets.baseButtonPressed, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
-                                } else {
-                                    DrawTextureEx(assets.baseButton, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
-                                }
-                                DrawTextCodepoint(GetFontDefault(), catchSequence[i], (Vector2){startX + 14.0f, startY + 6.5f}, 25, WHITE);
-                            } else {
-                                DrawTextureEx(assets.emptyButton, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
-                            }
-                        }
-                        int key = GetKeyPressed();
-                        if (key != 0) {
-                            if (key == catchSequence[currentSequenceIndex]) {
-                                PlaySound(assets.keyPress);
-                                currentSequenceIndex++;
-                                if (currentSequenceIndex == hookedFish->letters) {
-                                    successfulCatch = 1;
-                                    addFishToFishpedia(hookedFish);
-                                    insertBucket(&bucketHead, hookedFish);
-                                    PlaySound(assets.success);
-                                    currentSequenceIndex = 0;
-                                    waitingFrames = 0;
-                                    waitingFish = (rand() % 500) + 200;
-                                    isMiniGaming = false;
-                                    if (strcmp(hookedFish->name, "Tubarão") == 0) {
-                                        sharkCaught = true;
-                                    }
-                                }
-                            } else {
-                                PlaySound(assets.boowomp);
-                                showError = true;
-                                errorStartTime = GetTime();
-                                isMiniGaming = false;
-                            }
-                        }
                     } else if (showError) {
-                        if (hookedFish->letters > 10 && hookedFish->letters < 15) {
-                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
-                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 150}, 0.0f, 0.4f, RAYWHITE);
-                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 225}, 0.0f, 0.4f, RAYWHITE);
-                        } else if (hookedFish->letters > 5 && hookedFish->letters < 11) {
-                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
-                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 150}, 0.0f, 0.4f, RAYWHITE);
-                        } else if (hookedFish->letters < 6) {
-                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
-                        }
+                        
+                        showMiniGameMistake(assets);
 
-                         int maxButtons;
-                        if (hookedFish->letters > 10) {
-                            maxButtons = 15;
-                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
-                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 150}, 0.0f, 0.4f, RAYWHITE);
-                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 225}, 0.0f, 0.4f, RAYWHITE);
-                        } else if (hookedFish->letters > 5) {
-                            maxButtons = 10;
-                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
-                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 150}, 0.0f, 0.4f, RAYWHITE);
-                        } else {
-                            maxButtons = 5;
-                            DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
-                        }
-
-                        for (int i = 0; i < maxButtons; i++) {
-                            int row = i / 5;
-                            int col = i % 5;
-                            float startX = 361.5f + (50 * col);
-                            float startY = 86 + (75 * row);
-
-                            if (i < hookedFish->letters) {
-                                if (!ranOutOfTime) {
-                                    if (i < currentSequenceIndex) {
-                                        DrawTextureEx(assets.baseButtonPressed, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
-                                    } else if (i == currentSequenceIndex) {
-                                        DrawTextureEx(assets.baseButtonFail, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
-                                    } else {
-                                        DrawTextureEx(assets.baseButton, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
-                                    }
-                                } else {
-                                    DrawTextureEx(assets.baseButtonFail, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
-                                }
-
-                                DrawTextCodepoint(GetFontDefault(), catchSequence[i], (Vector2){startX + 14.0f, startY + 6.5f}, 25, WHITE);
-                            } else {
-                                DrawTextureEx(assets.emptyButton, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
-                            }
-                        }
-
-                        if (GetTime() - errorStartTime >= 1.0f) {
-                            showError = false;
-                            currentSequenceIndex = 0;
-                            successfulCatch = 2;
-                            isMiniGaming = false;
-                        }
                     }
                 } else {
                     waitingFrames++;
                 }
+
             } else if ((*animationFrames)->pullingRodAnimation || (*animationFrames)->fishmanHook->isUsing || successfulCatch != 2) {
+
                 if (successfulCatch == 1) {
                     fishFrame++;
                 }
+
                 pullRod(animationFrames, assets, successfulCatch, hookedFish);
+
                 StopSound(assets.tictac);
             }
+
             updateAnimationFrames(*animationFrames, assets, mousePos);
 
-            if (fishFrame <= 250 && fishFrame > 0 && !(*animationFrames)->throwingRodAnimation) {
-                DrawTextureEx(assets.button, (Vector2){268.25, 530}, 0.0f, 1.5f, WHITE);
-                DrawTextureEx(assets.fishFraming, (Vector2){298.25, 560}, 0.0f, 0.8f, WHITE);
-                DrawTextureEx(hookedFish->sprite, (Vector2){318.25, 560}, 0.0f, 0.8f, WHITE);
-                DrawText("Você pescou um", 474.25, 580, 30, WHITE);
-                DrawText(hookedFish->name, 568.25 - (strlen(hookedFish->name) * 6), 620, 30, YELLOW);
-                fishFrame++;
-            } else {
-                fishFrame = 0;
-            }
+            showCatchedFishAlert(assets, animationFrames);
 
             break;
 
         case FISHPEDIA:
-            if (calledGameFrame == DEFAULT)
-            {
+
+            if (calledGameFrame == DEFAULT) {
                 playSound(isSoundPlayed,location->defaultMusic);
-            }else if (calledGameFrame == PIER)
-            {
+            } else if (calledGameFrame == PIER) {
                 playSound(isSoundPlayed,location->fishingMusic);
             }
+
             DrawFishpedia(assets, mousePos);
+
             break;
 
         case PORT:
+
             playSound(isSoundPlayed, location->defaultMusic);
             DrawPort(assets, location, mousePos);
+
             break;
 
         case FISHSHOP:
+
             playSound(isSoundPlayed, location->defaultMusic);
             DrawFishShop(assets, location, mousePos);
+
             break;
 
         case DEFAULT:
+
             drawElements(assets, location, arrowFrames);
-            free(*animationFrames);
-            *animationFrames = createAnimationFrames();
-            waitingFrames = 0;
-            waitingFish = -1;
-            successfulCatch = 0;
-            fishFrame = 0;
-            caught = false;
-            firstGame = true;
+
+            resetGameStates(animationFrames);
+
             cursorHandle(mousePos, assets.button, assets.fishBucket, assets.fishPedia, frame);
+
             playSound(isSoundPlayed, location->defaultMusic);
+
             fadeHandle(inTransition, fadeAlpha);
+
             break;
     }
+
     if (*inTransition || isTransitioning) {
         DrawRectangle(0, 0, 1024, 720, Fade(BLACK, (*fadeAlpha) / 255.0f));
     }
@@ -813,12 +614,8 @@ void drawElements(Assets assets, Location *location, int arrowFrames) {
     DrawTexture(location->boat, -50, 115, RAYWHITE);
     DrawTexture(assets.fishPedia, 50, 40, RAYWHITE);
     DrawTexture(assets.fishBucket, 140, 40, RAYWHITE);
-
-
     DrawTextureEx(assets.portSign, (Vector2){30, 350}, 0.0f, 0.8f, WHITE);
 
-
-    
     if (location->name == PORTO_DE_GALINHAS) {
         DrawTexture(assets.portal, 325, 170, RAYWHITE);
         DrawTextureEx(assets.chicken, (Vector2){300, 350}, 0.0f, 0.5f, RAYWHITE);
@@ -827,8 +624,8 @@ void drawElements(Assets assets, Location *location, int arrowFrames) {
     }
     
     DrawTexture(location->sailor, 170, 250, RAYWHITE);
-    if (location->name == FERNANDO_DE_NORONHA)
-    {
+
+    if (location->name == FERNANDO_DE_NORONHA) {
         DrawTexture(assets.coral,300,380,RAYWHITE);
         DrawTextureEx(assets.islands,(Vector2){610,70}, 0.0f, 0.8f,RAYWHITE);
         DrawTexture(assets.star,870,630,RAYWHITE);
@@ -837,10 +634,12 @@ void drawElements(Assets assets, Location *location, int arrowFrames) {
         DrawTextureEx(assets.coconutRight, (Vector2){330, 370}, 0.0f, 2.2f, RAYWHITE);
         DrawTextureEx(assets.coconutLeft, (Vector2){-225, 340}, 0.0f, 2.4f, RAYWHITE);
     }
-    DrawTextureEx(assets.coin, (Vector2){810, 40}, 0.0f, 0.7f, WHITE);
-    char balanceText[10];
+
     DrawTexture(location->fishShop, 680, 228, RAYWHITE);
     DrawTexture(location->salesman, 830, 350, RAYWHITE);
+
+    DrawTextureEx(assets.coin, (Vector2){810, 40}, 0.0f, 0.7f, WHITE);
+    char balanceText[10];
     sprintf(balanceText, "%03d", balance);
     DrawText(balanceText, 888, 57, 45, BLACK);
     DrawText(balanceText, 890, 55, 45, WHITE);
@@ -1215,8 +1014,6 @@ void DrawFishpedia(Assets assets, Vector2 mousePos) {
         DrawText("/8", 120, 68, 28, BLACK);
         DrawText("/8", 118, 70, 28, WHITE);  
     }
-    
-    
 
     Vector2 framePositions[8] = {
         {55, 130}, {275, 130}, {545, 130}, {765, 130},
@@ -1361,6 +1158,33 @@ void DrawFishShop(Assets assets, Location *location, Vector2 mousePos) {
         DrawTextureEx(assets.button, (Vector2){50, 620}, 0.0f, 0.5f, WHITE);
     }
     DrawText("VOLTAR", 75, 632, 28, WHITE);
+}
+
+void DrawPier(Assets assets, Location *location, Vector2 mousePos, int arrowFrames2) {
+
+    DrawTextureEx(assets.water[waterFrames], (Vector2){0, 0}, 0.0f, 1.0f, RAYWHITE);
+    DrawRectangle(0, 0, 1024, 720, location->pierFilter);
+    DrawTexture(location->pier, 0, 100, RAYWHITE);
+    DrawTexture(location->pierRight, 0, 0, RAYWHITE);
+    DrawTexture(assets.fishPedia, 50, 40, RAYWHITE);
+    DrawTexture(assets.fishBucket, 140, 40, RAYWHITE);
+
+    if (location->name==FERNANDO_DE_NORONHA) {
+        DrawTexture(assets.sharkfin,900,360,RAYWHITE);
+    }
+
+    if (firstGame) {
+        DrawRectangle(280, 0, 744, 720, (Color){0, 255, 0, 130});
+        DrawTextureEx(assets.button, (Vector2){268.25, 530}, 0.0f, 1.5f, WHITE);
+        DrawText("Clique em qualquer lugar", 325, 560, 30, WHITE);
+        DrawText("da", 365, 600, 30, WHITE);
+        DrawText("área verde", 408, 600, 30, GREEN);
+        DrawText("para", 590, 600, 30, WHITE);
+        DrawText("lançar a vara", 400, 640, 30, YELLOW);
+    }
+
+    DrawTextureEx(assets.arrow, (Vector2){65 + arrowFrames2 / 5, 370}, 90.0f, 1.0f, RAYWHITE);
+
 }
 
 void DrawPort(Assets assets, Location *location, Vector2 mousePos) {
@@ -1586,4 +1410,264 @@ void sortFishListByDifficulty(Fish **head) {
         }
         last = current;
     }
+}
+
+void updateWaterFrames() {
+    if (waterUpdateCounter >= 13) {
+        waterFrames = (waterFrames + 1) % 10;
+        waterUpdateCounter = 0;
+    } else {
+        waterUpdateCounter++;
+    }
+}
+
+void setHookedFish(Assets assets, Location *location, Vector2 mousePos) {
+    if (!hookedFish) {
+
+        Rectangle sharkFinArea = {900, 360, assets.sharkfin.width, assets.sharkfin.height};
+
+        if (CheckCollisionPointRec(mousePos,sharkFinArea)&& !sharkCaught) {
+            hookedFish = getSharkFish(); 
+        } else {
+            hookedFish = pescar(location->firstFish);   
+        }
+        
+        updateSequence(hookedFish);
+        gameTime = 1000000.0f;
+        ranOutOfTime = false;
+        StopSound(assets.tictac);
+        
+    }
+}
+
+void spaceKeyMiniGame(Assets assets) {
+
+    DrawTextureEx(assets.baseButtonSpace, (Vector2){100, 250}, 0.0f, 0.5f, RAYWHITE);
+
+    if (alert) {
+        PlaySound(assets.alert);
+        alert = false;
+    }
+
+    float timeRatio = gameTime / 1000000.0f;
+
+    if (timeRatio > 0.75f) {
+        DrawRectangle(100, 240, 160 * timeRatio, 10, GREEN);
+    } else if (timeRatio >= 0.5f) {
+        DrawRectangle(100, 240, 160 * timeRatio, 10, YELLOW);
+    } else if (timeRatio > 0.35f) {
+        DrawRectangle(100, 240, 160 * timeRatio, 10, ORANGE);
+    } else {
+        DrawRectangle(100, 240, 160 * timeRatio, 10, RED);
+    }
+
+    gameTime -= 10000;
+
+    if (!IsSoundPlaying(assets.tictac)) {
+        PlaySound(assets.tictac);
+        SetSoundVolume(assets.tictac, 1.0f);
+    }
+
+    if (gameTime <= 0) {
+        waitingFish = (rand() % 500) + 200;
+        waitingFrames = 0;
+        gameTime = 1000000.0f;
+        hookedFish = NULL;
+        alert = true;
+        StopSound(assets.tictac);
+    }
+
+    if (IsKeyPressed(KEY_SPACE)) {
+        isMiniGaming = true;
+        currentSequenceIndex = 0;
+        PlaySound(assets.keyPress);
+        gameTime = 1000000.0f;
+        alert = true;
+        StopSound(assets.tictac);
+    }
+
+}
+
+void fishingMiniGame(Assets assets) {
+
+    int maxButtons;
+
+    if (hookedFish->letters > 10) {
+        maxButtons = 15;
+        DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
+        DrawTextureEx(assets.keyButtonBox, (Vector2){350, 150}, 0.0f, 0.4f, RAYWHITE);
+        DrawTextureEx(assets.keyButtonBox, (Vector2){350, 225}, 0.0f, 0.4f, RAYWHITE);
+    } else if (hookedFish->letters > 5) {
+        maxButtons = 10;
+        DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
+        DrawTextureEx(assets.keyButtonBox, (Vector2){350, 150}, 0.0f, 0.4f, RAYWHITE);
+    } else {
+        maxButtons = 5;
+        DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
+    }
+
+    float timeRatio = gameTime / 1000000.0f;
+
+    if (timeRatio > 0.75f) {
+        DrawRectangle(350, 63, 267 * timeRatio, 10, GREEN);
+    } else if (timeRatio >= 0.5f) {
+        DrawRectangle(350, 63, 267 * timeRatio, 10, YELLOW);
+    } else if (timeRatio > 0.35f) {
+        DrawRectangle(350, 63, 267 * timeRatio, 10, ORANGE);
+    } else {
+        DrawRectangle(350, 63, 267 * timeRatio, 10, RED);
+    }
+
+    gameTime -= 5000;
+
+    if (!IsSoundPlaying(assets.tictac)) {
+        PlaySound(assets.tictac);
+        SetSoundVolume(assets.tictac, 1.0f);
+    }
+
+    if (gameTime <= 0) {
+        showError = true;
+        errorStartTime = GetTime();
+        isMiniGaming = false;
+        ranOutOfTime = true;
+        StopSound(assets.tictac);
+        PlaySound(assets.fail);
+    }
+
+    for (int i = 0; i < maxButtons; i++) {
+        int row = i / 5;
+        int col = i % 5;
+        float startX = 361.5f + (50 * col);
+        float startY = 86 + (75 * row);
+
+        if (i < hookedFish->letters) {
+            if (i < currentSequenceIndex) {
+                DrawTextureEx(assets.baseButtonPressed, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
+            } else {
+                DrawTextureEx(assets.baseButton, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
+            }
+            DrawTextCodepoint(GetFontDefault(), catchSequence[i], (Vector2){startX + 14.0f, startY + 6.5f}, 25, WHITE);
+        } else {
+            DrawTextureEx(assets.emptyButton, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
+        }
+    }
+    int key = GetKeyPressed();
+    if (key != 0) {
+        if (key == catchSequence[currentSequenceIndex]) {
+            PlaySound(assets.keyPress);
+            currentSequenceIndex++;
+            if (currentSequenceIndex == hookedFish->letters) {
+                successfulCatch = 1;
+                addFishToFishpedia(hookedFish);
+                insertBucket(&bucketHead, hookedFish);
+                PlaySound(assets.success);
+                currentSequenceIndex = 0;
+                waitingFrames = 0;
+                waitingFish = (rand() % 500) + 200;
+                isMiniGaming = false;
+                if (strcmp(hookedFish->name, "Tubarão") == 0) {
+                    sharkCaught = true;
+                }
+            }
+        } else {
+            PlaySound(assets.boowomp);
+            showError = true;
+            errorStartTime = GetTime();
+            isMiniGaming = false;
+        }
+    }
+
+}
+
+void showMiniGameMistake(Assets assets) {
+
+    if (hookedFish->letters > 10 && hookedFish->letters < 15) {
+        DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
+        DrawTextureEx(assets.keyButtonBox, (Vector2){350, 150}, 0.0f, 0.4f, RAYWHITE);
+        DrawTextureEx(assets.keyButtonBox, (Vector2){350, 225}, 0.0f, 0.4f, RAYWHITE);
+    } else if (hookedFish->letters > 5 && hookedFish->letters < 11) {
+        DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
+        DrawTextureEx(assets.keyButtonBox, (Vector2){350, 150}, 0.0f, 0.4f, RAYWHITE);
+    } else if (hookedFish->letters < 6) {
+        DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
+    }
+
+    int maxButtons;
+
+    if (hookedFish->letters > 10) {
+        maxButtons = 15;
+        DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
+        DrawTextureEx(assets.keyButtonBox, (Vector2){350, 150}, 0.0f, 0.4f, RAYWHITE);
+        DrawTextureEx(assets.keyButtonBox, (Vector2){350, 225}, 0.0f, 0.4f, RAYWHITE);
+    } else if (hookedFish->letters > 5) {
+        maxButtons = 10;
+        DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
+        DrawTextureEx(assets.keyButtonBox, (Vector2){350, 150}, 0.0f, 0.4f, RAYWHITE);
+    } else {
+        maxButtons = 5;
+        DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
+    }
+
+    for (int i = 0; i < maxButtons; i++) {
+        int row = i / 5;
+        int col = i % 5;
+        float startX = 361.5f + (50 * col);
+        float startY = 86 + (75 * row);
+
+        if (i < hookedFish->letters) {
+            if (!ranOutOfTime) {
+                if (i < currentSequenceIndex) {
+                    DrawTextureEx(assets.baseButtonPressed, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
+                } else if (i == currentSequenceIndex) {
+                    DrawTextureEx(assets.baseButtonFail, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
+                } else {
+                    DrawTextureEx(assets.baseButton, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
+                }
+            } else {
+                DrawTextureEx(assets.baseButtonFail, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
+            }
+
+            DrawTextCodepoint(GetFontDefault(), catchSequence[i], (Vector2){startX + 14.0f, startY + 6.5f}, 25, WHITE);
+        } else {
+            DrawTextureEx(assets.emptyButton, (Vector2){startX, startY}, 0.0f, 0.5f, WHITE);
+        }
+    }
+
+    if (GetTime() - errorStartTime >= 1.0f) {
+        showError = false;
+        currentSequenceIndex = 0;
+        successfulCatch = 2;
+        isMiniGaming = false;
+    }
+
+}
+
+void showCatchedFishAlert(Assets assets, AnimationFrames **animationFrames) {
+
+    if (fishFrame <= 250 && fishFrame > 0 && !(*animationFrames)->throwingRodAnimation) {
+        DrawTextureEx(assets.button, (Vector2){268.25, 530}, 0.0f, 1.5f, WHITE);
+        DrawTextureEx(assets.fishFraming, (Vector2){298.25, 560}, 0.0f, 0.8f, WHITE);
+        DrawTextureEx(hookedFish->sprite, (Vector2){318.25, 560}, 0.0f, 0.8f, WHITE);
+        DrawText("Você pescou um", 474.25, 580, 30, WHITE);
+        DrawText(hookedFish->name, 568.25 - (strlen(hookedFish->name) * 6), 620, 30, YELLOW);
+        fishFrame++;
+    } else {
+        fishFrame = 0;
+    }
+
+}
+
+void resetGameStates(AnimationFrames **animationFrames) {
+
+    free(*animationFrames);
+    *animationFrames = createAnimationFrames();
+
+    caught = false;
+    firstGame = true;
+
+    fishFrame = 0;
+    waitingFish = -1;
+    waitingFrames = 0;
+    successfulCatch = 0;
+
 }
