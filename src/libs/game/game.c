@@ -382,15 +382,16 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
     EndDrawing();
 }
 
+// Retorna um ponteiro para o peixe "Tubarão" na lista de peixes de Fernando de Noronha
 Fish* getSharkFish() {
-    Fish *temp = fernandoDeNoronhaFishList;
+    Fish *temp = fernandoDeNoronhaFishList; // Percorre a lista de peixes de Fernando de Noronha
     while (temp != NULL) {
-        if (strcmp(temp->name, "Tubarão") == 0) {
+        if (strcmp(temp->name, "Tubarão") == 0) { // Verifica se o peixe é um "Tubarão"
             return temp;
         }
-        temp = temp->next;
+        temp = temp->next; // Avança para o próximo peixe na lista
     }
-    return NULL;
+    return NULL; // Retorna NULL se não encontrar o "Tubarão"
 }
 
 Arrow* createArrow() {
@@ -400,7 +401,10 @@ Arrow* createArrow() {
     return arrow;
 }
 
+// Inicializa as listas de peixes para cada localidade com diferentes características e dificuldades
 void initializeFishLists(Assets assets) {
+    
+    // Cria peixes para o local "Marco Zero"
     createFish(&marcoZeroFishList, "Jacaré", 75, 10, assets.marcoZeroFishes[0], MARCO_ZERO);
     createFish(&marcoZeroFishList, "Peixe-CESAR", 60, 8, assets.marcoZeroFishes[1], MARCO_ZERO);
     createFish(&marcoZeroFishList, "Saco de Pipoca", 0, 5, assets.marcoZeroFishes[8], MARCO_ZERO);
@@ -413,7 +417,7 @@ void initializeFishLists(Assets assets) {
     createFish(&marcoZeroFishList, "Peixe-Sport", 30, 5, assets.marcoZeroFishes[7], MARCO_ZERO);
     sortFishListByDifficulty(&marcoZeroFishList);
 
-
+    // Cria peixes para o local "Porto de Galinhas"
     createFish(&portoDeGalinhasFishList, "Peixe-Galinha", 120, 10, assets.portoFishes[0], PORTO_DE_GALINHAS);
     createFish(&portoDeGalinhasFishList, "Caranguejo", 75, 4, assets.portoFishes[1], PORTO_DE_GALINHAS);
     createFish(&portoDeGalinhasFishList, "Heineken", 0, 6, assets.portoFishes[9], PORTO_DE_GALINHAS);
@@ -426,7 +430,7 @@ void initializeFishLists(Assets assets) {
     createFish(&portoDeGalinhasFishList, "Peixe-Rossi", 100, 8, assets.portoFishes[7], PORTO_DE_GALINHAS);
     sortFishListByDifficulty(&portoDeGalinhasFishList);
 
-
+    // Cria peixes para o local "Fernando de Noronha"
     createFish(&fernandoDeNoronhaFishList, "Enguia", 200, 6, assets.noronhaFishes[0], FERNANDO_DE_NORONHA);
     createFish(&fernandoDeNoronhaFishList, "Peixe-Leão", 250, 8, assets.noronhaFishes[1], FERNANDO_DE_NORONHA);
     createFish(&fernandoDeNoronhaFishList, "Canudo", 0, 6, assets.noronhaFishes[7], FERNANDO_DE_NORONHA);
@@ -765,49 +769,51 @@ void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCat
     }
 }
 
+// Atualiza a sequência de teclas para o minigame de pesca de acordo com o tipo de peixe capturado
 void updateSequence(Fish *fish) {
-    if (strcmp(fish->name, "Tubarão") == 0) {
+    if (strcmp(fish->name, "Tubarão") == 0) { // Verifica se o peixe é um "Tubarão"
         char sequence[] = "EUAMOPERNAMBUCO";
         for (int i = 0; i < fish->letters; i++) {
-            catchSequence[i] = sequence[i];
+            catchSequence[i] = sequence[i]; // Define a sequência específica para "Tubarão"
         }
-    } else {
+    } else { // Para outros peixes, gera uma sequência aleatória de letras
         for (int i = 0; i < 20; i++) {
-            if (i < fish->letters) {
-                catchSequence[i] = (rand() % 26) + 65;
+            if (i < fish->letters) { // Define o número de letras correspondente ao peixe
+                catchSequence[i] = (rand() % 26) + 65; // Gera uma letra aleatória (A-Z)
             } else {
-                catchSequence[i] = -1;
+                catchSequence[i] = -1; // Marca o final da sequência
             }
         }
     }
 }
 
+// Função que simula a captura de um peixe, escolhendo aleatoriamente um peixe que não seja o "Tubarão"
 Fish* pescar(Fish *head) {
-    if (head == NULL) {
+    if (head == NULL) { // Verifica se a lista está vazia
         return NULL;
     }
 
-    int listSize = 0;
+    int listSize = 0; // Inicializa o tamanho da lista
     Fish *temp = head;
 
-    while (temp != NULL) {
+    while (temp != NULL) { // Conta apenas peixes que não são "Tubarão"
         if (temp->price != 999) {
             listSize++;
         }
         temp = temp->next;
     }
 
-    if (listSize == 0) {
+    if (listSize == 0) { // Se não houver peixes válidos, retorna NULL
         return NULL;
     }
 
-    int randomIndex = rand() % listSize;
+    int randomIndex = rand() % listSize; // Seleciona um índice aleatório
     temp = head;
     int index = 0;
 
-    while (temp != NULL) {
+    while (temp != NULL) { // Percorre a lista para encontrar o peixe no índice aleatório
         if (temp->price != 999) {
-            if (index == randomIndex) {
+            if (index == randomIndex) { // Retorna o peixe correspondente
                 return temp;
             }
             index++;
@@ -815,135 +821,140 @@ Fish* pescar(Fish *head) {
         temp = temp->next;
     }
 
-    return NULL;
+    return NULL; // Retorna NULL se o peixe não for encontrado
 }
 
+// Cria um novo peixe com as características especificadas e insere-o na lista de peixes do local apropriado
 void createFish(Fish **head, char *name, int price, int letters, Texture2D sprite, LocationName locationName) {
-    Fish *new = (Fish *)malloc(sizeof(Fish));
+    Fish *new = (Fish *)malloc(sizeof(Fish)); // Aloca memória para o novo peixe
 
     if (new != NULL) {
-        strcpy(new->name, name);
-        new->wasCaptured = false;
-        new->price = price;
-        new->sprite = sprite;
-        new->locationName = locationName;
+        strcpy(new->name, name); // Define o nome do peixe
+        new->wasCaptured = false; // Marca o peixe como ainda não capturado
+        new->price = price; // Define o preço do peixe
+        new->sprite = sprite; // Define o sprite do peixe
+        new->locationName = locationName; // Define a localização do peixe
         new->next = *head;
-        new->letters = letters;
+        new->letters = letters; // Define o número de letras do minigame associado ao peixe
         new->prev = NULL;
 
-        if (!price) {
+        if (!price) { // Se o preço é zero, marca o peixe como "lixo"
             new->isTrash = true;
         } else {
             new->isTrash = false;
         }
 
-        if (*head != NULL) {
+        if (*head != NULL) { // Insere o peixe no início da lista
             (*head)->prev = new;
         }
 
-        *head = new;
+        *head = new; // Atualiza a cabeça da lista
     }
 }
 
+// Insere um peixe no balde (bucket) caso haja espaço disponível e o peixe não seja um lixo
 void insertBucket(Bucket **head, Fish *fish) {
+    // Verifica se o peixe é nulo, é lixo ou se o balde já está cheio
     if (fish == NULL || fish->isTrash || bucket >= 8) {
         return;
     }
 
+    // Cria uma nova entrada para o peixe no balde
     Bucket *newBucket = (Bucket *)malloc(sizeof(Bucket));
-    if (newBucket == NULL) {
+    if (newBucket == NULL) { // Verifica falha de alocação
         return;
     }
 
-    newBucket->fish = fish;
+    newBucket->fish = fish; // Associa o peixe à nova entrada
     newBucket->next = NULL;
 
-    if (*head == NULL) {
+    if (*head == NULL) { // Se o balde está vazio, insere o peixe no início
         newBucket->prev = NULL;
         *head = newBucket;
-    } else {
+    } else { // Caso contrário, insere o peixe ao final da lista
         Bucket *last = *head;
-        while (last->next != NULL) {
+        while (last->next != NULL) { // Percorre até o último elemento
             last = last->next;
         }
         last->next = newBucket;
         newBucket->prev = last;
     }
 
-    bucket++;
+    bucket++; // Incrementa o contador de peixes no balde
 }
 
+// Insere um novo peixe na Fishpedia
 void insertFishpedia(Fishpedia **head, Fish *fish) {
+    // Verifica se o peixe é nulo, é lixo ou se a Fishpedia já atingiu seu limite
     if (fish == NULL || fish->isTrash || fishpediaCount >= 24) {
         return;
     }
 
+    // Cria uma nova entrada para o peixe na Fishpedia
     Fishpedia *newFishpedia = (Fishpedia *)malloc(sizeof(Fishpedia));
-    if (newFishpedia == NULL) {
+    if (newFishpedia == NULL) { // Verifica falha de alocação
         return;
     }
 
-    newFishpedia->fish = fish;
+    newFishpedia->fish = fish; // Associa o peixe à nova entrada
     newFishpedia->next = NULL;
 
-    if (*head == NULL) {
+    if (*head == NULL) { // Se a Fishpedia está vazia, insere o peixe no início
         newFishpedia->prev = NULL;
         *head = newFishpedia;
-    } else {
+    } else { // Caso contrário, insere o peixe ao final da lista
         Fishpedia *last = *head;
-        while (last->next != NULL) {
+        while (last->next != NULL) { // Percorre até o último elemento
             last = last->next;
         }
         last->next = newFishpedia;
         newFishpedia->prev = last;
     }
 }
-
+// Atualiza o contador de capturas para cada local específico
 void updateLocationCaptureCount(Fish *capturedFish) {
-    if (capturedFish == NULL) {
+    if (capturedFish == NULL) { // Se o peixe capturado for nulo, termina a função
         return;
     }
 
+    // Determina qual localidade o peixe pertence e incrementa o contador correspondente
     switch (capturedFish->locationName) {
         case MARCO_ZERO:
-            if (!capturedFish->isTrash)
+            if (!capturedFish->isTrash) // Ignora peixes classificados como "lixo"
             {
-                marcoZeroCapturedCount++;
+                marcoZeroCapturedCount++; // Incrementa o contador de Marco Zero
             }
-        
             break;
         case PORTO_DE_GALINHAS:
-            if (!capturedFish->isTrash)
+            if (!capturedFish->isTrash) // Ignora peixes classificados como "lixo"
             {
-                portoDeGalinhasCapturedCount++;
+                portoDeGalinhasCapturedCount++; // Incrementa o contador de Porto de Galinhas
             }
-            
             break;
         case FERNANDO_DE_NORONHA:
-            if (!capturedFish->isTrash)
+            if (!capturedFish->isTrash) // Ignora peixes classificados como "lixo"
             {
-                fernandoDeNoronhaCapturedCount++;
+                fernandoDeNoronhaCapturedCount++; // Incrementa o contador de Fernando de Noronha
             }
-        
             break;
         default:
             break;
     }
 }
 
+// Adiciona um peixe à Fishpedia caso ele ainda não tenha sido capturado
 void addFishToFishpedia(Fish *fish) {
-    if (fish == NULL) {
+    if (fish == NULL) { // Se o peixe for nulo, termina a função
         return;
     }
 
-    if (!fish->wasCaptured) {
-        fish->wasCaptured = true;
-        if (!fish->isTrash)
+    if (!fish->wasCaptured) { // Adiciona o peixe apenas se ele ainda não foi capturado
+        fish->wasCaptured = true; // Marca o peixe como capturado
+        if (!fish->isTrash) // Ignora peixes classificados como "lixo"
         {
-            fishpediaCount++;
+            fishpediaCount++; // Incrementa o contador da Fishpedia
         }
-        
-        updateLocationCaptureCount(fish);
+        updateLocationCaptureCount(fish); // Atualiza o contador do local de captura
     }
 }
 
@@ -1363,25 +1374,26 @@ void DrawPort(Assets assets, Location *location, Vector2 mousePos) {
     }
 }
 
+// Vende todos os peixes atualmente no balde e atualiza o saldo
 void sell(Assets assets) {
-    bool vendeu = false;
-    while (bucketHead != NULL) {
+    bool vendeu = false; // Variável de controle para verificar se algum peixe foi vendido
+    while (bucketHead != NULL) { // Continua enquanto houver peixes no balde
         Bucket *current = bucketHead;
-        balance += current->fish->price;
-        if (balance > 999) {
+        balance += current->fish->price; // Adiciona o preço do peixe ao saldo
+        if (balance > 999) { // Limita o saldo máximo a 999
             balance = 999;
         }
-        bucketHead = bucketHead->next;
-        if (bucketHead != NULL) {
+        bucketHead = bucketHead->next; // Move para o próximo peixe no balde
+        if (bucketHead != NULL) { // Se ainda houver peixes, ajusta o ponteiro do anterior
             bucketHead->prev = NULL;
         }
-        free(current);
+        free(current); // Libera a memória do peixe vendido
         vendeu = true;
     }
-    if (vendeu) {
+    if (vendeu) { // Reproduz o som de venda se houve alguma venda
         PlaySound(assets.sellSound);
     }
-    bucket = 0;
+    bucket = 0; // Zera o contador de peixes no balde
 }
 
 void sortFishListByDifficulty(Fish **head) {
