@@ -32,7 +32,7 @@ bool showError = false;
 bool sharkCaught = false;
 bool isMiniGaming = false;
 bool ranOutOfTime = false;
-bool visitedNoronha = true;
+bool visitedNoronha = false;
 bool isTransitioning = false;
 
 int cont = 0;
