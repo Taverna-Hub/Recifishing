@@ -1116,7 +1116,7 @@ void DrawFishpedia(Assets assets, Vector2 mousePos) {
 
     int index = 0;
     while (fish != NULL && index < 8) {
-        if (!fish->isTrash) {
+        if (!fish->isTrash && fish->price!=999) {
             DrawTextureEx(assets.fishFrame, framePositions[index], 0.0f, 1.1f, RAYWHITE);
             if (fish->wasCaptured) {
                 DrawTextureEx(fish->sprite, (Vector2){framePositions[index].x + 40, framePositions[index].y}, 0.0f, 1.0f, WHITE);
@@ -1261,9 +1261,7 @@ void DrawPort(Assets assets, Location *location, Vector2 mousePos) {
 
     if (location->name == MARCO_ZERO) {
         if (visitedNoronha) {
-            DrawText("ESCOLHA O DESTINO", 460, 210, 28, WHITE);
-            DrawText("PARA VIAJAR", 640, 210, 28, YELLOW);
-            DrawText("VIAGEM GRÁTIS", 590, 270, 45, WHITE);
+            DrawText("ESCOLHA O DESTINO PARA VIAJAR", 460, 210, 28, WHITE);
 
             if (CheckCollisionPointRec(mousePos, firstButtonRec)) {
                 DrawTextureEx(assets.buttonDark, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
@@ -1273,7 +1271,7 @@ void DrawPort(Assets assets, Location *location, Vector2 mousePos) {
             } else {
                 DrawTextureEx(assets.button, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
             }
-            DrawText("PORTO DE GALINHAS", 435, 400, 24, WHITE);
+            DrawText("PORTO DE GALINHAS", 435, 400, 18, WHITE);
 
             if (CheckCollisionPointRec(mousePos, secondButtonRec)) {
                 DrawTextureEx(assets.buttonDark, (Vector2){725, 380}, 0.0f, 0.8f, WHITE);
@@ -1315,10 +1313,7 @@ void DrawPort(Assets assets, Location *location, Vector2 mousePos) {
         }
     } else if (location->name == PORTO_DE_GALINHAS) {
         if (visitedNoronha) {
-            DrawText("ESCOLHA O DESTINO", 460, 210, 28, WHITE);
-            DrawText("PARA VIAJAR", 640, 210, 28, YELLOW);
-            DrawText("VIAGEM GRÁTIS", 590, 270, 45, WHITE);
-
+            DrawText("ESCOLHA O DESTINO PARA VIAJAR", 430, 210, 28, WHITE);
             if (CheckCollisionPointRec(mousePos, firstButtonRec)) {
                 DrawTextureEx(assets.buttonDark, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
                 if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
@@ -1327,7 +1322,7 @@ void DrawPort(Assets assets, Location *location, Vector2 mousePos) {
             } else {
                 DrawTextureEx(assets.button, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
             }
-            DrawText("MARCO ZERO", 465, 400, 35, WHITE);
+            DrawText("MARCO ZERO", 415, 400, 35, WHITE);
 
             if (CheckCollisionPointRec(mousePos, secondButtonRec)) {
                 DrawTextureEx(assets.buttonDark, (Vector2){725, 380}, 0.0f, 0.8f, WHITE);
@@ -1369,9 +1364,7 @@ void DrawPort(Assets assets, Location *location, Vector2 mousePos) {
             DrawText("NÃO", 810, 400, 45, WHITE);
         }
     } else if (location->name == FERNANDO_DE_NORONHA) {
-        DrawText("ESCOLHA O DESTINO", 460, 210, 28, WHITE);
-        DrawText("PARA VIAJAR", 460, 230, 28, YELLOW);
-        
+        DrawText("ESCOLHA O DESTINO PARA VIAJAR", 430, 210, 28, WHITE);
 
         if (CheckCollisionPointRec(mousePos, firstButtonRec)) {
             DrawTextureEx(assets.buttonDark, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
@@ -1381,7 +1374,7 @@ void DrawPort(Assets assets, Location *location, Vector2 mousePos) {
         } else {
             DrawTextureEx(assets.button, (Vector2){400, 380}, 0.0f, 0.8f, WHITE);
         }
-        DrawText("MARCO ZERO", 465, 400, 35, WHITE);
+        DrawText("MARCO ZERO", 415, 400, 35, WHITE);
 
         if (CheckCollisionPointRec(mousePos, secondButtonRec)) {
             DrawTextureEx(assets.buttonDark, (Vector2){725, 380}, 0.0f, 0.8f, WHITE);
@@ -1391,7 +1384,7 @@ void DrawPort(Assets assets, Location *location, Vector2 mousePos) {
         } else {
             DrawTextureEx(assets.button, (Vector2){725, 380}, 0.0f, 0.8f, WHITE);
         }
-        DrawText("PORTO DE GALINHAS", 740, 400, 24, WHITE);
+        DrawText("PORTO DE GALINHAS", 740, 400, 20, WHITE);
     }
 }
 
