@@ -46,6 +46,9 @@ int catchSequence[20];
 int currentSequenceIndex = 0;
 Fish *hookedFish = NULL;
 float gameTime = 1000000.0f;
+bool isTransitioning = false;
+int fadeAlpha = 0;
+Location *nextLocation = NULL;
 
 void updateArrow(Arrow *arrow);
 void drawElements(Assets assets, Location *location, int arrowFrames);
@@ -69,7 +72,7 @@ void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCat
 Fish* pescar(Fish *head);
 Location* startLocation(LocationName locationName, Assets assets);
 
-void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arrow *arrow2, Vector2 mousePos, Assets assets, int *gameFrame, AnimationFrames **animationFrames, Location *location) {
+void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arrow *arrow2, Vector2 mousePos, Assets assets, int *gameFrame, AnimationFrames **animationFrames, Location *location, int *fadeAlpha) {
     updateArrow(arrow);
     updateArrow(arrow2);
     Rectangle fishZone = {280, 0, 744, 720};
@@ -78,59 +81,70 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arr
         *gameFrame = cursorHandle(mousePos, assets.button, assets.fishBucket, assets.fishPedia, *gameFrame);
     }
 
-    if (*gameFrame == PORT) {
+    if (*gameFrame == PORT && !isTransitioning) {
         Rectangle firstButtonRec = {400, 380, assets.button.width * 0.8f, assets.button.height * 0.8f};
         Rectangle secondButtonRec = {725, 380, assets.button.width * 0.8f, assets.button.height * 0.8f};
 
         if (location->name == MARCO_ZERO) {
             if (visitedNoronha) {
                 if (CheckCollisionPointRec(mousePos, firstButtonRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                    *location = *startLocation(PORTO_DE_GALINHAS, assets);
-                    *gameFrame = DEFAULT;
-                    return;
+                    nextLocation = startLocation(PORTO_DE_GALINHAS, assets);
+                    isTransitioning = true;
                 } else if (CheckCollisionPointRec(mousePos, secondButtonRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                    *location = *startLocation(FERNANDO_DE_NORONHA, assets);
-                    *gameFrame = DEFAULT;
-                    return;
+                    nextLocation = startLocation(FERNANDO_DE_NORONHA, assets);
+                    isTransitioning = true;
                 }
             } else {
                 if (CheckCollisionPointRec(mousePos, firstButtonRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && balance >= 500) {
                     balance -= 500;
-                    *location = *startLocation(PORTO_DE_GALINHAS, assets);
-                    *gameFrame = DEFAULT;
-                    return;
+                    nextLocation = startLocation(PORTO_DE_GALINHAS, assets);
+                    isTransitioning = true;
                 }
             }
         } else if (location->name == PORTO_DE_GALINHAS) {
             if (visitedNoronha) {
                 if (CheckCollisionPointRec(mousePos, firstButtonRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                    *location = *startLocation(MARCO_ZERO, assets);
-                    *gameFrame = DEFAULT;
-                    return;
+                    nextLocation = startLocation(MARCO_ZERO, assets);
+                    isTransitioning = true;
                 } else if (CheckCollisionPointRec(mousePos, secondButtonRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                    *location = *startLocation(FERNANDO_DE_NORONHA, assets);
-                    *gameFrame = DEFAULT;
-                    return;
+                    nextLocation = startLocation(FERNANDO_DE_NORONHA, assets);
+                    isTransitioning = true;
                 }
             } else {
                 if (CheckCollisionPointRec(mousePos, firstButtonRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && balance >= 800) {
                     balance -= 800;
                     visitedNoronha = true;
-                    *location = *startLocation(FERNANDO_DE_NORONHA, assets);
-                    *gameFrame = DEFAULT;
-                    return;
+                    nextLocation = startLocation(FERNANDO_DE_NORONHA, assets);
+                    isTransitioning = true;
                 }
             }
         } else if (location->name == FERNANDO_DE_NORONHA) {
             if (CheckCollisionPointRec(mousePos, firstButtonRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                *location = *startLocation(MARCO_ZERO, assets);
-                *gameFrame = DEFAULT;
-                return;
+                nextLocation = startLocation(MARCO_ZERO, assets);
+                isTransitioning = true;
             } else if (CheckCollisionPointRec(mousePos, secondButtonRec) && IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                *location = *startLocation(PORTO_DE_GALINHAS, assets);
-                *gameFrame = DEFAULT;
-                return;
+                nextLocation = startLocation(PORTO_DE_GALINHAS, assets);
+                isTransitioning = true;
             }
+        }
+
+        if (isTransitioning) {
+            *fadeAlpha = 255;
+            *inTransition = true;
+            *gameFrame = DEFAULT;
+            if (nextLocation != NULL) {
+                *location = *nextLocation;
+                nextLocation = NULL;
+            }
+        }
+    }
+
+    if (isTransitioning) {
+        *fadeAlpha -= 3;
+        if (*fadeAlpha <= 0) {
+            *fadeAlpha = 0;
+            isTransitioning = false;
+            *inTransition = false;
         }
     }
 
@@ -479,6 +493,9 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             playSound(isSoundPlayed, assets.morenaTropicana);
             fadeHandle(inTransition, fadeAlpha);
             break;
+    }
+    if (*inTransition || isTransitioning) {
+        DrawRectangle(0, 0, 1024, 720, Fade(BLACK, (*fadeAlpha) / 255.0f));
     }
 
     EndDrawing();

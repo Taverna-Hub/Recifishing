@@ -60,7 +60,7 @@ int main(void) {
             if (!inTransition && fadeAlpha == 255) {
                 inTransition = true; 
             }
-            UpdateGame(&inTransition, &currentScreen, arrow, arrow2, mousePos, assets, &gameFrame, &animationFrames, location);
+            UpdateGame(&inTransition, &currentScreen, arrow, arrow2, mousePos, assets, &gameFrame, &animationFrames, location,&fadeAlpha);
             DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed, arrow->arrowFrames, arrow2->arrowFrames, mousePos, gameFrame, &animationFrames, location);
 
         }
