@@ -16,11 +16,11 @@ typedef struct {
 
     /* Trilha sonora */
     Music sol;
-    Music trombone;
+    Music asaBranca;
     Music borbulhas;
     Music anunciacao;
-    Music eraDomingo;
     Music labelledejour;
+    Music vidaDeViajante;
     Music morenaTropicana;
 
     /* Menu Sprites */
