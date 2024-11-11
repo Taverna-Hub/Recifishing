@@ -3,6 +3,6 @@
 
 #include "../init/init.h"
 
-void UnloadAssets(Assets assets);
+void UnloadAssets(Assets* assets);
 
 #endif

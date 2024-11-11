@@ -1,3 +1,4 @@
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -8,8 +9,6 @@
 #include "libs/game/game.h"
 #include "libs/cleanup/cleanup.h"
 
-#include <time.h>
-
 int main(void) {
 
     GameScreen currentScreen = MENU;
@@ -17,6 +16,7 @@ int main(void) {
     srand(time(0));
 
     int fadeAlpha = 0;
+
     bool inTransition = false;
     bool isSoundPlayed = false;  
 
@@ -37,6 +37,7 @@ int main(void) {
 
     Arrow *arrow = createArrow();
     Arrow *arrow2 = createArrow();
+
     AnimationFrames *animationFrames = createAnimationFrames();
 
     Location *marcoZero = startLocation(MARCO_ZERO, assets);
@@ -60,13 +61,14 @@ int main(void) {
             if (!inTransition && fadeAlpha == 255) {
                 inTransition = true; 
             }
+
             UpdateGame(&inTransition, &currentScreen, arrow, arrow2, mousePos, assets, &gameFrame, &animationFrames, location,&fadeAlpha);
             DrawGame(&inTransition, &fadeAlpha, assets, &isSoundPlayed, arrow->arrowFrames, arrow2->arrowFrames, mousePos, gameFrame, &animationFrames, location);
 
         }
     }
 
-    UnloadAssets(assets);
+    UnloadAssets(&assets);
     CloseAudioDevice();
     CloseWindow();
 

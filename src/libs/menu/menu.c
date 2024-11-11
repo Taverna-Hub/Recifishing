@@ -3,6 +3,7 @@
 
 #include "raylib.h"
 
+#include "../game/game.h"
 #include "../cleanup/cleanup.h"
 
 #include "menu.h"

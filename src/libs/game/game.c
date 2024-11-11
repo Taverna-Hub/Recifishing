@@ -1,77 +1,90 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+
 #include "raylib.h"
 #include "raymath.h"
-#include "../utils/utils.h"
-#include "../init/init.h"
-#include "game.h"
 
-Fishpedia *fishpediaHead = NULL;
-Bucket *bucketHead = NULL;
-bool visitedNoronha = false;
-bool sharkCaught = false;
-int balance = 0;
-int marcoZeroCapturedCount = 0;
-int portoDeGalinhasCapturedCount = 0;
-int fernandoDeNoronhaCapturedCount = 0;
+#include "../game/game.h"
+#include "../init/init.h"
+
+Fish *hookedFish = NULL;
 Fish *marcoZeroFishList = NULL;
 Fish *portoDeGalinhasFishList = NULL;
 Fish *fernandoDeNoronhaFishList = NULL;
-int cont = 0;
-int entrou = 0;
-int selectedQuadrant = -1;
-int successfulCatch = 0;
-float waitingFish = -1;
-int waitingFrames = 0;
-bool isMiniGaming = false;
-bool showError = false;
-float errorStartTime = 0.0f;
-int waterFrames = 0;
-int waterUpdateCounter = 0;
-bool caught = false;
-bool canThrow = true;
-bool alert = true;
-bool ranOutOfTime = false;
-bool firstGame = true;
-int bucket = 0;
-int fishpediaCount = 0;
-FishpediaPage currentFishpediaPage = MARCO_ZERO_PAGE;
-char bucketStr[20];
-char fishpediaCountStr[20];
-GameFrames called = DEFAULT;
-int fishFrame = 0;
-int catchSequence[20];
-int currentSequenceIndex = 0;
-Fish *hookedFish = NULL;
-float gameTime = 1000000.0f;
-bool isTransitioning = false;
-int fadeAlpha = 0;
+
+GameFrames calledGameFrame = DEFAULT;
+
 Location *nextLocation = NULL;
 
-void updateArrow(Arrow *arrow);
-void drawElements(Assets assets, Location *location, int arrowFrames);
-void fadeHandle(bool *inTransition, int *fadeAlpha);
-void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vector2 mousePos);
+Bucket *bucketHead = NULL;
+
+Fishpedia *fishpediaHead = NULL;
+FishpediaPage currentFishpediaPage = MARCO_ZERO_PAGE;
+
+bool alert = true;
+bool caught = false;
+bool canThrow = true;
+bool firstGame = true;
+bool showError = false;
+bool sharkCaught = false;
+bool isMiniGaming = false;
+bool ranOutOfTime = false;
+bool visitedNoronha = true;
+bool isTransitioning = false;
+
+int cont = 0;
+int entrou = 0;
+int bucket = 0;
+int balance = 0;
+int fadeAlpha = 0;
+int fishFrame = 0;
+int waterFrames = 0;
+int catchSequence[20];
+int waitingFrames = 0;
+int fishpediaCount = 0;
+int successfulCatch = 0;
+int selectedQuadrant = -1;
+int waterUpdateCounter = 0;
+int currentSequenceIndex = 0;
+int marcoZeroCapturedCount = 0;
+int portoDeGalinhasCapturedCount = 0;
+int fernandoDeNoronhaCapturedCount = 0;
+
+float waitingFish = -1;
+float errorStartTime = 0.0f;
+float gameTime = 1000000.0f;
+
+char bucketStr[20];
+char fishpediaCountStr[20];
+
+Fish* pescar(Fish *head);
+Fish* getSharkFish();
+
+Location* startLocation(LocationName locationName, Assets assets);
+
 int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D fishpedia, int gameFrame);
-void createFish(Fish **head, char *name, int price, int letters, Texture2D sprite, LocationName locationName);
+
+void sell(Assets assets);
+void updateArrow(Arrow *arrow);
+void updateSequence(Fish *fish);
+void addFishToFishpedia(Fish *newFish);
 void sortFishListByDifficulty(Fish **head);
 void insertBucket(Bucket **head, Fish *fish);
 void DrawBucket(Assets assets, Vector2 mousePos);
-void DrawPort(Assets assets, Location *location, Vector2 mousePos);
-void DrawFishpedia(Assets assets, Vector2 mousePos);
-void addFishToFishpedia(Fish *newFish);
-void sell(Assets assets);
-void insertFishpedia(Fishpedia **head, Fish *fish);
-void DrawFishShop(Assets assets, Location *location, Vector2 mousePos);
 void playSound(bool *isSoundPlayed, Music sound);
-void updateSequence(Fish *fish);
 void throwRod(AnimationFrames **animationFrames);
+void insertFishpedia(Fishpedia **head, Fish *fish);
+void fadeHandle(bool *inTransition, int *fadeAlpha);
+void DrawFishpedia(Assets assets, Vector2 mousePos);
+void DrawPort(Assets assets, Location *location, Vector2 mousePos);
+void drawElements(Assets assets, Location *location, int arrowFrames);
+void DrawFishShop(Assets assets, Location *location, Vector2 mousePos);
+void updateAnimationFrames(AnimationFrames *animationFrames, Assets assets, Vector2 mousePos);
 void pullRod(AnimationFrames **animationFrames, Assets assets, int successfulCatch, Fish* hookedFish);
-Fish* pescar(Fish *head);
-Location* startLocation(LocationName locationName, Assets assets);
+void createFish(Fish **head, char *name, int price, int letters, Texture2D sprite, LocationName locationName);
 
 void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arrow *arrow2, Vector2 mousePos, Assets assets, int *gameFrame, AnimationFrames **animationFrames, Location *location, int *fadeAlpha) {
     updateArrow(arrow);
@@ -195,17 +208,6 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arr
     }
 }
 
-Fish* getSharkFish() {
-    Fish *temp = fernandoDeNoronhaFishList;
-    while (temp != NULL) {
-        if (strcmp(temp->name, "Tubarão") == 0) {
-            return temp;
-        }
-        temp = temp->next;
-    }
-    return NULL;
-}
-
 void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, int arrowFrames2, Vector2 mousePos, int frame, AnimationFrames **animationFrames, Location *location) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
@@ -234,10 +236,10 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
     switch (frame) {
         case BUCKET:
             DrawBucket(assets, mousePos);
-            if (called == DEFAULT)
+            if (calledGameFrame == DEFAULT)
             {
                 playSound(isSoundPlayed,location->defaultMusic);
-            }else if (called == PIER)
+            }else if (calledGameFrame == PIER)
             {
                 playSound(isSoundPlayed,location->fishingMusic);
             }  
@@ -520,10 +522,10 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             break;
 
         case FISHPEDIA:
-            if (called == DEFAULT)
+            if (calledGameFrame == DEFAULT)
             {
                 playSound(isSoundPlayed,location->defaultMusic);
-            }else if (called == PIER)
+            }else if (calledGameFrame == PIER)
             {
                 playSound(isSoundPlayed,location->fishingMusic);
             }
@@ -560,6 +562,17 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
     }
 
     EndDrawing();
+}
+
+Fish* getSharkFish() {
+    Fish *temp = fernandoDeNoronhaFishList;
+    while (temp != NULL) {
+        if (strcmp(temp->name, "Tubarão") == 0) {
+            return temp;
+        }
+        temp = temp->next;
+    }
+    return NULL;
 }
 
 Arrow* createArrow() {
@@ -732,9 +745,9 @@ int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
         entrou = 0;
         if (CheckCollisionPointRec(mousePos, recArrow)) {
-            called = DEFAULT;
+            calledGameFrame = DEFAULT;
         }
-        return called;
+        return calledGameFrame;
     }
 
     if (CheckCollisionPointRec(mousePos, recPort) && gameFrame == DEFAULT) {
@@ -760,13 +773,13 @@ int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D
 
     if (CheckCollisionPointRec(mousePos, recBucket) && (gameFrame == DEFAULT || gameFrame == PIER)) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-        called = gameFrame;
+        calledGameFrame = gameFrame;
         return BUCKET;
     }
 
     if (CheckCollisionPointRec(mousePos, recFishpedia) && (gameFrame == DEFAULT || gameFrame == PIER)) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
-        called = gameFrame;
+        calledGameFrame = gameFrame;
         return FISHPEDIA;
     }
 

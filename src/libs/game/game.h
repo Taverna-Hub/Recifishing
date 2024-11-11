@@ -2,12 +2,16 @@
 #define GAME_H
 
 #include "../init/init.h"
-#include "../utils/utils.h"
 
 typedef struct Arrow {
     int arrowFrames;
     int direction;
 }Arrow;
+
+typedef enum GameScreen { 
+    MENU = 0, 
+    GAME = 1
+} GameScreen;
 
 typedef enum GameFrames {
     DEFAULT = 0,
@@ -81,7 +85,6 @@ typedef struct Location {
 
 }Location;
 
-
 typedef struct AnimationFrames {
     int throwingRodAnimation;
     int pullingRodAnimation;
@@ -100,19 +103,16 @@ typedef enum FishpediaPage {
 } FishpediaPage;
 
 Arrow* createArrow();
+
 AnimationFrames* createAnimationFrames();
-void updateArrow(Arrow *arrow);
 
 int cursorHandle(Vector2 mousePos, Texture2D button, Texture2D bucket, Texture2D fishpedia, int gameFrame);
-void fadeHandle(bool *inTransition, int *fadeAlpha);
 
+void updateArrow(Arrow *arrow);
+void initializeFishLists(Assets assets);
+void fadeHandle(bool *inTransition, int *fadeAlpha);
+Location* startLocation(LocationName locationName, Assets assets);
 void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arrow *arrow2, Vector2 mousePos, Assets assets, int *gameFrame, AnimationFrames **animationFrames, Location *location,int *fadeAlpha);
 void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames,int arrowFrames2, Vector2 mousePos, int frame, AnimationFrames **animationFrames, Location *location);
-Location* startLocation(LocationName locationName, Assets assets);
-void insertFish(Fish **head, char *name, int price, int letters, Texture2D sprite, LocationName locationName);
-void removeFish(Fish **head);
-void initializeFishLists(Assets assets);
-
-
 
 #endif
