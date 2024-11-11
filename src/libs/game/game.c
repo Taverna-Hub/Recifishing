@@ -216,32 +216,49 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arr
     }
 }
 
-void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, int arrowFrames2, Vector2 mousePos, int frame, AnimationFrames **animationFrames, Location *location) {
-
-    BeginDrawing();
-    ClearBackground(RAYWHITE);
-
+bool isHoveringOverInteractiveArea(int frame, Vector2 mousePos, AnimationFrames *animationFrames, Assets assets) {
     Rectangle recBackButton = {50, 620, assets.button.width / 2, assets.button.height / 2};
     Rectangle recArrow = {0, 340, 70, 120};
     Rectangle fishZone = {280, 0, 744, 720};
     Rectangle recBucket = {140, 40, assets.fishBucket.width, assets.fishBucket.height};
     Rectangle recFishpedia = {50, 40, assets.fishPedia.width, assets.fishPedia.height};
-    Rectangle recSellButton = {525, 575, assets.sellButton.width*1.3, assets.sellButton.height*1.3};
+    Rectangle recSellButton = {525, 575, assets.sellButton.width * 1.3, assets.sellButton.height * 1.3};
     Rectangle yesButton = {400, 380, assets.button.width * 0.8, assets.button.height * 0.8};
     Rectangle noButton = {725, 380, assets.button.width * 0.8, assets.button.height * 0.8};
     Rectangle leftArrow = {810, 600, 60, 50};
     Rectangle rightArrow = {900, 600, 60, 50};
 
-    if ((frame != DEFAULT && frame != PIER && CheckCollisionPointRec(mousePos, recBackButton)) ||
-        (frame == PIER && (CheckCollisionPointRec(mousePos, recArrow) || CheckCollisionPointRec(mousePos, fishZone) && (*animationFrames)->fishmanIdle->isUsing || (*animationFrames)->fishmanHook->isUsing)) ||
-        (frame == PIER && CheckCollisionPointRec(mousePos, recBucket) || CheckCollisionPointRec(mousePos, recFishpedia)) ||
-        frame == FISHSHOP && CheckCollisionPointRec(mousePos, recSellButton) ||
-        (frame == PORT && (CheckCollisionPointRec(mousePos, yesButton) || CheckCollisionPointRec(mousePos, noButton))) ||
-        (frame == FISHPEDIA && (CheckCollisionPointRec(mousePos, leftArrow) || CheckCollisionPointRec(mousePos, rightArrow)))) {
+    return 
+        (frame != DEFAULT && frame != PIER && CheckCollisionPointRec(mousePos, recBackButton)) ||
+        (frame == PIER && 
+            (CheckCollisionPointRec(mousePos, recArrow) || 
+             (CheckCollisionPointRec(mousePos, fishZone) && animationFrames->fishmanIdle->isUsing) || 
+             animationFrames->fishmanHook->isUsing)) ||
+        (frame == PIER && 
+            (CheckCollisionPointRec(mousePos, recBucket) || 
+             CheckCollisionPointRec(mousePos, recFishpedia))) ||
+        (frame == FISHSHOP && CheckCollisionPointRec(mousePos, recSellButton)) ||
+        (frame == PORT && 
+            (CheckCollisionPointRec(mousePos, yesButton) || 
+             CheckCollisionPointRec(mousePos, noButton))) ||
+        (frame == FISHPEDIA && 
+            (CheckCollisionPointRec(mousePos, leftArrow) || 
+             CheckCollisionPointRec(mousePos, rightArrow)));
+}
+
+void updateHover(int frame, Vector2 mousePos, AnimationFrames *animationFrames, Assets assets) {
+    if (isHoveringOverInteractiveArea(frame, mousePos, animationFrames, assets)) {
         SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
     } else {
         SetMouseCursor(MOUSE_CURSOR_DEFAULT);
     }
+}
+void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, int arrowFrames2, Vector2 mousePos, int frame, AnimationFrames **animationFrames, Location *location) {
+
+    BeginDrawing();
+    ClearBackground(RAYWHITE);
+
+    updateHover(frame, mousePos, animationFrames, assets);
 
     switch (frame) {
         case BUCKET:
