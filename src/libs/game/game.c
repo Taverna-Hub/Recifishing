@@ -12,6 +12,7 @@
 Fishpedia *fishpediaHead = NULL;
 Bucket *bucketHead = NULL;
 bool visitedNoronha = false;
+bool sharkCaught = false;
 int balance = 1800;
 int marcoZeroCapturedCount = 0;
 int portoDeGalinhasCapturedCount = 0;
@@ -36,7 +37,7 @@ bool alert = true;
 bool ranOutOfTime = false;
 bool firstGame = true;
 int bucket = 0;
-int fishpediaCount = 0;
+int fishpediaCount = 24;
 FishpediaPage currentFishpediaPage = MARCO_ZERO_PAGE;
 char bucketStr[20];
 char fishpediaCountStr[20];
@@ -194,6 +195,17 @@ void UpdateGame(bool *inTransition, GameScreen *currentScreen, Arrow *arrow, Arr
     }
 }
 
+Fish* getSharkFish() {
+    Fish *temp = fernandoDeNoronhaFishList;
+    while (temp != NULL) {
+        if (strcmp(temp->name, "Tubarão") == 0) {
+            return temp;
+        }
+        temp = temp->next;
+    }
+    return NULL;
+}
+
 void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPlayed, int arrowFrames, int arrowFrames2, Vector2 mousePos, int frame, AnimationFrames **animationFrames, Location *location) {
     BeginDrawing();
     ClearBackground(RAYWHITE);
@@ -233,6 +245,11 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             DrawTexture(assets.fishPedia, 50, 40, RAYWHITE);
             DrawTexture(assets.fishBucket, 140, 40, RAYWHITE);
 
+            if (location->name==FERNANDO_DE_NORONHA)
+            {
+                DrawTexture(assets.sharkfin,900,360,RAYWHITE);
+            }
+            Rectangle sharkFinArea = {900, 360, assets.sharkfin.width, assets.sharkfin.height};
             if (firstGame) {
                 DrawRectangle(280, 0, 744, 720, (Color){0, 255, 0, 130});
                 DrawTextureEx(assets.button, (Vector2){268.25, 530}, 0.0f, 1.5f, WHITE);
@@ -243,6 +260,10 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                 DrawText("lançar a vara", 400, 640, 30, YELLOW);
             }
 
+               
+            
+            
+            
             DrawTextureEx(assets.arrow, (Vector2){65 + arrowFrames2 / 5, 370}, 90.0f, 1.0f, RAYWHITE);
 
             if (waterUpdateCounter >= 13) {
@@ -261,11 +282,19 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                 throwRod(animationFrames);
 
                 if (!hookedFish) {
-                    hookedFish = pescar(location->firstFish);
+                    if (CheckCollisionPointRec(mousePos,sharkFinArea)&& !sharkCaught)
+                    {
+                        hookedFish=getSharkFish(); 
+                    }else
+                    {
+                        hookedFish = pescar(location->firstFish);   
+                    }
+                    
                     updateSequence(hookedFish);
                     gameTime = 1000000.0f;
                     ranOutOfTime = false;
                     StopSound(assets.tictac);
+                    
                 }
 
                 if (waitingFrames >= waitingFish) {
@@ -388,6 +417,9 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                                     waitingFrames = 0;
                                     waitingFish = (rand() % 500) + 200;
                                     isMiniGaming = false;
+                                    if (strcmp(hookedFish->name, "Tubarão") == 0) {
+                                        sharkCaught = true;
+                                    }
                                 }
                             } else {
                                 PlaySound(assets.boowomp);
@@ -1092,9 +1124,9 @@ void DrawFishpedia(Assets assets, Vector2 mousePos) {
     DrawTexture(assets.fishCounter, 792, 48, WHITE);
     sprintf(fishpediaCountStr, "%d", fishpediaCount);
     DrawText(fishpediaCountStr, 870, 68, 28, BLACK);
-    DrawText("/24", 885, 68, 28, BLACK);
+    DrawText("/24", 905, 68, 28, BLACK);
     DrawText(fishpediaCountStr, 872, 66, 28, WHITE);
-    DrawText("/24", 887, 66, 28, WHITE);
+    DrawText("/24", 907, 66, 28, WHITE);
 
     DrawText("Fishpedia", 448, 72, 28, BLACK);
     DrawText("Fishpedia", 450, 70, 28, WHITE);
@@ -1125,8 +1157,17 @@ void DrawFishpedia(Assets assets, Vector2 mousePos) {
     sprintf(fishpediaCountStr, "%d", capturedCount);
     DrawText(fishpediaCountStr, 100, 72, 28, BLACK);
     DrawText(fishpediaCountStr, 102, 70, 28, WHITE);
-    DrawText("/8", 120, 68, 28, BLACK);
-    DrawText("/8", 118, 70, 28, WHITE);
+    if (currentFishpediaPage==FERNANDO_DE_NORONHA_PAGE)
+    {
+        DrawText("/9", 120, 68, 28, BLACK);
+        DrawText("/9", 118, 70, 28, WHITE);
+    }else
+    {
+        DrawText("/8", 120, 68, 28, BLACK);
+        DrawText("/8", 118, 70, 28, WHITE);  
+    }
+    
+    
 
     Vector2 framePositions[8] = {
         {55, 130}, {275, 130}, {545, 130}, {765, 130},
