@@ -76,6 +76,8 @@ typedef struct Location {
     Texture2D fishShop;
     Texture2D fishShopMenu;
     Color pierFilter;
+    Music defaultMusic;
+    Music fishingMusic;
 
 }Location;
 
