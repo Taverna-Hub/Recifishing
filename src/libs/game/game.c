@@ -975,6 +975,11 @@ Fish* pescar(Fish *head) {
         temp = temp->next;
     }
 
+    if (temp->price==999)
+    {
+        temp=temp->next;
+    }
+    
     return temp;
 }
 
