@@ -13,7 +13,7 @@ Fishpedia *fishpediaHead = NULL;
 Bucket *bucketHead = NULL;
 bool visitedNoronha = false;
 bool sharkCaught = false;
-int balance = 0;
+int balance = 1300;
 int marcoZeroCapturedCount = 0;
 int portoDeGalinhasCapturedCount = 0;
 int fernandoDeNoronhaCapturedCount = 0;
@@ -234,9 +234,16 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
     switch (frame) {
         case BUCKET:
             DrawBucket(assets, mousePos);
+            if (called == DEFAULT)
+            {
+                playSound(isSoundPlayed,location->defaultMusic);
+            }else if (called == PIER)
+            {
+                playSound(isSoundPlayed,location->fishingMusic);
+            }  
             break;
         case PIER:
-            playSound(isSoundPlayed, assets.labelledejour);
+            playSound(isSoundPlayed, location->fishingMusic);
             SetMusicVolume(assets.labelledejour, 0.5f);
             DrawTextureEx(assets.water[waterFrames], (Vector2){0, 0}, 0.0f, 1.0f, RAYWHITE);
             DrawRectangle(0, 0, 1024, 720, location->pierFilter);
@@ -513,16 +520,23 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             break;
 
         case FISHPEDIA:
+            if (called == DEFAULT)
+            {
+                playSound(isSoundPlayed,location->defaultMusic);
+            }else if (called == PIER)
+            {
+                playSound(isSoundPlayed,location->fishingMusic);
+            }
             DrawFishpedia(assets, mousePos);
             break;
 
         case PORT:
-            playSound(isSoundPlayed, assets.morenaTropicana);
+            playSound(isSoundPlayed, location->defaultMusic);
             DrawPort(assets, location, mousePos);
             break;
 
         case FISHSHOP:
-            playSound(isSoundPlayed, assets.morenaTropicana);
+            playSound(isSoundPlayed, location->defaultMusic);
             DrawFishShop(assets, location, mousePos);
             break;
 
@@ -537,7 +551,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
             caught = false;
             firstGame = true;
             cursorHandle(mousePos, assets.button, assets.fishBucket, assets.fishPedia, frame);
-            playSound(isSoundPlayed, assets.morenaTropicana);
+            playSound(isSoundPlayed, location->defaultMusic);
             fadeHandle(inTransition, fadeAlpha);
             break;
     }
@@ -834,6 +848,8 @@ Location* startLocation(LocationName locationName, Assets assets) {
             location->fishShopMenu = assets.fishShopMenu;
             location->pier = assets.marcoZeroPier;
             location->firstFish = marcoZeroFishList;
+            location->defaultMusic = assets.morenaTropicana;
+            location->fishingMusic = assets.labelledejour;
             location->pierFilter = (Color){0, 255, 51, 120};
 
             break;
@@ -848,6 +864,8 @@ Location* startLocation(LocationName locationName, Assets assets) {
             location->fishShopMenu = assets.fishShopPortoMenu;
             location->pier = assets.marcoZeroPier;
             location->firstFish = portoDeGalinhasFishList;
+            location->defaultMusic = assets.borbulhas;
+            location->fishingMusic = assets.trombone;
             location->pierFilter = (Color){0, 0, 0, 0};
             break;
 
@@ -861,6 +879,8 @@ Location* startLocation(LocationName locationName, Assets assets) {
             location->fishShopMenu = assets.fishShopMenuNoronha;
             location->pier = assets.marcoZeroPier;
             location->firstFish = fernandoDeNoronhaFishList;
+            location->defaultMusic = assets.eraDomingo;
+            location->fishingMusic = assets.sol;
             location->pierFilter = (Color){42, 0, 255, 120};
             break;
 

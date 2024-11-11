@@ -95,6 +95,10 @@ void UnloadAssets(Assets assets) {
     UnloadMusicStream(assets.anunciacao);
     UnloadMusicStream(assets.labelledejour);
     UnloadMusicStream(assets.morenaTropicana);
+    UnloadMusicStream(assets.eraDomingo);
+    UnloadMusicStream(assets.sol);
+    UnloadMusicStream(assets.borbulhas);
+    UnloadMusicStream(assets.trombone);
     UnloadSound(assets.keyPress);
     UnloadSound(assets.boowomp);
     UnloadSound(assets.tictac);

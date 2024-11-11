@@ -83,6 +83,11 @@ typedef struct {
     Music anunciacao;
     Music labelledejour;
     Music morenaTropicana;
+    Music sol;
+    Music trombone;
+    Music eraDomingo;
+    Music borbulhas;
+
     Sound keyPress;
     Sound boowomp;
     Sound tictac;
