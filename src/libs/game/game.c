@@ -32,7 +32,7 @@ bool showError = false;
 bool sharkCaught = false;
 bool isMiniGaming = false;
 bool ranOutOfTime = false;
-bool visitedNoronha = false;
+bool visitedNoronha = true;
 bool isTransitioning = false;
 
 int cont = 0;
@@ -693,7 +693,7 @@ Location* startLocation(LocationName locationName, Assets assets) {
             location->fishShopMenu = assets.fishShopPortoMenu;
             location->pier = assets.marcoZeroPier;
             location->firstFish = portoDeGalinhasFishList;
-            location->defaultMusic = assets.asaBranca;
+            location->defaultMusic = assets.vidaDeViajante;
             location->fishingMusic = assets.borbulhas;
             location->pierFilter = (Color){0, 0, 0, 0};
             break;
@@ -709,7 +709,7 @@ Location* startLocation(LocationName locationName, Assets assets) {
             location->pier = assets.marcoZeroPier;
             location->firstFish = fernandoDeNoronhaFishList;
             location->defaultMusic = assets.sol;
-            location->fishingMusic = assets.vidaDeViajante;
+            location->fishingMusic = assets.asaBranca;
             location->pierFilter = (Color){42, 0, 255, 120};
             break;
 
