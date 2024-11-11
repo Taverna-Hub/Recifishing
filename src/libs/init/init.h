@@ -53,6 +53,9 @@ typedef struct {
     Texture2D sharkfin;
     Texture2D star;
     Texture2D turtle;
+    Texture2D backgroundNoronha;
+    Texture2D fishShopMenuNoronha;
+    Texture2D fishShopNoronha;
 
     Texture2D fish;
     Texture2D fishFraming;

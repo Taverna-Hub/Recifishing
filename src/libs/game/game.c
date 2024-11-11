@@ -787,25 +787,36 @@ void drawElements(Assets assets, Location *location, int arrowFrames) {
     DrawTexture(assets.fishPedia, 50, 40, RAYWHITE);
     DrawTexture(assets.fishBucket, 140, 40, RAYWHITE);
 
+
+    DrawTextureEx(assets.portSign, (Vector2){30, 350}, 0.0f, 0.8f, WHITE);
+
+
+    
     if (location->name == PORTO_DE_GALINHAS) {
         DrawTexture(assets.portal, 325, 170, RAYWHITE);
         DrawTextureEx(assets.chicken, (Vector2){300, 350}, 0.0f, 0.5f, RAYWHITE);
         DrawTextureEx(assets.chicken, (Vector2){635, 350}, 0.0f, 0.5f, RAYWHITE);
         DrawTextureEx(assets.coconutRight, (Vector2){835, 170}, 0.0f, 0.8f, RAYWHITE);
     }
-
-    DrawTexture(location->fishShop, 680, 228, RAYWHITE);
-    DrawTextureEx(assets.portSign, (Vector2){30, 350}, 0.0f, 0.8f, WHITE);
-
-
+    
     DrawTexture(location->sailor, 170, 250, RAYWHITE);
-    DrawTexture(location->salesman, 830, 350, RAYWHITE);
+    if (location->name == FERNANDO_DE_NORONHA)
+    {
+        DrawTexture(assets.coral,300,380,RAYWHITE);
+        DrawTextureEx(assets.islands,(Vector2){610,70}, 0.0f, 0.8f,RAYWHITE);
+        DrawTexture(assets.star,870,630,RAYWHITE);
+        DrawTexture(assets.turtle,400,420,RAYWHITE);
+        DrawTextureEx(assets.sharkfin,(Vector2){930,200},0.0f,0.6f,RAYWHITE);
+        DrawTextureEx(assets.coconutRight, (Vector2){330, 370}, 0.0f, 2.2f, RAYWHITE);
+        DrawTextureEx(assets.coconutLeft, (Vector2){-225, 340}, 0.0f, 2.4f, RAYWHITE);
+    }
     DrawTextureEx(assets.coin, (Vector2){810, 40}, 0.0f, 0.7f, WHITE);
     char balanceText[10];
+    DrawTexture(location->fishShop, 680, 228, RAYWHITE);
+    DrawTexture(location->salesman, 830, 350, RAYWHITE);
     sprintf(balanceText, "%03d", balance);
     DrawText(balanceText, 888, 57, 45, BLACK);
     DrawText(balanceText, 890, 55, 45, WHITE);
-    
 }
 
 Location* startLocation(LocationName locationName, Assets assets) {
@@ -841,13 +852,13 @@ Location* startLocation(LocationName locationName, Assets assets) {
             break;
 
         case FERNANDO_DE_NORONHA:
-            location->background = assets.backgroundPorto;
-            location->backgroundBlur = assets.backgroundMarcoZeroBlur;
+            location->background = assets.backgroundNoronha;
+            location->backgroundBlur = assets.backgroundNoronha;
             location->boat = assets.boat;
             location->sailor = assets.sailorNoronha;
             location->salesman = assets.salesmanNoronha;
-            location->fishShop = assets.fishShop;
-            location->fishShopMenu = assets.fishShopMenu;
+            location->fishShop = assets.fishShopNoronha;
+            location->fishShopMenu = assets.fishShopMenuNoronha;
             location->pier = assets.marcoZeroPier;
             location->firstFish = fernandoDeNoronhaFishList;
             location->pierFilter = (Color){42, 0, 255, 120};

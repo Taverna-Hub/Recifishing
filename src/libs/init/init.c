@@ -140,6 +140,9 @@ Assets LoadAssets(void) {
     assets.sharkfin = LoadTexture("assets/fernando_de_noronha/sharkfin.png");
     assets.star = LoadTexture("assets/fernando_de_noronha/star.png");
     assets.turtle = LoadTexture("assets/fernando_de_noronha/turtle.png");
+    assets.backgroundNoronha = LoadTexture("assets/fernando_de_noronha/noronhaBG.png");
+    assets.fishShopMenuNoronha = LoadTexture("assets/fernando_de_noronha/fishshopMenuNoronha.png");
+    assets.fishShopNoronha = LoadTexture("assets/fernando_de_noronha/fishshopNoronha.png");
 
 
     return assets;
