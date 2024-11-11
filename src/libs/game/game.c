@@ -32,7 +32,7 @@ bool showError = false;
 bool sharkCaught = false;
 bool isMiniGaming = false;
 bool ranOutOfTime = false;
-bool visitedNoronha = true;
+bool visitedNoronha = false;
 bool isTransitioning = false;
 
 int cont = 0;
@@ -772,8 +772,11 @@ Fish* pescar(Fish *head) {
 
     int listSize = 0;
     Fish *temp = head;
+
     while (temp != NULL) {
-        listSize++;
+        if (temp->price != 999) {
+            listSize++;
+        }
         temp = temp->next;
     }
 
@@ -783,16 +786,19 @@ Fish* pescar(Fish *head) {
 
     int randomIndex = rand() % listSize;
     temp = head;
-    for (int i = 0; i < randomIndex; i++) {
+    int index = 0;
+
+    while (temp != NULL) {
+        if (temp->price != 999) {
+            if (index == randomIndex) {
+                return temp;
+            }
+            index++;
+        }
         temp = temp->next;
     }
 
-    if (temp->price==999)
-    {
-        temp=temp->next;
-    }
-    
-    return temp;
+    return NULL;
 }
 
 void createFish(Fish **head, char *name, int price, int letters, Texture2D sprite, LocationName locationName) {
