@@ -1468,7 +1468,7 @@ void setHookedFish(Assets assets, Location *location, Vector2 mousePos) {
 
         Rectangle sharkFinArea = {900, 360, assets.sharkfin.width, assets.sharkfin.height};
 
-        if (CheckCollisionPointRec(mousePos,sharkFinArea)&& !sharkCaught) {
+        if (CheckCollisionPointRec(mousePos,sharkFinArea) && !sharkCaught && fishpediaCount==24) {
             hookedFish = getSharkFish(); 
         } else {
             hookedFish = pescar(location->firstFish);   
