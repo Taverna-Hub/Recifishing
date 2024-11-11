@@ -1005,9 +1005,9 @@ void DrawFishpedia(Assets assets, Vector2 mousePos) {
     DrawTexture(assets.fishCounter, 792, 48, WHITE);
     sprintf(fishpediaCountStr, "%d", fishpediaCount);
     DrawText(fishpediaCountStr, 870, 68, 28, BLACK);
-    DrawText("/24", 905, 68, 28, BLACK);
+    DrawText("/25", 905, 68, 28, BLACK);
     DrawText(fishpediaCountStr, 872, 66, 28, WHITE);
-    DrawText("/24", 907, 66, 28, WHITE);
+    DrawText("/25", 907, 66, 28, WHITE);
 
     DrawText("Fishpedia", 448, 72, 28, BLACK);
     DrawText("Fishpedia", 450, 70, 28, WHITE);
