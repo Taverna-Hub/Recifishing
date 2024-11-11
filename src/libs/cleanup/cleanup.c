@@ -14,11 +14,11 @@ void UnloadAssets(Assets* assets) {
 
     /* Trilha Sonora */
     UnloadMusicStream(assets->sol);
-    UnloadMusicStream(assets->trombone);
+    UnloadMusicStream(assets->asaBranca);
     UnloadMusicStream(assets->borbulhas);
-    UnloadMusicStream(assets->eraDomingo);
     UnloadMusicStream(assets->anunciacao);
     UnloadMusicStream(assets->labelledejour);
+    UnloadMusicStream(assets->vidaDeViajante);
     UnloadMusicStream(assets->morenaTropicana);
 
     /* Menu Sprites */

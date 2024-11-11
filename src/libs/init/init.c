@@ -25,10 +25,10 @@ Assets LoadAssets(void) {
     assets.anunciacao = LoadMusicStream("assets/sounds/anunciacao.WAV");
     assets.labelledejour = LoadMusicStream("assets/sounds/labelledejour.WAV");
     assets.morenaTropicana = LoadMusicStream("assets/sounds/morena-tropicana.WAV");
-    assets.trombone = LoadMusicStream("assets/porto_de_galinhas/trombone_de_prata.WAV");
-    assets.borbulhas = LoadMusicStream("assets/porto_de_galinhas/FagnerBorbulhas_de_amor.wav");
-    assets.eraDomingo = LoadMusicStream("assets/fernando_de_noronha/Reginaldo_RossiEra_Domingo.WAV");
-    assets.sol = LoadMusicStream("assets/fernando_de_noronha/Reginaldo_RossiSol_se_o_Dia_e_de_Sol.WAV");
+    assets.asaBranca = LoadMusicStream("assets/sounds/asaBranca.wav");
+    assets.borbulhas = LoadMusicStream("assets/sounds/FagnerBorbulhas_de_amor.wav");
+    assets.vidaDeViajante = LoadMusicStream("assets/sounds/vidaDeViajante.wav");
+    assets.sol = LoadMusicStream("assets/sounds/Reginaldo_RossiSol_se_o_Dia_e_de_Sol.WAV");
 
     /* Menu Sprites */
     assets.fishFrame=LoadTexture("assets/menu/fishframing.png");
@@ -46,7 +46,7 @@ Assets LoadAssets(void) {
     assets.arrow = LoadTexture("assets/icons/arrow.png");
     assets.button = LoadTexture("assets/icons/button.png");
     assets.logoTexture = LoadTexture("assets/icons/logo.png");
-    assets.PortoSign=LoadTexture("assets/icons/symbolporto.png");
+    assets.PortoSign = LoadTexture("assets/icons/symbolporto.png");
     assets.fishPedia = LoadTexture("assets/icons/fishpedia.png");
     assets.fishPedia2 = LoadTexture("assets/icons/fishpedia2.png");
     assets.fishBucket = LoadTexture("assets/icons/fishbucket.png");
@@ -55,8 +55,8 @@ Assets LoadAssets(void) {
     assets.emptyButton = LoadTexture("assets/icons/emptyButton.png");
     assets.fishFraming = LoadTexture("assets/icons/fishframing.png");
     assets.fishCounter = LoadTexture("assets/icons/fishcounter.png");
-    assets.MarcoSign=LoadTexture("assets/icons/symbolmarcozero.png");
-    assets.NoronhaSign=LoadTexture("assets/icons/symbolnoronha.png");
+    assets.MarcoSign = LoadTexture("assets/icons/symbolmarcozero.png");
+    assets.NoronhaSign = LoadTexture("assets/icons/symbolnoronha.png");
     assets.keyButtonBox = LoadTexture("assets/icons/keyButtonBox.png");
     assets.baseButtonFail = LoadTexture("assets/icons/baseButtonFail.png");
     assets.buttonDark = LoadTexture("assets/icons/darkbuttonTemplate.png");
