@@ -32,7 +32,7 @@ bool showError = false;
 bool sharkCaught = false;
 bool isMiniGaming = false;
 bool ranOutOfTime = false;
-bool visitedNoronha = true;
+bool visitedNoronha = false;
 bool isTransitioning = false;
 
 int cont = 0;
@@ -1537,7 +1537,7 @@ void fishingMiniGame(Assets assets) {
         DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
     }
 
-    float timeRatio = gameTime / 1000000.0f;
+    float timeRatio = gameTime / 1500000.0f;
 
     if (timeRatio > 0.75f) {
         DrawRectangle(350, 63, 267 * timeRatio, 10, GREEN);
