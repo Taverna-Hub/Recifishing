@@ -15,7 +15,7 @@ Assets LoadAssets(void) {
     assets.morenaTropicana = LoadMusicStream("assets/sounds/morena-tropicana.WAV");
     assets.eraDomingo = LoadMusicStream("assets/fernando_de_noronha/Reginaldo_RossiEra_Domingo.WAV");
     assets.sol = LoadMusicStream("assets/fernando_de_noronha/Reginaldo_RossiSol_se_o_Dia_e_de_Sol.WAV");
-    assets.borbulhas = LoadMusicStream("assets/porto_de_galinhas/FagnerBorbulhas_de_amor.WAV");
+    assets.borbulhas = LoadMusicStream("assets/porto_de_galinhas/FagnerBorbulhas_de_amor.wav");
     assets.trombone = LoadMusicStream("assets/porto_de_galinhas/trombone_de_prata.WAV");
     assets.keyPress = LoadSound("assets/sounds/spacePress.wav");
     assets.boowomp = LoadSound("assets/sounds/boowomp.mp3");
