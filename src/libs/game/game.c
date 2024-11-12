@@ -55,7 +55,7 @@ int fernandoDeNoronhaCapturedCount = 0;
 
 float waitingFish = -1;
 float errorStartTime = 0.0f;
-float gameTime = 1000000.0f;
+float gameTime = 1200000.0f;
 
 char bucketStr[20];
 char fishpediaCountStr[20];
@@ -260,7 +260,7 @@ void DrawGame(bool *inTransition, int *fadeAlpha, Assets assets, bool *isSoundPl
                 if (waitingFrames >= waitingFish) {
 
                     if (!isMiniGaming && !showError) {
-                        
+
                         spaceKeyMiniGame(assets);
 
                     } else if (isMiniGaming) {
@@ -1483,7 +1483,7 @@ void setHookedFish(Assets assets, Location *location, Vector2 mousePos) {
         }
         
         updateSequence(hookedFish);
-        gameTime = 1000000.0f;
+        gameTime = 1200000.0f;
         ranOutOfTime = false;
         StopSound(assets.tictac);
         
@@ -1499,7 +1499,7 @@ void spaceKeyMiniGame(Assets assets) {
         alert = false;
     }
 
-    float timeRatio = gameTime / 1000000.0f;
+    float timeRatio = gameTime / 1200000.0f;
 
     if (timeRatio > 0.75f) {
         DrawRectangle(100, 240, 160 * timeRatio, 10, GREEN);
@@ -1511,7 +1511,7 @@ void spaceKeyMiniGame(Assets assets) {
         DrawRectangle(100, 240, 160 * timeRatio, 10, RED);
     }
 
-    gameTime -= 10000;
+    gameTime -= 13000;
 
     if (!IsSoundPlaying(assets.tictac)) {
         PlaySound(assets.tictac);
@@ -1521,7 +1521,7 @@ void spaceKeyMiniGame(Assets assets) {
     if (gameTime <= 0) {
         waitingFish = (rand() % 500) + 200;
         waitingFrames = 0;
-        gameTime = 1000000.0f;
+        gameTime = 1200000.0f;
         hookedFish = NULL;
         alert = true;
         StopSound(assets.tictac);
@@ -1531,7 +1531,7 @@ void spaceKeyMiniGame(Assets assets) {
         isMiniGaming = true;
         currentSequenceIndex = 0;
         PlaySound(assets.keyPress);
-        gameTime = 1000000.0f;
+        gameTime = 1200000.0f;
         alert = true;
         StopSound(assets.tictac);
     }
@@ -1556,7 +1556,7 @@ void fishingMiniGame(Assets assets) {
         DrawTextureEx(assets.keyButtonBox, (Vector2){350, 75}, 0.0f, 0.4f, RAYWHITE);
     }
 
-    float timeRatio = gameTime / 1500000.0f;
+    float timeRatio = gameTime / 1200000.0f;
 
     if (timeRatio > 0.75f) {
         DrawRectangle(350, 63, 267 * timeRatio, 10, GREEN);
