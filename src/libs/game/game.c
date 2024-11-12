@@ -649,7 +649,11 @@ void drawElements(Assets assets, Location *location, int arrowFrames) {
         DrawTextureEx(assets.islands,(Vector2){610, 90}, 0.0f, 0.7f,RAYWHITE);
         DrawTexture(assets.star,870,630,RAYWHITE);
         DrawTexture(assets.turtle,400,420,RAYWHITE);
-        DrawTextureEx(assets.sharkfin,(Vector2){910, 210}, 0.0f, 0.5f,RAYWHITE);
+        if (!sharkCaught)
+        {
+            DrawTextureEx(assets.sharkfin,(Vector2){910, 210}, 0.0f, 0.5f,RAYWHITE);
+        }
+        
         DrawTextureEx(assets.coconutLeft, (Vector2){930, 190}, 0.0f, 1.0f, RAYWHITE);
         DrawTextureEx(assets.coconutLeft, (Vector2){-255, 390}, 0.0f, 2.4f, RAYWHITE);
         DrawTextureEx(assets.coconutRight, (Vector2){310, 370}, 0.0f, 2.2f, RAYWHITE);
@@ -1203,7 +1207,11 @@ void DrawPier(Assets assets, Location *location, Vector2 mousePos, int arrowFram
     DrawTexture(assets.fishBucket, 140, 40, RAYWHITE);
 
     if (location->name==FERNANDO_DE_NORONHA) {
-        DrawTexture(assets.sharkfin,900,360,RAYWHITE);
+        if (!sharkCaught)
+        {
+            DrawTexture(assets.sharkfin,900,360,RAYWHITE);
+        }
+        
     }
 
     if (firstGame) {
