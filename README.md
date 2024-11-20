@@ -45,3 +45,6 @@ make run
 ```
 
 <br>
+<br>
+<p align="center"><img src="https://github.com/Taverna-Hub/ForgeSheets/assets/117609505/9287638f-8716-4e62-9989-a40882fbfed6" width="40px"></p>
+<p align="center">Projeto para a disciplina de <strong>Algoritmos e Estruturas de Dados</strong> na <strong>CESAR School‎‎</strong></p>
